@@ -1,0 +1,12 @@
+<header class="site-header" role="banner">
+
+    <div class="wrapper">
+        {% assign default_paths = site.pages | map: "path" %}
+        <a class="site-title" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
+
+        <nav class="site-nav">
+            <a class="page-link" href="http://lilianweng.github.io" target="_blank">About Lilian</a>
+        </nav>
+    </div>
+
+</header>

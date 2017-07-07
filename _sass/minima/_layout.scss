@@ -2,8 +2,8 @@
  * Site header
  */
 .site-header {
-  border-top: 5px solid $grey-color-dark;
-  border-bottom: 1px solid $grey-color-light;
+  border-top: 5px solid $crimson-color;
+  border-bottom: 1px solid $crimson-color-very-light;
   min-height: $spacing-unit * 1.865;
 
   // Positioning context for the mobile navigation icon
@@ -12,7 +12,8 @@
 
 .site-title {
   @include relative-font-size(1.625);
-  font-weight: 300;
+  font-weight: 600;
+  color: $crimson-color;
   line-height: $base-line-height * $base-font-size * 2.25;
   letter-spacing: -1px;
   margin-bottom: 0;
@@ -20,7 +21,13 @@
 
   &,
   &:visited {
-    color: $grey-color-dark;
+    color: $crimson-color-dark;
+  }
+
+  &:hover {
+    color: $crimson-color-light;
+    text-decoration: none;
+    cursor: pointer;
   }
 }
 
@@ -43,6 +50,12 @@
     // Gaps between nav items, but not on the last one
     &:not(:last-child) {
       margin-right: 20px;
+    }
+
+    &:hover {
+      color: $crimson-color;
+      text-decoration: none;
+      cursor: pointer;
     }
   }
 
@@ -200,6 +213,12 @@
 .post-link {
   display: block;
   @include relative-font-size(1.5);
+
+  &:hover {
+    color: $crimson-color-light;
+    text-decoration: none;
+    cursor: pointer;
+  }
 }
 
 
@@ -212,39 +231,48 @@
 }
 
 .post-title {
-  @include relative-font-size(2.625);
+  @include relative-font-size(2.4);
   letter-spacing: -1px;
   line-height: 1;
 
   @include media-query($on-laptop) {
     @include relative-font-size(2.25);
   }
+
+  font-weight: $base-font-weight * 1.5;
+  width: $content-width * 0.8;
 }
 
 .post-content {
   margin-bottom: $spacing-unit;
 
   h2 {
-    @include relative-font-size(2);
+    @include relative-font-size(1.7);
 
     @include media-query($on-laptop) {
       @include relative-font-size(1.75);
     }
+
+    font-weight: $base-font-weight * 1.5;
+    margin-top: $spacing-unit * 1.55;
   }
 
   h3 {
-    @include relative-font-size(1.625);
+    @include relative-font-size(1.3);
 
     @include media-query($on-laptop) {
       @include relative-font-size(1.375);
     }
+    font-weight: $base-font-weight * 1.35;
+    margin-top: $spacing-unit * 1.1;
   }
 
   h4 {
-    @include relative-font-size(1.25);
+    @include relative-font-size(1);
 
     @include media-query($on-laptop) {
       @include relative-font-size(1.125);
     }
+    font-weight: $base-font-weight * 1.25;
   }
 }

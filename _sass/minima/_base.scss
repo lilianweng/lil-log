@@ -2,13 +2,21 @@
  * Reset some basic elements
  */
 body, h1, h2, h3, h4, h5, h6,
-p, blockquote, pre, hr,
-dl, dd, ol, ul, figure {
+p, blockquote, pre, dl, dd, ol,
+ul, figure {
   margin: 0;
   padding: 0;
 }
 
 
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid $crimson-color-very-light;
+    margin: 2em 0;
+    padding: 0; 
+}
 
 /**
  * Basic styling
@@ -23,6 +31,7 @@ body {
        -o-font-feature-settings: "kern" 1;
           font-feature-settings: "kern" 1;
   font-kerning: normal;
+
 }
 
 /**
@@ -43,6 +52,8 @@ ul, ol, dl, figure,
 img {
   max-width: 100%;
   vertical-align: middle;
+  margin: 10px auto;
+  text-align: center;
 }
 
 
@@ -97,7 +108,7 @@ a {
   }
 
   &:hover {
-    color: $text-color;
+    color: $crimson-color-light;
     text-decoration: underline;
   }
 

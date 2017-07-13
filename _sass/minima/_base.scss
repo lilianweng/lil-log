@@ -67,6 +67,7 @@ figure > img {
 figcaption {
   font-size: $small-font-size;
   color: $grey-color-dark;
+  padding-bottom: 10px;
 }
 
 
@@ -156,13 +157,17 @@ code {
 }
 
 pre {
-  padding: 8px 12px;
+  padding: 4px 6px;
   overflow-x: auto;
 
   > code {
     border: 0;
     padding-right: 0;
     padding-left: 0;
+  }
+
+  .lineno {
+    @include relative-font-size(0.9);
   }
 }
 

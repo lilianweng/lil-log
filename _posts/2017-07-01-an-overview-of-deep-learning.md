@@ -2,6 +2,7 @@
 layout: post
 title: "An Overview of Deep Learning for Curious People"
 date: 2017-07-01 01:09:00
+tags: tensorflow
 ---
 
 > Starting earlier this year, I grew a strong curiosity of deep learning and spent some time reading about this field. To document what I’ve learned and to provide some interesting pointers to people with similar interests, I wrote this overview of deep learning models and their applications.

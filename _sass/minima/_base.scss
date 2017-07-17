@@ -34,6 +34,23 @@ body {
 
 }
 
+.share-buttons {
+  display: inline;
+  float: right;
+}
+
+.share-button {
+  display: block;
+  float: left;
+  padding: 0 5px;
+  height: 30px;
+  vertical-align: text-bottom !important;
+}
+
+.twitter-share-button {
+  padding-top: 1px;
+}
+
 /**
  * Set `margin-bottom` to maintain vertical rhythm
  */

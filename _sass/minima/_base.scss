@@ -51,6 +51,41 @@ body {
   padding-top: 1px;
 }
 
+.table-of-content {
+  display: block;
+  position: fixed;
+  left: 0px;
+  top: 100px;
+  z-index: 1000;
+  overflow: hidden;
+  font-size: $small-font-size;
+  width: 270px;
+  opacity: 0.3;
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  a {
+    color: lighten($brand-color, 15%);
+  }
+
+  a:visited {
+    color: lighten($brand-color, 15%);
+  }
+
+  a:hover {
+    color: $brand-color;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  li {
+    color: $brand-color;
+    list-style-type: disc;
+  }
+}
+
 /**
  * Set `margin-bottom` to maintain vertical rhythm
  */
@@ -71,8 +106,15 @@ img {
   vertical-align: middle;
   margin: 10px auto;
   text-align: center;
+  display: block;
+  margin: 0 auto;
 }
 
+.center {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
 
 /**
  * Figures

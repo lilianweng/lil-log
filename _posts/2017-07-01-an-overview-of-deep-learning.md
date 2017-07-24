@@ -12,7 +12,7 @@ tags: tensorflow
 
 (The post was originated from my talk for [WiMLDS x Fintech meetup](http://wimlds.org/chapters/about-bay-area/) hosted by [Affirm](www.affirm.com).)
 
-**Table of Content**
+{: class="table-of-content"}
 * TOC
 {:toc}
 

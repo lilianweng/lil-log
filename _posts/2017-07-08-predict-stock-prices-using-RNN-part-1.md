@@ -4,13 +4,21 @@ title: "Predict Stock Prices Using RNN: Part 1"
 date: 2017-07-08 09:18:00
 ---
 
-> This post is a tutorial for how to build a recurrent neural network using Tensorflow to predict stock market prices. The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
+> This post is a tutorial for how to build a recurrent neural network using Tensorflow to predict stock market prices. Part 1 focuses on the prediction of S&P 500 index. The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
 
 
 <!--more-->
 
 This is a tutorial for how to build a recurrent neural network using Tensorflow to predict stock market prices. The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn). If you don't know what is recurrent neural network or LSTM cell, feel free to check [my previous post]({% post_url 2017-07-01-an-overview-of-deep-learning %}#recurrent-neural-network).
 
+
+{: class="table-of-content"}
+* TOC
+{:toc}
+
+
+
+## Overview of Existing Tutorials
 
 There are many tutorials on the Internet, like:
 - [A noob's guide to implementing RNN-LSTM using Tensorflow](http://monik.in/a-noobs-guide-to-implementing-rnn-lstm-using-tensorflow/)
@@ -31,9 +39,6 @@ Despite all these existing tutorials, I still want to write a new one mainly for
 
 After reading a bunch of examples, I would like to suggest taking the [official example](https://github.com/tensorflow/models/tree/master/tutorials/rnn/ptb) on Penn Tree Bank (PTB) dataset as your starting point. The PTB example showcases a RNN model in a pretty and modular design pattern, but it might prevent you from easily understanding the model structure. Hence, here I will build up the graph in a very straightforward manner.
 
-**Table of Content**
-* TOC
-{:toc}
 
 ## The Goal
 
@@ -45,7 +50,7 @@ As a quick recap: the recurrent neural network (RNN) is a type of artificial neu
 For more information in depth, please read [my previous post]({% post_url 2017-07-01-an-overview-of-deep-learning %}#recurrent-neural-network) or [this awesome post](http://colah.github.io/posts/2015-08-Understanding-LSTMs/).
 
 
-### Data Preparation
+## Data Preparation
 
 The stock prices is a time series of length $$N$$, defined as $$p_0, p_1, \dots, p_{N-1}$$ in which $$p_i$$ is the close price on day $$i$$, $$0 \le i < N$$. Imagine that we have a sliding window of a fixed size $$w$$ (later, we refer to this as `input_size`) and every time we move the window to the right by size $$w$$, so that there is no overlap between data in all the sliding windows. 
 
@@ -402,6 +407,8 @@ When the input_size is large, the prediction is still in need of improvment, as 
 ![]({{ '/assets/images/results_input_size_30_lstm_size_32.png' | relative_url }})
 *Fig. 5d Predictoin results for the first and last 200 days in test data. Model is trained with input_size=30 and lstm_size=32.*
 
+
+The full code in this tutorial is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
 
 
 ## What to Expect in Part 2

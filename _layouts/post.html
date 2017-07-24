@@ -32,7 +32,8 @@ layout: default
     {{ content }}
   </div>
 
-  {% if site.disqus.shortname %}
-    {% include disqus_comments.html %}
+  {% if page.comments %}
+    {% include disqus.html %}
   {% endif %}
+
 </article>

@@ -10,7 +10,7 @@ date: 2017-07-08 09:18:00
 
 <!--more-->
 
-This is a tutorial for how to build a recurrent neural network using Tensorflow to predict stock market prices. The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn). If you don't know what is recurrent neural network or LSTM cell, feel free to check [my previous post]({% post_url 2017-07-01-an-overview-of-deep-learning %}#recurrent-neural-network).
+This is a tutorial for how to build a recurrent neural network using Tensorflow to predict stock market prices. The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn). If you don't know what is recurrent neural network or LSTM cell, feel free to check [my previous post]({% post_url 2017-06-21-an-overview-of-deep-learning %}#recurrent-neural-network).
 
 
 {: class="table-of-content"}
@@ -48,7 +48,7 @@ I will explain how to build an RNN model with LSTM cells to predict the prices o
 As a quick recap: the recurrent neural network (RNN) is a type of artificial neural network with self-loop in its hidden layer(s), which enables RNN to use the previous state of the hidden neuron(s) to learn the current state given the new input. RNN is good at processing sequential data. Long short-term memory (LSTM) cell is a specially designed working unit that helps RNN better memorize the long-term context.
 
 
-For more information in depth, please read [my previous post]({% post_url 2017-07-01-an-overview-of-deep-learning %}#recurrent-neural-network) or [this awesome post](http://colah.github.io/posts/2015-08-Understanding-LSTMs/).
+For more information in depth, please read [my previous post]({% post_url 2017-06-21-an-overview-of-deep-learning %}#recurrent-neural-network) or [this awesome post](http://colah.github.io/posts/2015-08-Understanding-LSTMs/).
 
 
 ## Data Preparation

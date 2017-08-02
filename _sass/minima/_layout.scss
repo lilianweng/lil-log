@@ -192,6 +192,7 @@
 
   font-weight: $base-font-weight * 1.5;
   width: $content-width * 0.85;
+  max-width: 100%;
 }
 
 .post-content {

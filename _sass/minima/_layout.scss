@@ -129,9 +129,21 @@
   font-size: $small-font-size;
   color: $grey-color;
   clear: both;
+  margin-bottom: 30px;
 
   a {
     color: $grey-color;
+  }
+  p {
+    margin: 5px auto;
+    width: 115px;
+  }
+  img {
+    width: 26px;
+    height: 26px;
+    margin: 0 4px;
+    display: block;
+    float: left;
   }
 }
 

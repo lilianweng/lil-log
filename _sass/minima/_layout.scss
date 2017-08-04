@@ -239,4 +239,17 @@
     }
     font-weight: $base-font-weight * 1.25;
   }
+
+  a {
+    border-bottom: 1px dotted #bbb;
+    padding-bottom: 1px;
+
+    &:hover {
+      color: $crimson-color-light;
+      border-bottom: 1px solid $crimson-color-light;
+      padding-bottom: 1px;
+      text-decoration: none;
+    }
+  }
+
 }

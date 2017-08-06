@@ -287,20 +287,36 @@ Many exciting news and findings are happening in this evolving field every day. 
 
 ## References
 
-1. Zachary C. Lipton. ["The mythos of model interpretability."](https://arxiv.org/pdf/1606.03490.pdf) arXiv preprint arXiv:1606.03490 (2016). 
-2. Been Kim, Rajiv Khanna, and Oluwasanmi O. Koyejo. "Examples are not enough, learn to criticize! criticism for interpretability." Advances in Neural Information Processing Systems. 2016.
-3. Himabindu Lakkaraju, Stephen H. Bach, and Jure Leskovec. ["Interpretable decision sets: A joint framework for description and prediction."](http://www.kdd.org/kdd2016/papers/files/rpp1067-lakkarajuA.pdf) Proc. 22nd ACM SIGKDD Intl. Conf. on Knowledge Discovery and Data Mining. ACM, 2016.
-4. Robnik-Šikonja, Marko, and Igor Kononenko. ["Explaining classifications for individual instances."](http://lkm.fri.uni-lj.si/rmarko/papers/RobnikSikonjaKononenko08-TKDE.pdf) IEEE Transactions on Knowledge and Data Engineering 20.5 (2008): 589-600.
-5. Baehrens, David, et al. ["How to explain individual classification decisions."](http://www.jmlr.org/papers/volume11/baehrens10a/baehrens10a.pdf) Journal of Machine Learning Research 11.Jun (2010): 1803-1831.
-6. Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin. ["Why should I trust you?: Explaining the predictions of any classifier."](https://arxiv.org/pdf/1602.04938.pdf) Proc. 22nd ACM SIGKDD Intl. Conf. on Knowledge Discovery and Data Mining. ACM, 2016.
-7. Yiming Yang, and Jan O. Pedersen. ["A comparative study on feature selection in text categorization."](http://www.surdeanu.info/mihai/teaching/ista555-spring15/readings/yang97comparative.pdf) Intl. Conf. on Machine Learning. Vol. 97. 1997.
-8. Isabelle Guyon, and André Elisseeff. ["An introduction to variable and feature selection."](http://www.jmlr.org/papers/volume3/guyon03a/guyon03a.pdf) Journal of Machine Learning Research 3.Mar (2003): 1157-1182.
-9. Ian J. Goodfellow, Jonathon Shlens, and Christian Szegedy. ["Explaining and harnessing adversarial examples."](https://arxiv.org/pdf/1412.6572.pdf)  ICLR 2015.
-10. Christian Szegedy, Wojciech Zaremba, Ilya Sutskever, Joan Bruna, Dumitru Erhan, Ian Goodfellow, Rob Fergus. ["Intriguing properties of neural networks."](https://arxiv.org/abs/1312.6199) Intl. Conf. on Learning Representations (2014)
-11. Nguyen, Anh, Jason Yosinski, and Jeff Clune. ["Deep neural networks are easily fooled: High confidence predictions for unrecognizable images."](http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Nguyen_Deep_Neural_Networks_2015_CVPR_paper.pdf) Proc. IEEE Conference on Computer Vision and Pattern Recognition. 2015.
-12. Benjamin Letham, Cynthia Rudin, Tyler H. McCormick, and David Madigan. ["Interpretable classifiers using rules and Bayesian analysis: Building a better stroke prediction model."](https://arxiv.org/abs/1511.01644) The Annals of Applied Statistics 9, No. 3 (2015): 1350-1371.
-13. Haohan Wang, Bhiksha Raj, and Eric P. Xing. ["On the Origin of Deep Learning."](https://arxiv.org/pdf/1702.07800.pdf) arXiv preprint arXiv:1702.07800 (2017).
-14. [OpenAI Blog: Robust Adversarial Examples](https://blog.openai.com/robust-adversarial-inputs/)
-15. [Attacking Machine Learning with Adversarial Examples](https://blog.openai.com/adversarial-example-research/)
-16. [Reading an AI Car’s Mind: How NVIDIA’s Neural Net Makes Decisions](https://blogs.nvidia.com/blog/2017/04/27/how-nvidias-neural-net-makes-decisions/)
+[1] Zachary C. Lipton. ["The mythos of model interpretability."](https://arxiv.org/pdf/1606.03490.pdf) arXiv preprint arXiv:1606.03490 (2016). 
+
+[2] Been Kim, Rajiv Khanna, and Oluwasanmi O. Koyejo. "Examples are not enough, learn to criticize! criticism for interpretability." Advances in Neural Information Processing Systems. 2016.
+
+[3] Himabindu Lakkaraju, Stephen H. Bach, and Jure Leskovec. ["Interpretable decision sets: A joint framework for description and prediction."](http://www.kdd.org/kdd2016/papers/files/rpp1067-lakkarajuA.pdf) Proc. 22nd ACM SIGKDD Intl. Conf. on Knowledge Discovery and Data Mining. ACM, 2016.
+
+[4] Robnik-Šikonja, Marko, and Igor Kononenko. ["Explaining classifications for individual instances."](http://lkm.fri.uni-lj.si/rmarko/papers/RobnikSikonjaKononenko08-TKDE.pdf) IEEE Transactions on Knowledge and Data Engineering 20.5 (2008): 589-600.
+
+[5] Baehrens, David, et al. ["How to explain individual classification decisions."](http://www.jmlr.org/papers/volume11/baehrens10a/baehrens10a.pdf) Journal of Machine Learning Research 11.Jun (2010): 1803-1831.
+
+[6] Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin. ["Why should I trust you?: Explaining the predictions of any classifier."](https://arxiv.org/pdf/1602.04938.pdf) Proc. 22nd ACM SIGKDD Intl. Conf. on Knowledge Discovery and Data Mining. ACM, 2016.
+
+[7] Yiming Yang, and Jan O. Pedersen. ["A comparative study on feature selection in text categorization."](http://www.surdeanu.info/mihai/teaching/ista555-spring15/readings/yang97comparative.pdf) Intl. Conf. on Machine Learning. Vol. 97. 1997.
+
+[8] Isabelle Guyon, and André Elisseeff. ["An introduction to variable and feature selection."](http://www.jmlr.org/papers/volume3/guyon03a/guyon03a.pdf) Journal of Machine Learning Research 3.Mar (2003): 1157-1182.
+
+[9] Ian J. Goodfellow, Jonathon Shlens, and Christian Szegedy. ["Explaining and harnessing adversarial examples."](https://arxiv.org/pdf/1412.6572.pdf)  ICLR 2015.
+
+[10] Christian Szegedy, Wojciech Zaremba, Ilya Sutskever, Joan Bruna, Dumitru Erhan, Ian Goodfellow, Rob Fergus. ["Intriguing properties of neural networks."](https://arxiv.org/abs/1312.6199) Intl. Conf. on Learning Representations (2014)
+
+[11] Nguyen, Anh, Jason Yosinski, and Jeff Clune. ["Deep neural networks are easily fooled: High confidence predictions for unrecognizable images."](http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Nguyen_Deep_Neural_Networks_2015_CVPR_paper.pdf) Proc. IEEE Conference on Computer Vision and Pattern Recognition. 2015.
+
+[12] Benjamin Letham, Cynthia Rudin, Tyler H. McCormick, and David Madigan. ["Interpretable classifiers using rules and Bayesian analysis: Building a better stroke prediction model."](https://arxiv.org/abs/1511.01644) The Annals of Applied Statistics 9, No. 3 (2015): 1350-1371.
+
+[13] Haohan Wang, Bhiksha Raj, and Eric P. Xing. ["On the Origin of Deep Learning."](https://arxiv.org/pdf/1702.07800.pdf) arXiv preprint arXiv:1702.07800 (2017).
+
+[14] [OpenAI Blog: Robust Adversarial Examples](https://blog.openai.com/robust-adversarial-inputs/)
+
+[15] [Attacking Machine Learning with Adversarial Examples](https://blog.openai.com/adversarial-example-research/)
+
+[16] [Reading an AI Car’s Mind: How NVIDIA’s Neural Net Makes Decisions](https://blogs.nvidia.com/blog/2017/04/27/how-nvidias-neural-net-makes-decisions/)
+
 

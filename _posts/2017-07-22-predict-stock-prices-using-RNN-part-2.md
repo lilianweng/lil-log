@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: true
+comments: false
 title: "Predict Stock Prices Using RNN: Part 2"
 date: 2017-07-22 00:00:00
 ---

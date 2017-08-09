@@ -194,12 +194,12 @@
 }
 
 .post-title {
-  @include relative-font-size(2.4);
+  @include relative-font-size(2.2);
   letter-spacing: -1px;
   line-height: 1;
 
   @include media-query($on-laptop) {
-    @include relative-font-size(2.25);
+    @include relative-font-size(2.2);
   }
 
   font-weight: $base-font-weight * 1.5;

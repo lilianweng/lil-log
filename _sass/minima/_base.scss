@@ -58,6 +58,25 @@ body {
   }
 }
 
+.page-navigation {
+  font-size: 90%;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+
+  a {
+    display: block;
+    overflow: hidden;
+    width: 50%;
+    float: left;
+    margin: 1em 0;
+  }
+
+  .next {
+    text-align: right;
+  }
+}
+
 /**
  * Set `margin-bottom` to maintain vertical rhythm
  */

@@ -16,20 +16,31 @@ layout: default
         by <span itemprop="name">{{ site.author }}</span>
       </span>
 
+      <!--
       <span class="share-buttons">
-        <!-- Twitter share button -->
         <span class="share-button"><a class="twitter-share-button" href="https://twitter.com/share" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></span>
 
-        <!-- Facebook share button -->
         <span class="share-button"><span class="fb-like" data-href="{{ page.url }}" data-layout="button_count" data-action="like" data-size="small" data-show-faces="false" data-share="true"></span></span>
       </span>
-
       <div style="clear: both;"/>
+      -->
+
     </p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
     {{ content }}
+  </div>
+
+
+  <div class="page-navigation">
+    {% if page.previous.url %}
+      <a class="prev" href="{{page.previous.url | relative_url}}">&larr; {{page.previous.title}}</a>
+    {% endif %}
+
+    {% if page.next.url %}
+      <a class="next" href="{{page.next.url | relative_url}}">{{page.next.title}} &rarr;</a>
+    {% endif %}
   </div>
 
   {% if page.comments %}

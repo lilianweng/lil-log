@@ -6,3 +6,6 @@ _site
 .idea*
 *~
 *.gem
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+*.ipynb

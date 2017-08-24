@@ -137,6 +137,27 @@ li {
 }
 
 
+/**
+ * Table
+ */
+table {
+  max-width: 100%;
+  border-top: 2px solid $grey-color;
+  border-bottom: 2px solid $grey-color;
+  margin: 10px auto;
+
+  th, td {
+    padding: 2px 6px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    text-align: center;
+    border-bottom: 1px solid $grey-color-light;
+  }
+}
+
 
 /**
  * Headings

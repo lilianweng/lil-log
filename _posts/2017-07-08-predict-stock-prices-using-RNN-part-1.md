@@ -415,3 +415,7 @@ The full code in this tutorial is available in [github.com/lilianweng/stock-rnn]
 ## What to Expect in Part 2
 
 In "Predict Stock Prices Using RNN: Part 2" I will demonstrate how to use an RNN model to prediction prices of different stocks. Probably using embeddings, but not fully decided yet ;)
+
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*

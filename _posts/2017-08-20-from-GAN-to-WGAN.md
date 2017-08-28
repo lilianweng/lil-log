@@ -64,6 +64,7 @@ These two models compete against each other during the training process: the gen
 
 Given, 
 
+{: class="info"}
 | Symbol        | Meaning           | Notes  |
 | ------------- | ------------- | ------------- |
 | $$p_{z}$$ | Data distribution over noise input $$z$$ | Usually, just uniform. |
@@ -192,6 +193,7 @@ Because $$\frac{\partial f_1}{\partial x} = y$$ and $$\frac{\partial f_2}{\parti
 
 ### Low dimensional supports
 
+{: class="info"}
 | Term         | Explanation  |
 | ------------ | ------------ |
 | [Manifold](https://en.wikipedia.org/wiki/Manifold) | A topological space that locally resembles Euclidean space near each point. Precisely, when this Euclidean space is of **dimension $$n$$**, the manifold is referred as **$$n$$-manifold**. |
@@ -461,6 +463,10 @@ Unfortunately due to the tiny training data, the new pokemons only have rough sh
 {: class="center"}
 *Fig. 10. Train [carpedm20/DCGAN-tensorflow](https://github.com/carpedm20/DCGAN-tensorflow) on a set of Pokemon sprite images. The sample outputs are listed after training epoches = 7, 21, 49.*
 
+
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
 
 See you in the next post :D
 

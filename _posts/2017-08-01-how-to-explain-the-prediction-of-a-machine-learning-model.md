@@ -278,11 +278,14 @@ Studies on [**adversarial examples**]([OpenAI Blog: Robust Adversarial Examples]
 Nvidia recently developed [a method to visualize the most important pixel points](https://blogs.nvidia.com/blog/2017/04/27/how-nvidias-neural-net-makes-decisions/) in their self-driving cars' decisioning process. The visualization provides insights on how AI thinks and what the system relies on while operating the car. If what the AI believes to be important agrees with how human make similar decisions, we can naturally gain more confidence in the black-box model.
 
 
-More to come.
+Many exciting news and findings are happening in this evolving field every day. Hope my post can give you some pointers and encourage you to investigate more into this topic :)
 
 ---
 
-Many exciting news and findings are happening in this evolving field every day. Hope my post can give you some pointers and encourage you to investigate more into this topic :)
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
+
+
+More to come :)
 
 
 ## References

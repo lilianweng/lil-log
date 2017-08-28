@@ -250,3 +250,9 @@ In the embedding space, we can measure the similarity between two stocks by exam
 
 The full code in this tutorial is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
 
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
+
+Thanks! :)
+

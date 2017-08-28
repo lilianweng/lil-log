@@ -227,3 +227,7 @@ Meanwhile, maintain your curiosity and passion. The field is making progress eve
 [10] Goodfellow, Ian, et al. ["Generative adversarial nets."](https://arxiv.org/pdf/1406.2661.pdf) NIPS, 2014.
 
 
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
+

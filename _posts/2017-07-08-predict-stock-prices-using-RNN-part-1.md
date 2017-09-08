@@ -364,6 +364,10 @@ The full working code is available in [github.com/lilianweng/stock-rnn](https://
 
 ## Results
 
+<span style="color: red;">[!] Unfortunately I have a bug in my code on how to normalize the prices, instead of using the last price of the previous time window, I end up with using the last price in the same window. So the following plots are off. Thanks to Yury for catching the bug! <br /><br />
+I'm going to update this section with results using the correction normalization very soon! </span>
+
+<!--
 In my experiment, I used the following configuration:
 {% highlight python linenos %}
 num_layers=1
@@ -375,7 +379,6 @@ init_epoch = 5
 max_epoch = 500
 num_steps=30
 {% endhighlight %}
-
 
 ### input_size = 1; lstm_size = 32
 (Final MSE = 9.1462e-5)
@@ -407,7 +410,7 @@ When the input_size is large, the prediction is still in need of improvment, as 
 
 ![]({{ '/assets/images/results_input_size_30_lstm_size_32.png' | relative_url }})
 *Fig. 5d Predictoin results for the first and last 200 days in test data. Model is trained with input_size=30 and lstm_size=32.*
-
+-->
 
 The full code in this tutorial is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
 

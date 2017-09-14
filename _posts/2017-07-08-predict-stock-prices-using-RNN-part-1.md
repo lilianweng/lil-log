@@ -390,7 +390,7 @@ Overall predicting the stock prices is not an easy task. Especially after normal
 
 ![]({{ '/assets/images/rnn_input5_lstm128.png' | relative_url }})
 {: style="width: 500px;" class="center"}
-*Fig. 5c Predictoin results for the last 200 days in test data. Model is trained with input_size=5 and lstm_size=128.*
+*Fig. 5c Predictoin results for the last 200 days in test data. Model is trained with input_size=5, lstm_size=128 and max_epoch=75 (instead of 50).*
 
 
 

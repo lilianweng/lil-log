@@ -161,16 +161,16 @@ The training requires `max_epoch` epochs in total; an [epoch](http://www.fon.hum
 {% highlight python linenos %}
 # Configuration is wrapped in one object for easy tracking and passing.
 class RNNConfig():
-    input_size=3
+    input_size=1
     num_steps=30
     lstm_size=128
     num_layers=1
     keep_prob=0.8
-    batch_size = 200
-    init_learning_rate = 0.02
-    learning_rate_decay = 0.995
-    init_epoch = 10
-    max_epoch = 500
+    batch_size = 64
+    init_learning_rate = 0.001
+    learning_rate_decay = 0.99
+    init_epoch = 5
+    max_epoch = 50
 
 config = RNNConfig()
 {% endhighlight %}
@@ -263,10 +263,10 @@ with lstm_graph.as_default():
     prediction = tf.matmul(last, weight) + bias
 {% endhighlight %}
 
-(9) We use mean square error as the loss metric and [the Adam algorithm](https://arxiv.org/pdf/1412.6980.pdf) for gradient descent optimization.
+(9) We use mean square error as the loss metric and [the RMSPropOptimizer algorithm](http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf) for gradient descent optimization.
 {% highlight python linenos %}
     loss = tf.reduce_mean(tf.square(prediction - targets))
-    optimizer = tf.train.AdamOptimizer(learning_rate)
+    optimizer = tf.train.RMSPropOptimizer(learning_rate)
     minimize = optimizer.minimize(loss)
 {% endhighlight %}
 
@@ -364,60 +364,44 @@ The full working code is available in [github.com/lilianweng/stock-rnn](https://
 
 ## Results
 
-<span style="color: red;">[!] Unfortunately I have a bug in my code on how to normalize the prices, instead of using the last price of the previous time window, I end up with using the last price in the same window. So the following plots are off. Thanks to Yury for catching the bug! <br /><br />
-I'm going to update this section with results using the correction normalization very soon! </span>
-
-<!--
-In my experiment, I used the following configuration:
+I used the following configuration in the experiment.
 {% highlight python linenos %}
 num_layers=1
 keep_prob=0.8
-batch_size = 200
-init_learning_rate = 0.05
+batch_size = 64
+init_learning_rate = 0.001
 learning_rate_decay = 0.99
 init_epoch = 5
-max_epoch = 500
+max_epoch = 100
 num_steps=30
 {% endhighlight %}
 
-### input_size = 1; lstm_size = 32
-(Final MSE = 9.1462e-5)
-The result looks noisy with a tiny `input_size`.
+(Thanks to Yury for cathcing a bug that I had in the price normalization. Instead of using the last price of the previous time window, I ended up with using the last price in the same window. The following plots have been corrected.)
 
-![]({{ '/assets/images/results_input_size_1_lstm_size_32.png' | relative_url }})
-*Fig. 5a Predictoin results for the first and last 200 days in test data. Model is trained with input_size=1 and lstm_size=32.*
+Overall predicting the stock prices is not an easy task. Especially after normalization, the price trends look very noisy.
 
+![]({{ '/assets/images/rnn_input1_lstm32.png' | relative_url }})
+{: style="width: 500px;" class="center"}
+*Fig. 5a Predictoin results for the last 200 days in test data. Model is trained with input_size=1 and lstm_size=32.*
 
-### input_size = 5; lstm_size = 32
-(Final MSE = 2.9298e-4)
-Overall, pretty good.
+![]({{ '/assets/images/rnn_input1_lstm128.png' | relative_url }})
+{: style="width: 500px;" class="center"}
+*Fig. 5b Predictoin results for the last 200 days in test data. Model is trained with input_size=1 and lstm_size=128.*
 
-![]({{ '/assets/images/results_input_size_5_lstm_size_32.png' | relative_url }})
-*Fig. 5b Predictoin results for the first and last 200 days in test data. Model is trained with input_size=5 and lstm_size=32.*
-
-
-### input_size = 5; lstm_size = 128
-(Final MSE = 3.9621e-4)
-More LSTM units makes the prediction less table.
-
-![]({{ '/assets/images/results_input_size_5_lstm_size_128.png' | relative_url }})
-*Fig. 5c Predictoin results for the first and last 200 days in test data. Model is trained with input_size=5 and lstm_size=128.*
+![]({{ '/assets/images/rnn_input5_lstm128.png' | relative_url }})
+{: style="width: 500px;" class="center"}
+*Fig. 5c Predictoin results for the last 200 days in test data. Model is trained with input_size=5 and lstm_size=128.*
 
 
-### input_size = 30; lstm_size = 32
-(Final MSE = 1.4477e-3)
-When the input_size is large, the prediction is still in need of improvment, as it cannot capture many extreme points in the series.
 
-![]({{ '/assets/images/results_input_size_30_lstm_size_32.png' | relative_url }})
-*Fig. 5d Predictoin results for the first and last 200 days in test data. Model is trained with input_size=30 and lstm_size=32.*
--->
+The example code in this tutorial is available in [github.com/lilianweng/stock-rnn:scripts](https://github.com/lilianweng/stock-rnn/tree/master/scripts).
 
-The full code in this tutorial is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
+<span style="color: red;">(Updated on Sep 14, 2017)</span> 
+The model code has been updated to be wrapped into a class: [LstmRNN](https://github.com/lilianweng/stock-rnn/blob/master/model_rnn.py). The model training can be triggered by [main.py](https://github.com/lilianweng/stock-rnn/blob/master/main.py), such as:
 
-
-## What to Expect in Part 2
-
-In "Predict Stock Prices Using RNN: Part 2" I will demonstrate how to use an RNN model to prediction prices of different stocks. Probably using embeddings, but not fully decided yet ;)
+```
+python main.py --stock_symbol=SP500 --train --input_size=1 --lstm_size=128
+```
 
 ---
 

@@ -101,7 +101,7 @@ Precisely, in an information plane plot:
 *Fig. 2. Plots of $$I(X; T)$$ vs $$I(T; Y)$$ of hidden layers of 50 experiments. Layers are color-coders, there are three snapshots at the initial epoch, 400 epochs and 9000 epochs. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
 
 
-Each dot in Fig. 2. identifies encoder/ decoder measures of one hidden layers of one network simulation (no regularization is applied; no weights decay, no dropout, etc.). They move up as expected, because the knowledge about the true labels is increasing (accuracy increases). At the early stage, the hidden layers learns a lot about the input $$X$$, but later they start to compress and to forget something about the input. Tishby believes that "the most important part of learning is actually forgetting". Check out this [nice video](https://youtu.be/P1A1yNsxMjc) that demonstrates how the mutual information measures of layers are changing in time.
+Each dot in Fig. 2. identifies encoder/ decoder measures of one hidden layer of one network simulation (no regularization is applied; no weights decay, no dropout, etc.). They move up as expected because the knowledge about the true labels is increasing (accuracy increases). At the early stage, the hidden layers learn a lot about the input $$X$$, but later they start to compress and to forget something about the input. Tishby believes that "the most important part of learning is actually forgetting". Check out this [nice video](https://youtu.be/P1A1yNsxMjc) that demonstrates how the mutual information measures of layers are changing in time.
 
 
 
@@ -122,7 +122,7 @@ Tracking the normalized mean and standard deviation of the weights of each layer
 {: style="width: 480px;" class="center"}
 *Fig. 4. The normalized mean and standard deviation of each layer's weights as a function of training epochs. Different layers are color-coded. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
 
-Among early epochs, the mean values are three magnitude larger than the standard deviations. After a sufficient number of epochs, the error saturates and the standard deviation becomes much more noisy afterwards. The further a layer is away from the output, the noisier it gets, because the noises can get amplified and accumulated through the back-prop process (not the width of the layer).
+Among early epochs, the mean values are three magnitudes larger than the standard deviations. After a sufficient number of epochs, the error saturates and the standard deviation becomes much noisier afterward. The further a layer is away from the output, the noisier it gets, because the noises can get amplified and accumulated through the back-prop process (not the width of the layer).
 
 
 

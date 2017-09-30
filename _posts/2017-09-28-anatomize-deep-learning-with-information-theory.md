@@ -167,7 +167,7 @@ $$
 
 ![IB bounds]({{ '/assets/images/ib-bound.png' | relative_url }})
 {: style="width: 480px;" class="center"}
-*Fig. 5. The black line is the optimal achievable information bottleneck (IB) limit. The red line corresponds to the upper bound on the out-of-sample IB distortion (mutual information with $$Y$$), when training from a finite sample. (Recreated based on [Tishby’ talk 24:50](https://youtu.be/bLqJHjXihK8?t=24m56s))*
+*Fig. 5. The black line is the optimal achievable information bottleneck (IB) limit. The red line corresponds to the upper bound on the out-of-sample IB distortion, when trained on a finite sample set. $$\Delta C$$ is the complexity gap and $$\Delta G$$ is the generalization gap. (Recreated based on [Tishby’ talk 24:50](https://youtu.be/bLqJHjXihK8?t=24m56s))*
 
 
 ## Network Size and Training Data Size
@@ -175,27 +175,27 @@ $$
 
 ### The Benefit of More Hidden Layers
 
-More layers take much fewer training epochs for good generalization. Since the network has to spend a lot of time on compressing the representation, having more hidden layers can give us computational benefits and speed up the compression relaxation time.
+Having more layers give us computational benefits and speed up the training process for good generalization.
 
 
 ![Layers]({{ '/assets/images/ib-layers.png' | relative_url }})
 {: style="width: 640px;" class="center"}
-*Fig. 6. The optimization time is much shorter with more hidden layers. Converging faster. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
+*Fig. 6. The optimization time is much shorter (fewer epochs) with more hidden layers. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
 
 
-Compression through stochastic relaxation: According to the [diffusion equation](https://en.wikipedia.org/wiki/Fokker%E2%80%93Planck_equation), the relaxation time of layer $$k$$ is proportional to the exponential of this layer's compression amount $$\Delta S_k$$: $$\Delta t_k \sim \exp(\Delta S_k)$$. We can compute the layer compression as $$\Delta S_k = I(X; T_k) - I(X; T_{k-1})$$.  Because $$\exp(\sum_k \Delta S_k) \geq \sum_k \exp(\Delta S_k)$$, we would expect an exponential decrease in training epoch times with more hidden layers (larger $$k$$).
+**Compression through stochastic relaxation**: According to the [diffusion equation](https://en.wikipedia.org/wiki/Fokker%E2%80%93Planck_equation), the relaxation time of layer $$k$$ is proportional to the exponential of this layer's compression amount $$\Delta S_k$$: $$\Delta t_k \sim \exp(\Delta S_k)$$. We can compute the layer compression as $$\Delta S_k = I(X; T_k) - I(X; T_{k-1})$$.  Because $$\exp(\sum_k \Delta S_k) \geq \sum_k \exp(\Delta S_k)$$, we would expect an exponential decrease in training epochs with more hidden layers (larger $$k$$).
 
 
 
 ### The Benefit of More Training Samples
 
-Fitting larger training data requires more information captured by the hidden layers. With increased training data size, the decoder mutual information (recall that this is directly related to the generalization error), $$I(T; Y)$$, is pushed up and gets closer to the theoretical information bottleneck bound. Tishby emphasized that It is the mutual information, not layer size or VC-dim that determines generalization, different from standard theories.
+Fitting more training data requires more information captured by the hidden layers. With increased training data size, the decoder mutual information (recall that this is directly related to the generalization error), $$I(T; Y)$$, is pushed up and gets closer to the theoretical information bottleneck bound. Tishby emphasized that It is the mutual information, not the layer size or the VC dimension, that determines generalization, different from standard theories.
 
 
 
 ![Training size]({{ '/assets/images/ib-training-size.png' | relative_url }})
-{: style="width: 440px;" class="center"}
-*Fig. 7. The training data of different sizes is color-coded. The information plane of multiple converged networks are plotted. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
+{: style="width: 420px;" class="center"}
+*Fig. 7. The training data of different sizes is color-coded. The information plane of multiple converged networks are plotted. More training data leads to better generalization. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
 
 
 ## References

@@ -16,6 +16,9 @@ Human vocabulary comes in free text. In order to make a machine learning model u
 
 However, one-hot encoding is impractical computationally when dealing with the entire vocabulary, as the representation demands hundreds of thousands of dimensions. Word embedding represents words and phrases in vectors of (non-binary) numeric values with much lower and thus denser dimensions. An intuitive assumption for good word embedding is that they can approximate the similarity between words (i.e., "cat" and "kitten" are similar words, and thus they are expected to be close in the reduced vector space) or disclose hidden semantic relationships (i.e., the relationship between "cat" and "kitten" is an analogy to the one between "dog" and "puppy"). Contextual information is super useful for learning word meaning and relationship, as similar words may appear in the similar context often. 
 
+{: class="table-of-content"}
+* TOC
+{:toc}
 
 There are two main approaches for learning word embedding, both relying on the contextual knowledge. 
 - **Count-based**: The first one is unsupervised, based on matrix factorization of a global word co-occurrence matrix. Raw co-occurrence counts do not work well, so we want to do smart things on top.

@@ -13,6 +13,9 @@ Recently I watched the talk ["Information Theory in Deep Learning"](https://yout
 
 Most of the materials in this post are from Prof Tishby’s talk and [related papers]({% post_url 2017-09-28-anatomize-deep-learning-with-information-theory %}#references).
 
+{: class="table-of-content"}
+* TOC
+{:toc}
 
 ## Basic Concepts
 

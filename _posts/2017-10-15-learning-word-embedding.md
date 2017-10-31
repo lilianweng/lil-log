@@ -420,6 +420,13 @@ In the GoT word embedding space, the top similar words to "king" and "queen" are
 {: .info}
 
 
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
+
+See you in the next post :D
+
+
 ## References
 
 [1] Tensorflow Tutorial [Vector Representations of Words](https://www.tensorflow.org/tutorials/word2vec).

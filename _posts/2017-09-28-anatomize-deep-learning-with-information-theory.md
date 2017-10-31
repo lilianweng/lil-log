@@ -200,6 +200,12 @@ Fitting more training data requires more information captured by the hidden laye
 {: style="width: 420px;" class="center"}
 *Fig. 7. The training data of different sizes is color-coded. The information plane of multiple converged networks are plotted. More training data leads to better generalization. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
 
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
+
+See you in the next post :D
+
 
 ## References
 

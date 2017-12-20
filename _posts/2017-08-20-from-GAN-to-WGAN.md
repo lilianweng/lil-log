@@ -220,7 +220,7 @@ Because both $$p_g$$ and $$p_r$$ rest in low dimensional manifolds, they are alm
 
 ### Vanishing gradient
 
-When the discriminator is perfect, we are guaranteed with $$D(x) = 1, \forall x \in p_r$$ and $$D(x) = 1, \forall x \in p_g$$. Therefore the loss function $$L$$ falls to zero and we end up with no gradient to update the loss during learning iterations. Fig. 5 demonstrates an experiment when the discriminator gets better, the gradient vanishes fast.
+When the discriminator is perfect, we are guaranteed with $$D(x) = 1, \forall x \in p_r$$ and $$D(x) = 0, \forall x \in p_g$$. Therefore the loss function $$L$$ falls to zero and we end up with no gradient to update the loss during learning iterations. Fig. 5 demonstrates an experiment when the discriminator gets better, the gradient vanishes fast.
 
 
 ![Low dimensional manifolds in high dimension space]({{ '/assets/images/GAN_vanishing_gradient.png' | relative_url }})

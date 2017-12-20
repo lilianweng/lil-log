@@ -94,11 +94,11 @@ The sequence of prices are first split into non-overlapped small windows. Each c
 <a name="input_format_example"></a>For instance, if `input_size=3` and `num_steps=2`, my first few training examples would look like:
 
 $$
-\text{Input One} = [[p_0, p_1, p_2], [p_3, p_4, p_5]], \text{Label One} = [p_6, p_7, p_8] \\
+\text{Input}_1 = [[p_0, p_1, p_2], [p_3, p_4, p_5]], \text{Label}_1 = [p_6, p_7, p_8] \\
 
-\text{Input Two} = [[p_3, p_4, p_5], [p_6, p_7, p_8]], \text{Label Two} = [p_9, p_{10}, p_{11}] \\
+\text{Input}_2 = [[p_3, p_4, p_5], [p_6, p_7, p_8]], \text{Label}_2 = [p_9, p_{10}, p_{11}] \\
 
-\text{Input Three} = [[p_6, p_7, p_8], [p_9, p_{10}, p_{11}]], \text{Label Two} = [p_{11}, p_{12}, p_{13}] 
+\text{Input}_3 = [[p_6, p_7, p_8], [p_9, p_{10}, p_{11}]], \text{Label}_3 = [p_{12}, p_{13}, p_{14}] 
 $$
 
 

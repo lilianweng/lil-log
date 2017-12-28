@@ -1,16 +1,16 @@
 ---
 layout: post
 comments: false
-title: "Object Detection for Dummies Part 1: Gradient Vectors, HOG and Selective Search"
+title: "Object Recognition for Dummies Part 1: Gradient Vector, HOG, and SS"
 date: 2017-10-29 17:38:00
 ---
 
-> In this series of posts on "Object Detection for Dummies", we will go through several basic concepts and algorithms for image processing and objection detection. Hopefully, it would be a good read for people with no experience in this field but want to learn more.
+> In this series of posts on "Object Recognition for Dummies", we will go through several basic concepts, algorithms, and popular deep learning models for image processing and objection detection. Hopefully, it would be a good read for people with no experience in this field but want to learn more. The Part 1 introduces the concept of Gradient Vectors, the HOG (Histogram of Oriented Gradients) algorithm, and Selective Search for image segmentation. 
 
 
 <!--more-->
 
-I've never worked in the field of computer vision and has no idea how the magic could work when an autonomous car is configured to tell apart a stop sign from a pedestrian in a red hat. To motivate myself to look into the maths behind object detection algorithms, I'm writing a few posts on this topic "Object Detection for Dummies". This post, part 1, starts with super rudimentary concepts in image processing and a few methods for image segmentation. Nothing related to deep neural networks yet. Deep learning models for object detection will be discussed in part 2 [Link to be added].
+I've never worked in the field of computer vision and has no idea how the magic could work when an autonomous car is configured to tell apart a stop sign from a pedestrian in a red hat. To motivate myself to look into the maths behind object recognition algorithms, I'm writing a few posts on this topic "Object Recognition for Dummies". This post, part 1, starts with super rudimentary concepts in image processing and a few methods for image segmentation. Nothing related to deep neural networks yet. Deep learning models for object recognition will be discussed in part 2 [Link to be added].
 
 
 {: class="table-of-content"}
@@ -238,7 +238,7 @@ This interesting configuration makes the histogram much more stable when small d
 *Fig. 4. How to split one gradient vector's magnitude if its degress is between two degree bins. (Image source: https://www.learnopencv.com/histogram-of-oriented-gradients/)*
 
 4) Then we slide a 2x2 cells (thus 16x16 pixels) block across the image. In each block region, 4 histograms of 4 cells are concatenated into one-dimensional vector of 36 values and then normalized to have an unit weight.
-The final HOG feature vector is the concatenation of all the block vectors. It can be fed into a classifier like SVM for learning object detection tasks.
+The final HOG feature vector is the concatenation of all the block vectors. It can be fed into a classifier like SVM for learning object recognition tasks.
 
 
 ### Example: Manu in 2004

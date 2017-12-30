@@ -83,7 +83,7 @@ A few types of decision lists are briefly described below:
 
 - [Falling Rule Lists (FRL)](http://proceedings.mlr.press/v38/wang15a.pdf) (Wang and Rudin, 2015) has fully enforced monotonicity on feature values. One key point, for example in the binary classification context, is that the probability of prediction $$Y=1$$ associated with each rule decreases as one moves down the decision lists.
 - [Bayesian Rule List (BRL)](https://arxiv.org/abs/1511.01644) (Letham et al., 2015) is a generative model that yields a posterior distribution over possible decision lists.
-- [Interpretable Decision Sets (IDS)](https://cs.stanford.edu/people/jure/pubs/interpretable-kdd16.pdf) (Lakkaraju, Bach & Leskovec, 2016) is a prediction framework to create a set of classification rules. The learning is optimized for both accuracy and interpretability simultaneously. IDS is closely related to the BETA method I'm gonna describe [later]({% post_url 2017-08-01-how-to-explain-the-prediction-of-a-machine-learning-model %}#beta-black-box-explanation-through-transparent-approximations) for interpreting black-box models.
+- [Interpretable Decision Sets (IDS)](https://cs.stanford.edu/people/jure/pubs/interpretable-kdd16.pdf) (Lakkaraju, Bach & Leskovec, 2016) is a prediction framework to create a set of classification rules. The learning is optimized for both accuracy and interpretability simultaneously. IDS is closely related to the BETA method I'm gonna describe [later]({{ site.baseurl }}{% post_url 2017-08-01-how-to-explain-the-prediction-of-a-machine-learning-model %}#beta-black-box-explanation-through-transparent-approximations) for interpreting black-box models.
 
 
 ### Random Forests
@@ -163,7 +163,7 @@ $$ f^{*}(x)  = \arg \min_{c \in \{1, \dots, C\}} p(Y \neq c \vert X = x) $$
 
 The *local explanation vector* is defined as the derivative of the probability prediction function at the test point $$x = x_0$$. A large entry in this vector highlights a feature with a big influence on the model decision; A positive sign indicates that increasing the feature would lower the probability of $$x_0$$ assigned to $$f^{*}(x_0)$$.
 
-However, this approach requires the model output to be a probability (similar to the ["Prediction Decomposition"]({% post_url 2017-08-01-how-to-explain-the-prediction-of-a-machine-learning-model %}#prediction-decomposition) method above). What if the original model (labelled as $$f$$) is not calibrated to yield probabilities? As suggested by the paper, we can approximate $$f$$ by another classifier in a form that resembles the Bayes classifier $$f^{*}$$:
+However, this approach requires the model output to be a probability (similar to the ["Prediction Decomposition"]({{ site.baseurl }}{% post_url 2017-08-01-how-to-explain-the-prediction-of-a-machine-learning-model %}#prediction-decomposition) method above). What if the original model (labelled as $$f$$) is not calibrated to yield probabilities? As suggested by the paper, we can approximate $$f$$ by another classifier in a form that resembles the Bayes classifier $$f^{*}$$:
 
 (1) Apply [Parzen window](https://en.wikipedia.org/?title=Parzen_window&redirect=no) to the training data to estimate the weighted class densities:
 

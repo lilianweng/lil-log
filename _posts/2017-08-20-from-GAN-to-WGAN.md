@@ -142,7 +142,7 @@ $$
 
 ### What does the loss function represent?
 
-According to the formula listed in the [previous section]({% post_url 2017-08-20-from-GAN-to-WGAN %}#kullbackleibler-and-jensenshannon-divergence), JS divergence between $$p_{r}$$ and $$p_g$$ can be computed as:
+According to the formula listed in the [previous section]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}#kullbackleibler-and-jensenshannon-divergence), JS divergence between $$p_{r}$$ and $$p_g$$ can be computed as:
 
 $$
 \begin{aligned}
@@ -285,7 +285,7 @@ Each data sample is normalized based on a fixed batch (*"reference batch"*) of d
 
 (6) **Adding Noises**. 
 
-Based on the discussion in the [previous section]({% post_url 2017-08-20-from-GAN-to-WGAN %}#low-dimensional-supports), we now know $$p_r$$ and $$p_g$$ are disjoint in a high dimensional space and it causes the problem of vanishing gradient. To artificially "spread out" the distribution and to create higher chances for two probability distributions to have overlaps, one solution is to add continuous noises onto the inputs of the discriminator $$D$$.
+Based on the discussion in the [previous section]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}#low-dimensional-supports), we now know $$p_r$$ and $$p_g$$ are disjoint in a high dimensional space and it causes the problem of vanishing gradient. To artificially "spread out" the distribution and to create higher chances for two probability distributions to have overlaps, one solution is to add continuous noises onto the inputs of the discriminator $$D$$.
 
 (7) **Use Better Metric of Distribution Similarity**
  

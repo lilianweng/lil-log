@@ -263,8 +263,8 @@ The YOLO model ("You Only Look Once"; [Redmon et al., 2016](https://www.cv-found
 
 ### Workflow
 
-![Mask R-CNN Examples]({{ '/assets/images/YOLO.png' | relative_url }})
-{: style="width: 600px;" class="center"}
+![YOLO]({{ '/assets/images/YOLO.png' | relative_url }})
+{: style="width: 720px;" class="center"}
 *Fig. 8. The workflow of POLO model. (Image source: [Redmon et al., 2016](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf))*
 
 1. Pre-train a CNN network on image classification tasks.
@@ -305,7 +305,7 @@ where:
 > NOTE: In the original YOLO paper, the loss function uses $$C_i$$ instead of $$C_{ij}$$. I made the correction based on my own understanding. Please kindly let me if you do not agree. Many thanks.
 
 
-![Mask R-CNN Examples]({{ '/assets/images/YOLO_predictor.png' | relative_url }})
+![YOLO responsible predictor]({{ '/assets/images/YOLO_predictor.png' | relative_url }})
 {: style="width: 560px;" class="center"}
 *Fig. 9. At one location, in cell i, the model proposes B bounding box candidates and the one with highest IoU with the ground truth is the "responsible" predictor.*
 

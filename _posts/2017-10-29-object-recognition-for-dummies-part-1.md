@@ -234,7 +234,7 @@ For better robustness, if the direction of the gradient vector of a pixel lays b
 This interesting configuration makes the histogram much more stable when small distortion is applied to the image.
 
 ![Histogram construction]({{ '/assets/images/HOG-histogram-creation.png' | relative_url }})
-{: style="width: 520px;" class="center"}
+{: style="width: 600px;" class="center"}
 *Fig. 4. How to split one gradient vector's magnitude if its degress is between two degree bins. (Image source: https://www.learnopencv.com/histogram-of-oriented-gradients/)*
 
 4) Then we slide a 2x2 cells (thus 16x16 pixels) block across the image. In each block region, 4 histograms of 4 cells are concatenated into one-dimensional vector of 36 values and then normalized to have an unit weight.

@@ -211,7 +211,7 @@ Because pixel-level segmentation requires much more fine-grained alignment than 
 
 
 ![Mask R-CNN Examples]({{ '/assets/images/mask-rcnn-examples.png' | relative_url }})
-{: style="width: 600px;" class="center"}
+{: style="width: 100%;" class="center"}
 *Fig. 7. Predictions by Mask R-CNN on COCO test set. (Image source: [He et al., 2017](https://arxiv.org/pdf/1703.06870.pdf))*
 
 
@@ -221,7 +221,7 @@ The RoIAlign layer is designed to fix the location misalignment caused by quanti
 
 
 ![RoI Align]({{ '/assets/images/roi-align.png' | relative_url }})
-{: style="width: 600px;" class="center"}
+{: style="width: 640px;" class="center"}
 *Fig. 8. A region of interest is mapped **accurately** from the original image onto the feature map without rounding up to integers. (Image source: [link](https://blog.athelas.com/a-brief-history-of-cnns-in-image-segmentation-from-r-cnn-to-mask-r-cnn-34ea83205de4))*
 
 
@@ -264,7 +264,7 @@ The YOLO model ("You Only Look Once"; [Redmon et al., 2016](https://www.cv-found
 ### Workflow
 
 ![YOLO]({{ '/assets/images/YOLO.png' | relative_url }})
-{: style="width: 720px;" class="center"}
+{: style="width: 760px;" class="center"}
 *Fig. 8. The workflow of POLO model. (Image source: [Redmon et al., 2016](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf))*
 
 1. Pre-train a CNN network on image classification tasks.
@@ -306,7 +306,7 @@ where:
 
 
 ![YOLO responsible predictor]({{ '/assets/images/YOLO_predictor.png' | relative_url }})
-{: style="width: 560px;" class="center"}
+{: style="width: 640px;" class="center"}
 *Fig. 9. At one location, in cell i, the model proposes B bounding box candidates and the one with highest IoU with the ground truth is the "responsible" predictor.*
 
 

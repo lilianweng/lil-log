@@ -34,7 +34,7 @@ In short, convolution operation slides a predefined [kernel](https://en.wikipedi
 
 
 ![Convolution Operation]({{ '/assets/images/convolution-operation.png' | relative_url }})
-{: style="width: 400px;" class="center"}
+{: style="width: 500px;" class="center"}
 *Fig. 1. An illustration of applying a kernel on the input feature map to generate the output. (Image source: [River Trail documentation](http://intellabs.github.io/RiverTrail/tutorial/))*
 
 
@@ -52,7 +52,7 @@ Figure 2 showcases two real examples of how to convolve a 3x3 kernel over a 5x5 
 
 
 ![Convolution pperation example]({{ '/assets/images/alex_net_illustration.png' | relative_url }})
-{: style="width: 90%;" class="center"}
+{: style="width: 100%;" class="center"}
 *Fig. 3. The architecture of AlexNet. (Image source: [link](http://vision03.csail.mit.edu/cnn_art/index.html))*
 
 
@@ -68,7 +68,7 @@ Figure 2 showcases two real examples of how to convolve a 3x3 kernel over a 5x5 
 
 
 ![Residual block]({{ '/assets/images/residual-block.png' | relative_url }})
-{: style="width: 640px;" class="center"}
+{: style="width: 100%;" class="center"}
 *Fig. 4. An illustration of the residual block of ResNet. In some way, we can say the design of residual blocks is inspired by V4 getting input directly from V1 in the human visual cortex system. (left image source: [Wang et al., 2017](https://arxiv.org/pdf/1312.6229.pdf))*
 
 

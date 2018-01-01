@@ -12,7 +12,7 @@ date: 2017-12-15 23:00:00
 
 [Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}) of the "Object Recognition for Dummies" series introduced: (1) the concept of image gradient vector and how HOG algorithm summarizes the information across all the gradient vectors in one image; (2) how the image segmentation algorithm works to detect regions that potentially contain objects; (3) how the Selective Search algorithm refines the outcomes of image segmentation for better region proposal. 
 
-In Part 2, we are about to find out more on the classic convolution neural network architectures for image classification. They lay the ___foundation___ for further progress on the deep learning models for object recognition.
+In Part 2, we are about to find out more on the classic convolution neural network architectures for image classification. They lay the ___foundation___ for further progress on the deep learning models for object recognition. Go check [Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %}) if you want to learn more on R-CNN and related models.
 
 
 {: class="table-of-content"}
@@ -128,7 +128,7 @@ The author later claimed that DPM and CNN models are not two distinct approaches
 
 Overfeat [[paper](https://pdfs.semanticscholar.org/f2c2/fbc35d0541571f54790851de9fcd1adde085.pdf)][[code](https://github.com/sermanet/OverFeat)] is a pioneer model of integrating the object detection, localization and classification tasks all into one convolutional neural network. The main idea is to (i) do image classification at different locations on regions of multiple scales of the image in a sliding window fashion, and (ii) predict the bounding box locations with a regressor trained on top of the same convolution layers.
 
-The Overfeat model architecture is very similar to [AlexNet]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}#alexnet-krizhevsky-et-al-2012). It is trained as follows:
+The Overfeat model architecture is very similar to [AlexNet](#alexnet-krizhevsky-et-al-2012). It is trained as follows:
 
 
 ![Overfeat training]({{ '/assets/images/overfeat-training.png' | relative_url }})

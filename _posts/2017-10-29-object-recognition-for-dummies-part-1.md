@@ -10,7 +10,7 @@ date: 2017-10-29 17:38:00
 
 <!--more-->
 
-I've never worked in the field of computer vision and has no idea how the magic could work when an autonomous car is configured to tell apart a stop sign from a pedestrian in a red hat. To motivate myself to look into the maths behind object recognition algorithms, I'm writing a few posts on this topic "Object Recognition for Dummies". This post, part 1, starts with super rudimentary concepts in image processing and a few methods for image segmentation. Nothing related to deep neural networks yet. Deep learning models for object recognition will be discussed in part 2 [Link to be added].
+I've never worked in the field of computer vision and has no idea how the magic could work when an autonomous car is configured to tell apart a stop sign from a pedestrian in a red hat. To motivate myself to look into the maths behind object recognition algorithms, I'm writing a few posts on this topic "Object Recognition for Dummies". This post, part 1, starts with super rudimentary concepts in image processing and a few methods for image segmentation. Nothing related to deep neural networks yet. Deep learning models for object recognition will be discussed in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}) and [Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %}).
 
 
 {: class="table-of-content"}

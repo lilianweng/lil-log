@@ -305,7 +305,7 @@ where:
 > NOTE: In the original YOLO paper, the loss function uses $$C_i$$ instead of $$C_{ij}$$. I made the correction based on my own understanding. Please kindly let me if you do not agree. Many thanks.
 
 
-![YOLO responsible predictor]({{ '/assets/images/yolo_predictor.png' | relative_url }})
+![YOLO responsible predictor]({{ '/assets/images/yolo-responsible-predictor.png' | relative_url }})
 {: style="width: 640px;" class="center"}
 *Fig. 9. At one location, in cell i, the model proposes B bounding box candidates and the one with highest IoU with the ground truth is the "responsible" predictor.*
 

@@ -259,7 +259,7 @@ with lstm_graph.as_default():
 
 {% highlight python linenos %}
     weight = tf.Variable(tf.truncated_normal([config.lstm_size, config.input_size]))
-    bias = tf.Variable(tf.constant(0.1, shape=[targets_width]))
+    bias = tf.Variable(tf.constant(0.1, shape=[config.input_size]))
     prediction = tf.matmul(last, weight) + bias
 {% endhighlight %}
 

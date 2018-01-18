@@ -437,7 +437,7 @@ One big problem is to maintain the $$K$$-Lipschitz continuity of $$f_w$$ during 
 
 ![Simple example]({{ '/assets/images/WGAN_algorithm.png' | relative_url }})
 {: style="width: 640px;" class="center"}
-*Fig. 9. Algorithma of Wasserstein generaitve adversarial network. (Image source: [Arjovsky, Chintala, & Bottou, 2017.](https://arxiv.org/pdf/1701.07875.pdf))*
+*Fig. 9. Algorithm of Wasserstein generative adversarial network. (Image source: [Arjovsky, Chintala, & Bottou, 2017.](https://arxiv.org/pdf/1701.07875.pdf))*
 
 
 Compared to the original GAN algorithm, the WGAN undertakes the following changes:

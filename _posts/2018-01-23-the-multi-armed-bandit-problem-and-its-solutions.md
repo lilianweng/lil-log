@@ -10,6 +10,10 @@ date: 2018-01-23 22:09:00
 
 <!--more-->
 
+{: class="table-of-content"}
+* TOC
+{:toc}
+
 
 ## Exploitation vs Exploration
 

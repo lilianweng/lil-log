@@ -223,7 +223,7 @@ stock_symbol_size = 100
 As a brief overview of the prediction quality, Fig. 3 plots the predictions for test data of "KO", "AAPL", "GOOG" and "NFLX". The overall trends matched up between the true values and the predictions. Considering how the prediction task is designed, the model relies on all the historical data points to predict only next 5 (`input_size`) days. With a small `input_size`, the model does not need to worry about the long-term growth curve. Once we increase `input_size`, the prediction would be much harder.
 
 ![Results]({{ '/assets/images/rnn_embedding_result.png' | relative_url }})
-*Fig. 3. <span style="color: red;">[Sorry for the missing figure. I'm going to update this very soon.]</span> True and predicted stock prices of KO, AAPL, GOOG and NFLX in the test set. The prices are normalized across consecutive prediction sliding windows (See [Part 1: Normalization]({% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#normalization).*
+*Fig. 3. <span style="color: red;">[Sorry for the missing figure. I'm going to update this very soon. ]</span> True and predicted stock prices of KO, AAPL, GOOG and NFLX in the test set. The prices are normalized across consecutive prediction sliding windows (See [Part 1: Normalization]({% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#normalization).*
 
 
 ### Embedding Visualization

@@ -64,7 +64,7 @@ Figure 2 showcases two real examples of how to convolve a 3x3 kernel over a 5x5 
 
 ### ResNet (He et al., 2015)
 - The network is indeed very deep; 152 layers of simple architecture.
-- **Residual Block**: Some input of a certain layer can be passed to the component two layers later. Residual blocks are essential for keeping a deep network trainable and eventually work.
+- **Residual Block**: Some input of a certain layer can be passed to the component two layers later. Residual blocks are essential for keeping a deep network trainable and eventually work. Without residual blocks, the training loss of a plain network does not monotonically decrease as the number of layers increases due to [vanishing and exploding gradients](http://www.wildml.com/2015/10/recurrent-neural-networks-tutorial-part-3-backpropagation-through-time-and-vanishing-gradients/).
 
 
 ![Residual block]({{ '/assets/images/residual-block.png' | relative_url }})

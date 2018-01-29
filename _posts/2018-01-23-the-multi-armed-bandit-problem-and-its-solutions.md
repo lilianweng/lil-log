@@ -102,7 +102,7 @@ Check my toy implementation [here](https://github.com/lilianweng/multi-armed-ban
 
 ## Upper Confidence Bounds
 
-Random exploration gives us an opportunity to try out options that we have not known much about. However, due to the randomness, it is possible we end up exploring a bad action which we have confirmed in the past (bad luck!). To avoid such inefficient exploration, one approach is to be optimistic about options with high uncertainty and thus to prefer actions for which we haven't had a confident value estimation yet. Or in other words, we favor exploration of actions with a strong potential to have a optimal value.
+Random exploration gives us an opportunity to try out options that we have not known much about. However, due to the randomness, it is possible we end up exploring a bad action which we have confirmed in the past (bad luck!). To avoid such inefficient exploration, one approach is to decrease the parameter ε in time and the other is to be optimistic about options with *high uncertainty* and thus to prefer actions for which we haven't had a confident value estimation yet. Or in other words, we favor exploration of actions with a strong potential to have a optimal value.
 
 
 The Upper Confidence Bounds (UCB) algorithm measures this potential by an upper confidence bound of the reward value, $$\hat{U}_t(a)$$, so that the true value is below with bound $$Q(a) \leq \hat{Q}_t(a) + \hat{U}_t(a)$$ with high probability. The upper bound $$\hat{U}_t(a)$$ is a function of $$N_t(a)$$; a larger number of trials $$N_t(a)$$ should give us a smaller bound $$\hat{U}_t(a)$$.

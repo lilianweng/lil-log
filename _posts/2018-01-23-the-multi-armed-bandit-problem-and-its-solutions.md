@@ -19,6 +19,10 @@ date: 2018-01-23 22:09:00
 
 The exploration vs exploitation dilemma exists in many aspects of our life. Say, your favorite restaurant is right around the corner. If you go there every day, you would be confident of what you will get, but miss the chances of discovering an even better option. If you try new places all the time, very likely you are gonna have to eat unpleasant food from time to time. Similarly, online advisors try to balance between the known most attractive ads and the new ads that might be even more successful. 
 
+![bernoulli bandit]({{ '/assets/images/exploration_vs_exploitation.png' | relative_url }})
+{: style="width: 80%;" class="center"}
+*Fig. 1. A real-life example of the exploration vs exploitation dilemma: where to eat? (Image source: UC Berkeley AI course [slide](http://ai.berkeley.edu/lecture_slides.html), [lecture 11](http://ai.berkeley.edu/slides/Lecture%2011%20--%20Reinforcement%20Learning%20II/SP14%20CS188%20Lecture%2011%20--%20Reinforcement%20Learning%20II.pptx).)*
+
 If we have learned all the information about the environment, we are able to find the best strategy by even just simulating brute-force, let alone many other smart approaches. The dilemma comes from the *incomplete* information: we need to gather enough information to make best overall decisions while keeping the risk under control. With exploitation, we take advantage of the best option we know. With exploration, we take some risk to collect information about unknown options. The best long-term strategy may involve short-term sacrifices. For example, one exploration trial could be a total failure, but it warns us of not taking that action too often in the future.
 
 
@@ -31,8 +35,8 @@ In this post, we will only discuss the setting of having an infinite number of t
 
 
 ![bernoulli bandit]({{ '/assets/images/bern_bandit.png' | relative_url }})
-{: style="width: 72%;" class="center"}
-*Fig. 1. An illustration of how a Bernoulli multi-armed bandit works. The reward probabilities are **unknown** to the player.*
+{: style="width: 80%;" class="center"}
+*Fig. 2. An illustration of how a Bernoulli multi-armed bandit works. The reward probabilities are **unknown** to the player.*
 
 
 A naive approach can be that you continue to playing with one machine for many many rounds so as to eventually estimate the "true" reward probability according to the [law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers). However, this is quite wasteful and surely does not guarantee the best long-term reward.
@@ -166,8 +170,8 @@ For example, if we expect the mean reward of every slot machine to be Gaussian a
 
 
 ![Gaussian prior]({{ '/assets/images/bern_UCB.png' | relative_url }})
-{: style="width: 90%;" class="center"}
-*Fig. 2. When the expected reward has a Gaussian distribution. $$\sigma(a_i)$$ is the standard deviation and $$c\sigma(a_i)$$ is the upper confidence bound. The constant $$c$$ is a adjustable hyperparameter. (Image source: [UCL RL course lecture 9's slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/XX.pdf))*
+{: style="width: 100%;" class="center"}
+*Fig. 3. When the expected reward has a Gaussian distribution. $$\sigma(a_i)$$ is the standard deviation and $$c\sigma(a_i)$$ is the upper confidence bound. The constant $$c$$ is a adjustable hyperparameter. (Image source: [UCL RL course lecture 9's slides](http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching_files/XX.pdf))*
 
 
 Check my toy implementation of [UCB1](https://github.com/lilianweng/multi-armed-bandit/blob/master/solvers.py#L76) and [Bayesian UCB](https://github.com/lilianweng/multi-armed-bandit/blob/master/solvers.py#L99) with Beta prior on θ.
@@ -179,8 +183,8 @@ Thompson sampling has a simple idea but it works great for solving the multi-arm
 
 
 ![Thompson?]({{ '/assets/images/klay-thompson.jpg' | relative_url }})
-{: style="width: 70%;" class="center"}
-*Fig. 3. Oops, I guess not this Thompson?*
+{: style="width: 80%;" class="center"}
+*Fig. 4. Oops, I guess not this Thompson?*
 
 
 At each time step, we want to select action a according to the probability that a is **optimal**:

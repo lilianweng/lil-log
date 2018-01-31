@@ -85,7 +85,7 @@ Essentially we try to learn an approximation function, $$f(W_0, W_1, \dots, W_t)
 Considering how [back propagation through time (BPTT)](https://en.wikipedia.org/wiki/Backpropagation_through_time) works, we usually train RNN in a “unrolled” version so that we don't have to do propagation computation too far back and save the training complication.
 
 
-Here is the explanation on `input_size` from [Tensorflow's tutorial](tensorflow.org/tutorials/recurrent):
+Here is the explanation on `num_steps` from [Tensorflow's tutorial](tensorflow.org/tutorials/recurrent):
 > By design, the output of a recurrent neural network (RNN) depends on arbitrarily distant inputs. Unfortunately, this makes backpropagation computation difficult. In order to make the learning process tractable, it is common practice to create an "unrolled" version of the network, which contains a fixed number (`num_steps`) of LSTM inputs and outputs. The model is then trained on this finite approximation of the RNN. This can be implemented by feeding inputs of length `num_steps` at a time and performing a backward pass after each such input block.
 
 

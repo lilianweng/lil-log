@@ -138,6 +138,8 @@ To solve the out-of-scale issue, I normalize the prices in each sliding window. 
 $$ W'_t = (\frac{p_{tw}}{p_{tw-1}}, \frac{p_{tw+1}}{p_{tw-1}}, \dots, \frac{p_{(t+1)w-1}}{p_{tw-1}}) $$
 
 
+Here is a data archive [stock-data-lilianweng.tar.gz](https://drive.google.com/open?id=1QKVkiwgCNJsdQMEsfoi6KpqoPgc4O6DD) of S & P 500 stock prices I crawled up to Jul, 2017. Feel free to play with it :)
+
 
 ## Model Construction
 
@@ -359,7 +361,6 @@ writer.add_summary(_summary, global_step=epoch_step)  # epoch_step in range(conf
 *Fig. 4b Click the "output_layer" module to expand it and check the structure in details.*
 
 The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
-
 
 
 ## Results

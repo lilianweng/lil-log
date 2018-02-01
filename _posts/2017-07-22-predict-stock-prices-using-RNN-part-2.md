@@ -68,14 +68,14 @@ Another alternative is to concatenate the embedding vectors with the last state 
 
 Two new configuration settings are added into `RNNConfig`:
 - `embedding_size` controls the size of each embedding vector; 
-- `stock_symbol_size` refers to the number of unique stocks in the dataset. 
+- `stock_count` refers to the number of unique stocks in the dataset. 
 
-Together they define the size of the embedding matrix, for which the model has to learn `embedding_size` $$\times$$ `stock_symbol_size` additional variables compared to the model in [Part 1]({% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}).
+Together they define the size of the embedding matrix, for which the model has to learn `embedding_size` $$\times$$ `stock_count` additional variables compared to the model in [Part 1]({{ site.baseurl }}{% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}).
 {% highlight python linenos %}
 class RNNConfig():
-   # … old ones
-   embedding_size = 8
-   stock_symbol_size = 100
+   # ... old ones
+   embedding_size = 3
+   stock_count = 50
 {% endhighlight %}
 
 
@@ -84,22 +84,22 @@ class RNNConfig():
 
 **--- Let's start going through some code ---**
 
-(1) As demonstrated in tutorial [Part 1: Define the Graph]({% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#define-graph), let us define a `tf.Graph()` named `lstm_graph` and a set of tensors to hold input data, `inputs`, `targets`, and `learning_rate` in the same way. One more placeholder to define is a list of stock symbols associated with the input prices. Stock symbols have been mapped to unique integers beforehand with [label encoding](http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html).
+(1) As demonstrated in tutorial [Part 1: Define the Graph]({{ site.baseurl }}{% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#define-graph), let us define a `tf.Graph()` named `lstm_graph` and a set of tensors to hold input data, `inputs`, `targets`, and `learning_rate` in the same way. One more placeholder to define is a list of stock symbols associated with the input prices. Stock symbols have been mapped to unique integers beforehand with [label encoding](http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html).
 
 {% highlight python linenos %}
-    # Mapped to an integer. one label refers to one stock symbol.
-    stock_labels = tf.placeholder(tf.int32, [None, 1])
+# Mapped to an integer. one label refers to one stock symbol.
+stock_labels = tf.placeholder(tf.int32, [None, 1])
 {% endhighlight %}
 
 
-(2) Then we need to set up an embedding matrix to play as a lookup table, containing the embedding vectors of all the stocks. The matrix is initialized with random numbers between $$-1$$ and $$1$$ and gets updated during training.
+(2) Then we need to set up an embedding matrix to play as a lookup table, containing the embedding vectors of all the stocks. The matrix is initialized with random numbers in the interval [-1, 1] and gets updated during training.
 
 {% highlight python linenos %}
-    # Don’t forget: config = RNNConfig()
-    # Convert the integer labels to numeric embedding vectors.
-    embedding_matrix = tf.Variable(
-        tf.random_uniform([config.stock_symbol_size, config.embedding_size], -1.0, 1.0)
-    )
+# NOTE: config = RNNConfig() and it defines hyperparameters.
+# Convert the integer labels to numeric embedding vectors.
+embedding_matrix = tf.Variable(
+    tf.random_uniform([config.stock_count, config.embedding_size], -1.0, 1.0)
+)
 {% endhighlight %}
 
 
@@ -108,36 +108,36 @@ The transformation operation [tf.tile](https://www.tensorflow.org/api_docs/pytho
 tiling it by `[1, 5]` produces `[[0 0 0 0 0], [0 0 0 0 0], [2 2 2 2 2], [1 1 1 1 1]]`.
 
 {% highlight python linenos %}
-    stacked_stock_labels = tf.tile(stock_labels, multiples=[1, config.num_steps])
+stacked_stock_labels = tf.tile(stock_labels, multiples=[1, config.num_steps])
 {% endhighlight %}
 
 
 (4) Then we map the symbols to embedding vectors according to the lookup table `embedding_matrix`.
 
 {% highlight python linenos %}
-    # stock_label_embeds.get_shape() = (?, num_steps, embedding_size).
-    stock_label_embeds = tf.nn.embedding_lookup(embedding_matrix, stacked_stock_labels)
+# stock_label_embeds.get_shape() = (?, num_steps, embedding_size).
+stock_label_embeds = tf.nn.embedding_lookup(embedding_matrix, stacked_stock_labels)
 {% endhighlight %}
 
 
 (5) Finally, combine the price values with the embedding vectors. The operation [tf.concat](https://www.tensorflow.org/api_docs/python/tf/concat) concatenates a list of tensors along the dimension `axis`. In our case, we want to keep the batch size and the number of steps unchanged, but only extend the input vector of length `input_size` to include embedding features.
 
 {% highlight python linenos %}
-    # inputs.get_shape() = (?, num_steps, input_size)
-    # stock_label_embeds.get_shape() = (?, num_steps, embedding_size)
-    # inputs_with_embed.get_shape() = (?, num_steps, input_size + embedding_size)
-    inputs_with_embed = tf.concat([inputs, stock_label_embeds], axis=2)
+# inputs.get_shape() = (?, num_steps, input_size)
+# stock_label_embeds.get_shape() = (?, num_steps, embedding_size)
+# inputs_with_embeds.get_shape() = (?, num_steps, input_size + embedding_size)
+inputs_with_embeds = tf.concat([inputs, stock_label_embeds], axis=2)
 {% endhighlight %}
 
 
-The rest of code runs the dynamic RNN, extracts the last state of the LSTM cell, and handles weights and bias in the output layer. See [Part 1: Define the Graph]({% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#define-graph) for the details.
+The rest of code runs the dynamic RNN, extracts the last state of the LSTM cell, and handles weights and bias in the output layer. See [Part 1: Define the Graph]({{ site.baseurl }}{% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#define-graph) for the details.
 
 
 
 ### Training Session
 
 
-Please read [Part 1: Start Training Session]({% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#start-training-session) if you haven't for how to run a training session in Tensorflow.
+Please read [Part 1: Start Training Session]({{ site.baseurl }}{% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#start-training-session) if you haven't for how to run a training session in Tensorflow.
 
 Before feeding the data into the graph, the stock symbols should be transformed to unique integers with [label encoding](http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html).
 {% highlight python linenos %}
@@ -200,30 +200,38 @@ with tf.Session(graph=lstm_graph) as sess:
 
 ## Results
 
-The model is trained with top 100 stocks with largest market values in the S&P 500 index. 
+The model is trained with top 50 stocks with largest market values in the S&P 500 index. 
+
+(Run the following command within [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn))
+```bash
+python main.py --stock_count=50 --embed_size=3 --input_size=3 --max_epoch=50 --train
+```
 
 And the following configuration is used:
 ```
-input_size=10
-num_steps=30
-lstm_size=256
-num_layers=1,
-keep_prob=0.8
-batch_size = 200
+stock_count = 100
+input_size = 3
+embed_size = 3
+num_steps = 30
+lstm_size = 256
+num_layers = 1
+max_epoch = 50
+keep_prob = 0.8
+batch_size = 64
 init_learning_rate = 0.05
 learning_rate_decay = 0.99
 init_epoch = 5
-max_epoch = 500
-embedding_size = 8
-stock_symbol_size = 100
 ```
+
 
 ### Price Prediction
 
 As a brief overview of the prediction quality, Fig. 3 plots the predictions for test data of "KO", "AAPL", "GOOG" and "NFLX". The overall trends matched up between the true values and the predictions. Considering how the prediction task is designed, the model relies on all the historical data points to predict only next 5 (`input_size`) days. With a small `input_size`, the model does not need to worry about the long-term growth curve. Once we increase `input_size`, the prediction would be much harder.
 
-![Results]({{ '/assets/images/rnn_embedding_result.png' | relative_url }})
-*Fig. 3. <span style="color: red;">[Sorry for the missing figure. Unfortunately I lost the stock data that I crawled a while back and now the Google finance API does not return the full history. It is gonna take me some time to recover this figure :(]</span> True and predicted stock prices of KO, AAPL, GOOG and NFLX in the test set. The prices are normalized across consecutive prediction sliding windows (See [Part 1: Normalization]({% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#normalization).*
+![Results AAPL]({{ '/assets/images/rnn_embedding_AAPL.png' | relative_url }})
+![Results MSFT]({{ '/assets/images/rnn_embedding_MSFT.png' | relative_url }})
+![Results GOOG]({{ '/assets/images/rnn_embedding_GOOG.png' | relative_url }})
+*Fig. 3. True and predicted stock prices of AAPL, MSFT and GOOG in the test set. The prices are normalized across consecutive prediction sliding windows (See [Part 1: Normalization]({{ site.baseurl }}{% post_url 2017-07-08-predict-stock-prices-using-RNN-part-1 %}#normalization)). The y-axis values get multiplied by 5 for a better comparison between true and predicted trends.*
 
 
 ### Embedding Visualization
@@ -237,17 +245,25 @@ Check [this post](http://distill.pub/2016/misread-tsne/) for how to adjust the p
 
 
 ![Visualization of embeddings]({{ '/assets/images/embedding_clusters.png' | relative_url }})
-{: style="width: 640px;" class="center"}
-*Fig. 4. Visualization of the stock embeddings using t-SNE. Each label is colored based on the stock industry sector.*
+{: style="width: 80%;" class="center"}
+*Fig. 4. Visualization of the stock embeddings using t-SNE. Each label is colored based on the stock industry sector. We have 5 clusters. Interstingly, GOOG, GOOGL and FB belong to the same cluster, while AMZN and AAPL stay in another.*
 
 
 In the embedding space, we can measure the similarity between two stocks by examining the similarity between their embedding vectors. For example, GOOG is mostly similar to GOOGL in the learned embeddings (See Fig. 5).
 
 
 ![Visualization of embeddings: GOOG]({{ '/assets/images/embedding_clusters_2.png' | relative_url }})
-{: style="width: 640px;" class="center"}
-*Fig. 5. When we search “GOOG” in the embeddings tab of Tensorboard, other similar stocks are highlighted with colors from dark to light as the similarity decreases.*
+{: style="width: 100%;" class="center"}
+*Fig. 5. "GOOG" is clicked in the embedding visualization graph and top 20 similar neighbors are highlighted with colors from dark to light as the similarity decreases.*
 
+
+### Known Problems
+
+- The prediction values get diminished and flatten quite a lot as the training goes. That's why I multiplied the absolute values by a constant to make the trend is more visible in Fig. 3., as I'm more curious about whether the prediction on the up-or-down direction right. However, there must be a reason for the diminishing prediction value problem. Potentially rather than using simple MSE as the loss, we can adopt another form of loss function to penalize more when the direction is predicted wrong.
+- The loss function decreases fast at the beginning, but it suffers from occasional value explosion (a sudden peak happens and then goes back immediately). I suspect it is related to the form of loss function too. A updated and smarter loss function might be able to resolve the issue.
+
+
+<br />
 The full code in this tutorial is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).
 
 ---

@@ -12,6 +12,7 @@ date: 2017-07-08 09:18:00
 
 This is a tutorial for how to build a recurrent neural network using Tensorflow to predict stock market prices. The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn). If you don't know what is recurrent neural network or LSTM cell, feel free to check [my previous post]({{ site.baseurl }}{% post_url 2017-06-21-an-overview-of-deep-learning %}#recurrent-neural-network).
 
+*One thing I would like to emphasize that because my motivation for writing this post is more on demonstrating how to build and train an RNN model in Tensorflow and less on solve the stock prediction problem, I didn't try hard on improving the prediction outcomes. You are more than welcome to take my [code](https://github.com/lilianweng/stock-rnn) as a reference point and add more stock prediction related ideas to improve it. Enjoy!*
 
 {: class="table-of-content"}
 * TOC

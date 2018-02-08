@@ -3,6 +3,7 @@ layout: post
 comments: false
 title: "Predict Stock Prices Using RNN: Part 2"
 date: 2017-07-22 00:00:00
+tags: rnn tensorflow
 ---
 
 > This post is a continued tutorial for how to build a recurrent neural network using Tensorflow to predict stock market prices. Part 2 attempts to predict prices of multiple stocks using embeddings. The full working code is available in [github.com/lilianweng/stock-rnn](https://github.com/lilianweng/stock-rnn).

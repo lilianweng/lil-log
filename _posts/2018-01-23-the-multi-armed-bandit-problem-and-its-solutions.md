@@ -3,6 +3,7 @@ layout: post
 comments: false
 title: "The Multi-Armed Bandit Problem and Its Solutions"
 date: 2018-01-23 22:09:00
+tags: reinforcement-learning
 ---
 
 > The multi-armed bandit problem is a class example to demonstrate the exploration versus exploitation dilemma. This post introduces the bandit problem and how to solve it using different exploration strategies. The algorithms are implemented for Bernoulli bandit in [lilianweng/multi-armed-bandit](https://github.com/lilianweng/multi-armed-bandit).

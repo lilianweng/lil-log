@@ -16,6 +16,12 @@ layout: default
         by <span itemprop="name">{{ site.author }}</span>
       </span>
 
+      <span>
+        {% for tag in page.tags %}
+          {% capture tag_name %}{{ tag }}{% endcapture %}
+          <a class="post-tag" href="/lil-log/tag/{{ tag_name }}"><nobr>{{ tag_name }}</nobr>&nbsp;</a>
+        {% endfor %}
+      </span>
       <!--
       <span class="share-buttons">
         <span class="share-button"><a class="twitter-share-button" href="https://twitter.com/share" data-show-count="false">Tweet</a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></span>

@@ -3,6 +3,7 @@ layout: post
 comments: false
 title: "Anatomize Deep Learning with Information Theory"
 date: 2017-09-28 23:42:00
+tags: information-theory review
 ---
 
 > This post is a summary of Prof Naftali Tishby's recent talk on ["Information Theory in Deep Learning"](https://youtu.be/bLqJHjXihK8). It presented how to apply the information theory to study the growth and transformation of deep neural networks during training.

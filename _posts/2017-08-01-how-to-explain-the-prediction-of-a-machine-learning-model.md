@@ -3,6 +3,7 @@ layout: post
 comments: false
 title: "How to Explain the Prediction of a Machine Learning Model?"
 date: 2017-08-01 00:23:00
+tags: review
 ---
 
 > This post reviews some research in model interpretability, covering two aspects: (i) interpretable models with model-specific interpretation methods and (ii) approaches of explaining black-box models. I included an open discussion on explainable artificial intelligence at the end.

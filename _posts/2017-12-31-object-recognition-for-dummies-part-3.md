@@ -3,6 +3,7 @@ layout: post
 comments: false
 title: "Object Recognition for Dummies Part 3: R-CNN and Fast/Faster/Mask R-CNN and YOLO"
 date: 2017-12-31 23:00:00
+tags: object-recognition
 ---
 
 > In Part 3, we would examine five object recognition models: R-CNN, Fast R-CNN, Faster R-CNN, Mask R-CNN and YOLO. These models are highly related and the new versions show great speed improvement compared to the older ones.

@@ -171,6 +171,19 @@
 .post-meta {
   font-size: $small-font-size;
   color: $grey-color;
+
+  a.post-tag {
+    border-radius: 20px;
+    border: 1px solid $grey-color;
+    color: $grey-color;
+    padding: 1px 5px;
+    margin-left: 5px;
+    &:hover {
+      border: 1px solid $brand-color;
+      text-decoration: none;
+      color: $brand-color;
+    }
+  }
 }
 
 .post-link {

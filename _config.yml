@@ -3,7 +3,6 @@ author: Lilian Weng
 baseurl: "/lil-log"
 description: Trace my thoughts
 profile_url: "http://lilianweng.github.io"
-google_analytics:
 
 # Build settings
 markdown: kramdown

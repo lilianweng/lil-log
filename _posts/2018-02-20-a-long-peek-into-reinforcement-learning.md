@@ -609,7 +609,7 @@ $$
 $$
 
 
-We can rewrite this formula in terms of a "mean" parameter $$\theta$$ (different from the $$\theta$$ above; this $$\theta$$ is the base gene for further mutation), $$\epsilon \sim N(0, I)$$ and therefore $$\theta + \epsilon \sigma \sim N(\theta, \sigma^2). $$\epsilon$$ controls how much Gaussian noises should be added to create mutation:
+We can rewrite this formula in terms of a "mean" parameter $$\theta$$ (different from the $$\theta$$ above; this $$\theta$$ is the base gene for further mutation), $$\epsilon \sim N(0, I)$$ and therefore $$\theta + \epsilon \sigma \sim N(\theta, \sigma^2)$$. $$\epsilon$$ controls how much Gaussian noises should be added to create mutation:
 
 $$
 \nabla_\theta \mathbb{E}_{\epsilon \sim N(0, I)} F(\theta + \sigma \epsilon) = \frac{1}{\sigma} \mathbb{E}_{\epsilon \sim N(0, I)} [F(\theta + \sigma \epsilon) \epsilon]

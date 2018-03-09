@@ -579,7 +579,7 @@ Here is the algorithm outline:
 		V(s_t; w') & \text{otherwise}
 		\end{cases}$$.
 	6. For $$i = t-1, \dots, t_\text{start}$$:
-		1. $$R \leftarrow r_i \gamma R$$; here R is a MC measure of $$G_i$$.
+		1. $$R \leftarrow r_i + \gamma R$$; here R is a MC measure of $$G_i$$.
 		2. Accumulate gradients w.r.t. θ': $$d\theta \leftarrow d\theta + \nabla_{\theta'} \log \pi(a_i \vert s_i; \theta')(R - V(s_i; w'))$$;<br/>
 		Accumulate gradients w.r.t. w': $$dw \leftarrow dw + \nabla_{w'} (R - V(s_i; w'))^2$$.
 	7. Update synchronously θ using dθ, and w using dw.

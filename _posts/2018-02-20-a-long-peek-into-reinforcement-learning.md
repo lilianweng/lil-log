@@ -62,7 +62,7 @@ Terms you will encounter a lot when diving into different categories of RL algor
 - **Model-based**: Rely on the model of the environment; either the model is known or the algorithm learns it explicitly.
 - **Model-free**: No dependency on the model during learning.
 - **On-policy**: Use the deterministic outcomes or samples from the target policy to train the algorithm.
-- **Off-policy**: Training on a distribution of transitions other than that produced by the target policy.
+- **Off-policy**: Training on a distribution of transitions or episodes produced by a different behavior policy rather than that produced by the target policy.
 
 
 #### Model: Transition and Reward

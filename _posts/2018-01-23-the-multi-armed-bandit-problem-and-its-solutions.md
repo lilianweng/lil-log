@@ -185,7 +185,7 @@ Thompson sampling has a simple idea but it works great for solving the multi-arm
 
 ![Thompson?]({{ '/assets/images/klay-thompson.jpg' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 4. Oops, I guess not this Thompson?*
+*Fig. 4. Oops, I guess not this Thompson? (Credit goes to [Ben Taborsky](https://www.linkedin.com/in/benjamin-taborsky); he has a full theorem of how Thompson invented while pondering over who to pass the ball. Yes I stole his joke.)*
 
 
 At each time step, we want to select action a according to the probability that a is **optimal**:

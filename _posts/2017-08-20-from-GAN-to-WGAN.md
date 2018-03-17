@@ -290,7 +290,7 @@ Based on the discussion in the [previous section]({{ site.baseurl }}{% post_url 
 
 (7) **Use Better Metric of Distribution Similarity**
  
-The loss function of the vanilla GAN measures the JS divergence between the distributions of $$p_r$$ and $$p_r$$. This metric fails to provide a meaningful value when two distributions are disjoint.
+The loss function of the vanilla GAN measures the JS divergence between the distributions of $$p_r$$ and $$p_g$$. This metric fails to provide a meaningful value when two distributions are disjoint.
 
 [Wasserstein metric](https://en.wikipedia.org/wiki/Wasserstein_metric) is proposed to replace JS divergence because it has a much smoother value space. See more in the next section.
 

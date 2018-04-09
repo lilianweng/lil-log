@@ -1,0 +1,19 @@
+title: Lil'Log
+author: Lilian Weng
+baseurl: "/lil-log"
+description: Trace my thoughts
+profile_url: "http://lilianweng.github.io"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+excerpt_separator: <!--more-->
+gems:
+  - jekyll-feed
+exclude:
+  - Gemfile
+  - Gemfile.lock
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge

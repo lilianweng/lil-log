@@ -1,0 +1,29 @@
+---
+layout: default
+---
+<div class="home">
+  <h1 class="page-heading">Posts</h1>
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        {% assign date_format = site.minima.date_format | default: "%b %-d, %Y" %}
+        <span class="post-meta">
+          {{ post.date | date: date_format }}
+          <span>
+            {% for tag in post.tags %}
+              {% capture tag_name %}{{ tag }}{% endcapture %}
+              <a class="post-tag" href="/lil-log/tag/{{ tag_name }}"><nobr>{{ tag_name }}</nobr>&nbsp;</a>
+            {% endfor %}
+          </span>
+        </span>
+
+        <h2>
+          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+          {% if post.excerpt %}
+            {{ post.excerpt }}
+          {% endif %}
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
+ </div>

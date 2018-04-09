@@ -171,7 +171,7 @@ Or in other words, the future and the past are **conditionally independent** giv
 *Fig. 3. The agent-environment interaction in a Markov decision process. (Image source: Sec. 3.1 Sutton & Barto (2017).)*
 
 
-A Markov deicison process consists of five elements $$\mathcal{M} = <\mathcal{S}, \mathcal{A}, P, R, \gamma>$$, where the symbols carry the same meanings as key conceps in the [previsous]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#key-concepts) section, well aligned with RL problem settings:
+A Markov deicison process consists of five elements $$\mathcal{M} = <\mathcal{S}, \mathcal{A}, P, R, \gamma>$$, where the symbols carry the same meanings as key conceps in the [previsous](#key-concepts) section, well aligned with RL problem settings:
 - $$\mathcal{S}$$ - a set of states;
 - $$\mathcal{A}$$ - a set of actions;
 - $$P$$ - transition probability function;
@@ -228,7 +228,7 @@ $$
 
 #### Bellman Optimality Equations
 
-If we are only interested in the optimal values, rather than computing the expectation following a policy, we could jump right into the maximum returns during the alternative updates without using a policy. RECAP: the optimal values $$V_*$$ and $$Q_*$$ are the best returns we can obtain, defined [here]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#optimal-value-and-policy).
+If we are only interested in the optimal values, rather than computing the expectation following a policy, we could jump right into the maximum returns during the alternative updates without using a policy. RECAP: the optimal values $$V_*$$ and $$Q_*$$ are the best returns we can obtain, defined [here](#optimal-value-and-policy).
 
 $$
 \begin{aligned}
@@ -315,7 +315,7 @@ $$
 Q(s, a) = \frac{\sum_{t=1}^T \mathbb{1}[S_t = s, A_t = a] G_t}{\sum_{t=1}^T \mathbb{1}[S_t = s, A_t = a]}
 $$
 
-To learn the optimal policy by MC, we iterate it by following a similar idea to [GPI]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#policy-iteration).
+To learn the optimal policy by MC, we iterate it by following a similar idea to [GPI](#policy-iteration).
 
 ![Policy Iteration by MC]({{ '/assets/images/MC_control.png' | relative_url }})
 {: style="width: 50%;" class="center"}
@@ -358,7 +358,7 @@ Next, let's dig into the fun part on how to learn optimal policy in TD learning 
 
 #### SARSA: On-Policy TD control
 
-"SARSA" refers to the procedure of updaing Q-value by following a sequence of $$\dots, S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1}, \dots$$. The idea follows the same route of [GPI]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#policy-iteration):
+"SARSA" refers to the procedure of updaing Q-value by following a sequence of $$\dots, S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1}, \dots$$. The idea follows the same route of [GPI](#policy-iteration):
 1. At time step t, we start from state $$S_t$$ and pick action according to Q values, $$A_t = \arg\max_{a \in \mathcal{A}} Q(S_t, a)$$; ε-greedy is commonly applied.
 2. With action $$A_t$$, we observe reward $$R_{t+1}$$ and get into the next state $$S_{t+1}$$.
 3. Then pick the next action in the same way as in step 1.: $$A_{t+1} = \arg\max_{a \in \mathcal{A}} Q(S_{t+1}, a)$$.
@@ -387,7 +387,7 @@ The first two steps are same as in SARSA. In step 3., Q-learning does not follow
 
 Theoretically, we can memorize $$Q_*(.)$$ for all state-action pairs in Q-learning, like in a gigantic table. However, it quickly becomes computationally infeasible when the state and action space are large. Thus people use functions (i.e. a machine learning model) to approximate Q values and this is called **function approximation**. For example, if we use a function with parameter $$\theta$$ to calculate Q values, we can label Q value function as $$Q(s, a; \theta)$$.
 
-Unfortunately Q-learning may suffer from instability and divergence when combined with an nonlinear Q-value function approximation and [bootstrapping]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#bootstrapping) (See [Problems #2]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#deadly-triad-issue)).
+Unfortunately Q-learning may suffer from instability and divergence when combined with an nonlinear Q-value function approximation and [bootstrapping](#bootstrapping) (See [Problems #2](#deadly-triad-issue)).
 
 Deep Q-Network ("DQN"; Mnih et al. 2015) aims to greatly improve and stabilize the training procedure of Q-learning by two innovative mechanisms:
 - **Experience Replay**: All the episode steps $$e_t = (S_t, A_t, R_t, S_{t+1})$$ are stored in one replay memory $$D_t = \{ e_1, \dots, e_t \}$$. $$D_t$$ has experience tuples over many episodes. During Q-learning updates, samples are drawn at random from the replay memory and thus one sample could be used multiple times. Experience replay improves data efficiency, removes correlations in the observation sequences, and smooths over changes in the data distribution.
@@ -414,7 +414,7 @@ There are many extensions of DQN to improve the original design, such as DQN wit
 
 ### Combining TD and MC Learning
 
-In previous [section]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-estimation) on value estimation in TD learning, we only trace one step further down the action chain when calculating the TD target. One can easily extend it to take multiple steps to estimate the return. 
+In previous [section](#value-estimation) on value estimation in TD learning, we only trace one step further down the action chain when calculating the TD target. One can easily extend it to take multiple steps to estimate the return. 
 
 Let's label the estimated return following n steps as $$G_t^{(n)}, $$n=1, \dots, \infty$$, then:
 
@@ -428,7 +428,7 @@ Let's label the estimated return following n steps as $$G_t^{(n)}, $$n=1, \dots,
 | ... | | |
 | $$n=\infty$$ | $$G_t^{(\infty)} = R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{T-t-1} R_T + \gamma^{T-t} V(S_T) $$ | MC estimation |
 
-The generalized n-step TD learning still has the [same]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-estimation) form for updating the value function:
+The generalized n-step TD learning still has the [same](#value-estimation) form for updating the value function:
 
 $$
 V(S_t) \leftarrow V(S_t) + \alpha (G_t^{(n)} - V(S_t))
@@ -438,7 +438,7 @@ $$
 {: style="width: 70%;" class="center"}
 
 
-We are free to pick any $$n$$ in TD learning as we like. Now the question becomes what is the best $$n$$? Which $$G_t^{(n)}$$ gives us the best return approximation? A common yet smart solution is to apply a weighted sum of all possible n-step TD targets rather than to pick a single best n. The weights decay by a factor λ with n, $$\lambda^{n-1}$$; the intuition is similar to [why]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-estimation) we want to discount future rewards when computing the return: the more future we look into the less confident we would be. To make all the weight (n → ∞) sum up to 1, we multiply every weight by (1-λ), because:
+We are free to pick any $$n$$ in TD learning as we like. Now the question becomes what is the best $$n$$? Which $$G_t^{(n)}$$ gives us the best return approximation? A common yet smart solution is to apply a weighted sum of all possible n-step TD targets rather than to pick a single best n. The weights decay by a factor λ with n, $$\lambda^{n-1}$$; the intuition is similar to [why](#value-estimation) we want to discount future rewards when computing the return: the more future we look into the less confident we would be. To make all the weight (n → ∞) sum up to 1, we multiply every weight by (1-λ), because:
 
 $$
 \begin{aligned}
@@ -449,7 +449,7 @@ S &= 1 / (1-\lambda)
 \end{aligned}
 $$
 
-This weighted sum of many n-step returns is called λ-return $$G_t^{\lambda} = (1-\lambda) \sum_{n=1}^{\infty} \lambda^{n-1} G_t^{(n)}$$. TD learning that adopts λ-return for value updating is labeled as **TD(λ)**. The original version we introduced [above]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-estimation) is equivalent to **TD(0)**.
+This weighted sum of many n-step returns is called λ-return $$G_t^{\lambda} = (1-\lambda) \sum_{n=1}^{\infty} \lambda^{n-1} G_t^{(n)}$$. TD learning that adopts λ-return for value updating is labeled as **TD(λ)**. The original version we introduced [above](#value-estimation) is equivalent to **TD(0)**.
 
 
 ![Backup diagrams]({{ '/assets/images/TD_MC_DP_backups.png' | relative_url }})
@@ -523,7 +523,7 @@ $$
 
 #### REINFORCE
 
-REINFORCE, also known as Monte-Carlo policy gradient, relies on $$Q_\pi(s, a)$$, an estimated return by [MC]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#monte-carlo-methods) methods using episode samples, to update the policy parameter $$\theta$$.
+REINFORCE, also known as Monte-Carlo policy gradient, relies on $$Q_\pi(s, a)$$, an estimated return by [MC](#monte-carlo-methods) methods using episode samples, to update the policy parameter $$\theta$$.
 
 A commonly used variation of REINFORCE is to subtract a baseline value from the return $$G_t$$ to reduce the variance of gradient estimation while keeping the bias unchanged. For example, a common baseline is state-value, and if applied, we would use $$A(s, a) = Q(s, a) - V(s)$$ in the gradient ascent update.
 
@@ -634,7 +634,7 @@ ES, as a black-box optimization algorithm, is a nice alternative to RL problems.
 
 The problem of exploration vs exploitation dilemma has been discussed in my previous [post]({{ site.baseurl }}{% post_url 2018-01-23-the-multi-armed-bandit-problem-and-its-solutions %}#exploitation-vs-exploration). When the RL problem faces an unknown environment, this issue is especially a key to finding a good solution: without enough exploration, we cannot learn the environment well enough; without enough exploitation, we cannot complete our reward optimization task.
 
-Different RL algorithms balance between exploration and exploitation in different ways. In [MC]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#monte-carlo-methods) methods, [Q-learning]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#q-learning-off-policy-td-control) or many on-policy algorithms, the exploration is commonly implemented by [ε-greedy]({{ site.baseurl }}{% post_url 2018-01-23-the-multi-armed-bandit-problem-and-its-solutions %}#%CE%B5-greedy-algorithm); In [ES]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#evolution-strategies), the exploration is captured by the policy parameter perturbation. Please keep this into consideration when develop a new RL algorithm.
+Different RL algorithms balance between exploration and exploitation in different ways. In [MC](#monte-carlo-methods) methods, [Q-learning](#q-learning-off-policy-td-control) or many on-policy algorithms, the exploration is commonly implemented by [ε-greedy]({{ site.baseurl }}{% post_url 2018-01-23-the-multi-armed-bandit-problem-and-its-solutions %}#%CE%B5-greedy-algorithm); In [ES](#evolution-strategies), the exploration is captured by the policy parameter perturbation. Please keep this into consideration when develop a new RL algorithm.
 
 ### Deadly Triad Issue
 

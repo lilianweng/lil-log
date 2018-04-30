@@ -148,7 +148,7 @@ According to the formula listed in the [previous section]({{ site.baseurl }}{% p
 $$
 \begin{aligned}
 D_{JS}(p_{r} \| p_g) 
-=& \frac{1}{2} D_{KL}(p_{r} || \frac{p_{r} + p_g}{2}) + \frac{1}{2} D_{KL}(p_{r} || \frac{p_{r} + p_g}{2}) \\
+=& \frac{1}{2} D_{KL}(p_{r} || \frac{p_{r} + p_g}{2}) + \frac{1}{2} D_{KL}(p_{g} || \frac{p_{r} + p_g}{2}) \\
 =& \frac{1}{2} \bigg( \log2 + \int_x p_{r}(x) \log \frac{p_{r}(x)}{p_{r} + p_g(x)} dx \bigg) + \\& \frac{1}{2} \bigg( \log2 + \int_x p_g(x) \log \frac{p_g(x)}{p_{r} + p_g(x)} dx \bigg) \\
 =& \frac{1}{2} \bigg( \log4 + L(G, D^*) \bigg)
 \end{aligned}

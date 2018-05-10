@@ -380,9 +380,10 @@ Check the [code](https://github.com/lilianweng/playground-drl/blob/master/playgr
 
 ## Monte-Carlo Policy Gradient
 
-I reviewed a number of popular policy gradient methods in my [last post]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}). Monte-Carlo policy gradient, also known as [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce), is a classic on-policy method that try to learn the policy model explicitly. REINFORCE estimates the return from a full on-policy trajectory and update the policy parameters with this MC-approximated return and the policy gradient.
+I reviewed a number of popular policy gradient methods in my [last post]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}). Monte-Carlo policy gradient, also known as [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce), is a classic on-policy method that learns the policy model explicitly. It uses the return estimated from a full on-policy trajectory and updates the policy parameters with policy gradient.
 
 The returns are computed during rollouts and then fed into the Tensorflow graph as inputs.
+
 ```python
 # Inputs
 states = tf.placeholder(tf.float32, shape=(None, obs_size), name='state')

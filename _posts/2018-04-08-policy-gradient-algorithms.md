@@ -617,6 +617,7 @@ After reading through all the algorithms above, I list a few building blocks or 
 * Experience replay (training data sampled from a replay memory buffer);
 * Target network that is either frozen periodically or updated slower than the actively learnt policy network;
 * Batch normalization;
+* Entropy-regularized reward;
 * The critic and actor can share lower layer parameters of the network and two output heads for policy and value functions.
 * It is possible to learn with deterministic policy rather than stochastic one.
 * Put constraint on the divergence between policy updates.

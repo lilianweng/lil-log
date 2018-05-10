@@ -370,7 +370,7 @@ In each update of SARSA, we need to choose actions for two steps by following th
 
 #### Q-Learning: Off-policy TD control
 
-The development of Q-learning (Watkins, 1989) is a big breakout in the early days of Reinforcement Learning.
+The development of Q-learning ([Watkins & Dayan, 1992](https://link.springer.com/content/pdf/10.1007/BF00992698.pdf)) is a big breakout in the early days of Reinforcement Learning.
 1. At time step t, we start from state $$S_t$$ and pick action according to Q values, $$A_t = \arg\max_{a \in \mathcal{A}} Q(S_t, a)$$; ε-greedy is commonly applied.
 2. With action $$A_t$$, we observe reward $$R_{t+1}$$ and get into the next state $$S_{t+1}$$.
 3. Update the action-value function: $$ Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha (R_{t+1} + \gamma \max_{a \in \mathcal{A}} Q(S_{t+1}, a) - Q(S_t, A_t)) $$.

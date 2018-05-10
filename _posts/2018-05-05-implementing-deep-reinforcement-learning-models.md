@@ -300,7 +300,7 @@ def update_target_q_net_soft(tau=0.05):
 
 ### Double Q-Learning
 
-If we look into the stanford form of the Q value target more carefully, $$Y(s, a) = r + \gamma \max_{a' \in \mathcal{A}} Q_\theta (s', a')$$, it is easy to notice that we use $$Q_\theta$$ to select the best next action at state s' and then apply the action value predicted by the same $$Q_\theta$$. This two-step reinforcing procedure could potentially lead to overestimation of an (already) overestimated value, further leading to training instability. The solution proposed by double Q-learning ([Hasselt, 2010](http://papers.nips.cc/paper/3964-double-q-learning.pdf)) is to decouple the action selection and action value estimation by using two Q networks, $$Q_1$$ and $$Q_2$$, and when one Q network is being updated, the other is used to decide the best next action.
+If we look into the standard form of the Q value target, $$Y(s, a) = r + \gamma \max_{a' \in \mathcal{A}} Q_\theta (s', a')$$, it is easy to notice that we use $$Q_\theta$$ to select the best next action at state s' and then apply the action value predicted by the same $$Q_\theta$$. This two-step reinforcing procedure could potentially lead to overestimation of an (already) overestimated value, further leading to training instability. The solution proposed by double Q-learning ([Hasselt, 2010](http://papers.nips.cc/paper/3964-double-q-learning.pdf)) is to decouple the action selection and action value estimation by using two Q networks, $$Q_1$$ and $$Q_2$$: when $$Q_1$$ is being updated, $$Q_2$$ decides the best next action, and vice versa.
 
 
 $$
@@ -326,8 +326,8 @@ actions_next_flatten = actions_next + tf.range(0, batch_size) * q_target.shape[1
 max_q_next_target = tf.gather(tf.reshape(q_target, [-1]), actions_next_flatten)
 y = rewards + (1. - done_flags) * gamma * max_q_next_by_target
 ```
-Here I used [tf.gather()](https://www.tensorflow.org/api_docs/python/tf/gather) to select the action values of interests.
 
+Here I used [tf.gather()](https://www.tensorflow.org/api_docs/python/tf/gather) to select the action values of interests.
 
 ![tf-gather]({{ '/assets/images/tf_gather.png' | relative_url }})
 {: style="width: 60%;" class="center"}
@@ -343,7 +343,7 @@ actions_next = sess.run(actions_selected_by_q, {states: batch_data['s_next']})
 
 ### Dueling Q-Network
 
-The dueling Q-network ([Wang et al., 2016](https://arxiv.org/pdf/1511.06581.pdf)) proposed an enhanced network architecture: the output layer branches out into two heads, one for state value, V, and the other for [advantage]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-function) value, A. The Q-value is then reconstructed, $$Q(s, a) = V(s) + A(s, a)$$.
+The dueling Q-network ([Wang et al., 2016](https://arxiv.org/pdf/1511.06581.pdf)) has an enhanced network architecture: the output layer branches out into two heads, one for predicting state value, V, and the other for [advantage]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-function), A. The Q-value is then reconstructed, $$Q(s, a) = V(s) + A(s, a)$$.
 
 $$
 \begin{aligned}
@@ -358,6 +358,9 @@ To make sure the estimated advantage values sum up to zero, $$\sum_a A(s, a)\pi(
 $$
 Q(s, a) = V(s) + (A(s, a) - \frac{1}{|\mathcal{A}|} \sum_a A(s, a))
 $$
+
+
+The code change is straightforward:
 
 ```python
 q_hidden = dense_nn(states, [32], name='Q_primary_hidden')
@@ -377,7 +380,7 @@ Check the [code](https://github.com/lilianweng/playground-drl/blob/master/playgr
 
 ## Monte-Carlo Policy Gradient
 
-I reviewed a number of popular policy gradient methods in the [last post]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}). Monte-Carlo policy gradient, also known as [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce), is a classic on-policy method. It estimates the return from a full on-policy trajectory and update the policy parameters directly with this MC-approximated return and the policy gradient.
+I reviewed a number of popular policy gradient methods in my [last post]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}). Monte-Carlo policy gradient, also known as [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce), is a classic on-policy method that try to learn the policy model explicitly. REINFORCE estimates the return from a full on-policy trajectory and update the policy parameters with this MC-approximated return and the policy gradient.
 
 The returns are computed during rollouts and then fed into the Tensorflow graph as inputs.
 ```python
@@ -387,30 +390,71 @@ actions = tf.placeholder(tf.int32, shape=(None,), name='action')
 returns = tf.placeholder(tf.float32, shape=(None,), name='return')
 ```
 
+The policy network is contructed. We update the policy parameters by minimizing the loss function, $$\mathcal{L} = - (G_t - V(s)) \log \pi(a \vert s)$$. 
+[tf.nn.sparse_softmax_cross_entropy_with_logits()](https://www.tensorflow.org/api_docs/python/tf/nn/sparse_softmax_cross_entropy_with_logits) asks for the raw logits as inputs, rather then the probabilities after softmax, and that's why we do not have a softmax layer on top of the policy network.
 ```python
 # Policy network
 pi = dense_nn(states, [32, 32, env.action_space.n], name='pi_network')
-```
+sampled_actions = tf.squeeze(tf.multinomial(pi, 1))  # For sampling actions according to probabilities.
 
-We update the parameters in the policy network (Note that not the variables in the state value network and that's why `tf.stop_gradient()` is used.) by minimizing the loss function, $$\mathcal{L} = - (G_t - V(s)) \log \pi(a \vert s)$$. 
-
-[tf.nn.sparse_softmax_cross_entropy_with_logits()](https://www.tensorflow.org/api_docs/python/tf/nn/sparse_softmax_cross_entropy_with_logits) asks for the raw logits as inputs, rather then the probabilities after softmax, and that's why we do not have a softmax layer on top of the policy network.
-
-```python
 with tf.variable_scope('pi_optimize'):
     loss_pi = tf.reduce_mean(
         returns * tf.nn.sparse_softmax_cross_entropy_with_logits(
             logits=pi, labels=actions), name='loss_pi')
     optim_pi = tf.train.AdamOptimizer(0.001).minimize(loss_pi, name='adam_optim_pi')
 ```
+
+During the episode rollout, the return is calculated as follows:
+```python
+# env = gym.make(...)
+# gamma = 0.99
+# sess = tf.Session(...)
+
+def act(ob):
+    return sess.run(sampled_actions, {states: [ob]})
+
+for _ in range(n_episodes):
+    ob = env.reset()
+    done = False
+
+    obs = []
+    actions = []
+    rewards = []
+    returns = []
+
+    while not done:
+        a = act(ob)
+        new_ob, r, done, info = env.step(a)
+
+        obs.append(ob)
+        actions.append(a)
+        rewards.append(r)
+        ob = new_ob
+
+    # Estimate returns backwards.
+    return_so_far = 0.0
+    for r in rewards[::-1]:
+        return_so_far = gamma * return_so_far + r
+        returns.append(return_so_far)
+
+    returns = returns[::-1]
+
+    # Update the policy network with the data from one episode.
+    sess.run([optim_pi], feed_dict={
+        states: np.array(obs),
+        actions: np.array(actions),
+        returns: np.array(returns),
+    })
+```
+
 The full implementation of REINFORCE is [here](https://github.com/lilianweng/playground-drl/blob/master/playground/policies/reinforce.py).
 
 
 ## Actor-Critic
 
-The [actor-critic]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#actor-critic) algorithm trains two models at the same time, the actor for learning the best policy and the critic for estimating the state value.
+The [actor-critic]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#actor-critic) algorithm learns two models at the same time, the actor for learning the best policy and the critic for estimating the state value.
 
-1. Actor, $$\pi(a \vert s)$$ and  critic, $$V(s)$$
+1. Initialize the actor network, $$\pi(a \vert s)$$ and the critic, $$V(s)$$
 2. Collect a new transition (s, a, r, s'): Sample the action $$a \sim \pi(a \vert s)$$ for the current state s, and get the reward r and the next state s'.
 3. Compute the TD target during episode rollout, $$G_t = r + \gamma V(s')$$ and TD error, $$\delta_t = r + \gamma V(s') - V(s)$$.
 4. Update the critic network by minimizing the critic loss: $$L_c = (V(s) - G_t)$$.
@@ -449,6 +493,7 @@ with tf.variable_scope('actor_train'):
 train_ops = [optim_c, optim_a]
 ```
 
+The tensorboard graph is always helpful:
 ![ac-tensorflow]({{ '/assets/images/actor-critic-tensorboard-graph.png' | relative_url }})
 
 

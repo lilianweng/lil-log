@@ -6,7 +6,7 @@ date: 2018-05-05 16:00:00
 tags: tutorial tensorflow reinforcement-learning
 ---
 
-> Let's see how to implement a number of classic deep reinforcement learning models in code. The full implementation is available in [[lilianweng/playground-drl]](https://github.com/lilianweng/playground-drl)
+> Let's see how to implement a number of classic deep reinforcement learning models in code. The full implementation is available in [lilianweng/playground-drl](https://github.com/lilianweng/playground-drl)
 
 
 <!--more-->

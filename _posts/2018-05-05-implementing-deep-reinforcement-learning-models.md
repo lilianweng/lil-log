@@ -377,7 +377,7 @@ Check the [code](https://github.com/lilianweng/playground-drl/blob/master/playgr
 
 ## Monte-Carlo Policy Gradient
 
-I reviewed a number of popular policy gradient methods in the [last post]({{ site.baseurl }}{% post_url 2018-04-07-policy-gradient-algorithms %}). Monte-Carlo policy gradient, also known as [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-07-policy-gradient-algorithms %}#reinforce), is a classic on-policy method. It estimates the return from a full on-policy trajectory and update the policy parameters directly with this MC-approximated return and the policy gradient.
+I reviewed a number of popular policy gradient methods in the [last post]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}). Monte-Carlo policy gradient, also known as [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce), is a classic on-policy method. It estimates the return from a full on-policy trajectory and update the policy parameters directly with this MC-approximated return and the policy gradient.
 
 The returns are computed during rollouts and then fed into the Tensorflow graph as inputs.
 ```python
@@ -408,7 +408,7 @@ The full implementation of REINFORCE is [here](https://github.com/lilianweng/pla
 
 ## Actor-Critic
 
-The [actor-critic]({{ site.baseurl }}{% post_url 2018-04-07-policy-gradient-algorithms %}#actor-critic) algorithm trains two models at the same time, the actor for learning the best policy and the critic for estimating the state value.
+The [actor-critic]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#actor-critic) algorithm trains two models at the same time, the actor for learning the best policy and the critic for estimating the state value.
 
 1. Actor, $$\pi(a \vert s)$$ and  critic, $$V(s)$$
 2. Collect a new transition (s, a, r, s'): Sample the action $$a \sim \pi(a \vert s)$$ for the current state s, and get the reward r and the next state s'.

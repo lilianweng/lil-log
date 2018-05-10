@@ -6,7 +6,7 @@ date: 2018-05-05 16:00:00
 tags: tutorial tensorflow reinforcement-learning
 ---
 
-> Let's see how to implement several classic deep reinforcement learning models in code. The full implementation is available in [[lilianweng/playground-drl]](https://github.com/lilianweng/playground-drl)
+> Let's see how to implement a number of classic deep reinforcement learning models in code. The full implementation is available in [[lilianweng/playground-drl]](https://github.com/lilianweng/playground-drl)
 
 
 <!--more-->
@@ -27,7 +27,7 @@ In the previous two posts, I have introduced the algorithms of many deep reinfor
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-1) I would suggest to start a virtualenv for your development. It makes life so much easier when you have multiple projects with conflicting requirements; i.e. one works in Python 2.7 while the other is only compatible with Python 3.5+.
+1) I would suggest starting a virtualenv for your development. It makes life so much easier when you have multiple projects with conflicting requirements; i.e. one works in Python 2.7 while the other is only compatible with Python 3.5+.
 ```bash
 # Install python virtualenv
 brew install pyenv-virtualenv
@@ -120,7 +120,7 @@ def update_Q(s, r, a, s_next, done):
     Q[s, a] += alpha * (r + gamma * max_q_next * (1.0 - done) - Q[s, a])
 ```
 
-Most gym environments have a multi-dimensional continuous observation space (`gym.spaces.Box`). To make sure our Q dictionary will not explode by trying to memorize an infinite number of keys, we apply a wrapper to discretize the observation. The concept of [wrappers](https://github.com/openai/gym/tree/master/gym/wrappers) is very powerful, with which we are capable to customize observation, action, step function, etc. of a env. No matter how many wrappers are applied, `env.unwrapped` always gives back the internal original environment object.
+Most gym environments have a multi-dimensional continuous observation space (`gym.spaces.Box`). To make sure our Q dictionary will not explode by trying to memorize an infinite number of keys, we apply a wrapper to discretize the observation. The concept of [wrappers](https://github.com/openai/gym/tree/master/gym/wrappers) is very powerful, with which we are capable to customize observation, action, step function, etc. of an env. No matter how many wrappers are applied, `env.unwrapped` always gives back the internal original environment object.
 
 ```python
 import gym
@@ -199,7 +199,7 @@ Often we start with a high `epsilon` and gradually decrease it during the traini
 
 ## Deep Q-Network
 
-[Deep Q-network]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#deep-q-network) is a seminal piece of work to make the training of Q-learning more stable and more data-efficient, when the Q value is approximated with a nonlinear function. The key ideas are experience replay and a separately updated target network. 
+[Deep Q-network]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#deep-q-network) is a seminal piece of work to make the training of Q-learning more stable and more data-efficient, when the Q value is approximated with a nonlinear function. Two key ingredients are experience replay and a separately updated target network. 
 
 The main loss function looks like the following,
 
@@ -227,7 +227,7 @@ def dense_nn(inputs, layers_sizes, scope_name):
     """Creates a densely connected multi-layer neural network.
     inputs: the input tensor
     layers_sizes (list<int>): defines the number of units in each layer. The output 
-        Layer has the size layers_sizes[-1].
+        layer has the size layers_sizes[-1].
     """
     with tf.variable_scope(scope_name):
         for i, size in enumerate(layers_sizes):
@@ -280,7 +280,7 @@ Note that [tf.stop_gradient()](https://www.tensorflow.org/api_docs/python/tf/sto
 ![DQN-tensorflow]({{ '/assets/images/dqn-tensorboard-graph.png' | relative_url }})
 
 
-The target network is updated by copying the primary Q network parameters over every C number of steps ("hard update") or polyak averaging towards the primary network ("soft update")
+The target network is updated by copying the primary Q network parameters over every `C` number of steps ("hard update") or polyak averaging towards the primary network ("soft update")
 ```python
 # Get all the variables in the Q primary network.
 q_vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="Q_primary")
@@ -343,7 +343,7 @@ actions_next = sess.run(actions_selected_by_q, {states: batch_data['s_next']})
 
 ### Dueling Q-Network
 
-The dueling Q-network ([Wang et al., 2016](https://arxiv.org/pdf/1511.06581.pdf)) has an enhanced network architecture: the output layer branches out into two heads, one for predicting state value, V, and the other for [advantage]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-function), A. The Q-value is then reconstructed, $$Q(s, a) = V(s) + A(s, a)$$.
+The dueling Q-network ([Wang et al., 2016](https://arxiv.org/pdf/1511.06581.pdf)) is equipped with an enhanced network architecture: the output layer branches out into two heads, one for predicting state value, V, and the other for [advantage]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#value-function), A. The Q-value is then reconstructed, $$Q(s, a) = V(s) + A(s, a)$$.
 
 $$
 \begin{aligned}

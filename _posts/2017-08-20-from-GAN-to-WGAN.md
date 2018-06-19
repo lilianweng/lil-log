@@ -419,7 +419,7 @@ A real-valued function $$f: \mathbb{R} \rightarrow \mathbb{R}$$ is called $$K$$-
 
 $$\lvert f(x_1) - f(x_2) \rvert \leq K \lvert x_1 - x_2 \rvert$$
 
-Functions that are everywhere continuously differentiable is Lipschitz continuous, because the derivative, estimated as $$\frac{\lvert f(x_1) - f(x_2) \rvert}{\lvert x_1 - x_2 \rvert}$$, has bounds. However, a Lipschitz continuous function may not be everywhere differentiable, such as $$f(x) = \lvert x \rvert$$.
+Here $$K$$ is known as a Lipschitz constant for function $$f(.)$$. Functions that are everywhere continuously differentiable is Lipschitz continuous, because the derivative, estimated as $$\frac{\lvert f(x_1) - f(x_2) \rvert}{\lvert x_1 - x_2 \rvert}$$, has bounds. However, a Lipschitz continuous function may not be everywhere differentiable, such as $$f(x) = \lvert x \rvert$$.
 
 
 Explaining how the transformation happens on the Wasserstein distance formula is worthy of a long post by itself, so I skip the details here. If you are interested in how to compute Wasserstein metric using linear programming, or how to transfer Wasserstein metric into its dual form according to the Kantorovich-Rubinstein Duality, read this [awesome post](https://vincentherrmann.github.io/blog/wasserstein/).

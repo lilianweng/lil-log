@@ -6,7 +6,7 @@ date: 2018-05-05 16:00:00
 tags: tutorial tensorflow reinforcement-learning
 ---
 
-> Let's see how to implement a number of classic deep reinforcement learning models in code. The full implementation is available in [lilianweng/playground-drl](https://github.com/lilianweng/playground-drl)
+> Let's see how to implement a number of classic deep reinforcement learning models in code. The full implementation is available in [lilianweng/deep-reinforcement-learning-gym](https://github.com/lilianweng/deep-reinforcement-learning-gym)
 
 
 <!--more-->
@@ -17,7 +17,7 @@ tags: tutorial tensorflow reinforcement-learning
 {:toc}
 
 
-In the previous two posts, I have introduced the algorithms of many deep reinforcement learning models. Now it is the time to get our hands dirty and practice how to implement the models in the wild. The implementation is gonna be built in Tensorflow and OpenAI [gym](https://github.com/openai/gym) environment. The full version of the code in this tutorial is available in [[lilian/playground-drl]](https://github.com/lilianweng/playground-drl).
+In the previous two posts, I have introduced the algorithms of many deep reinforcement learning models. Now it is the time to get our hands dirty and practice how to implement the models in the wild. The implementation is gonna be built in Tensorflow and OpenAI [gym](https://github.com/openai/gym) environment. The full version of the code in this tutorial is available in [[lilian/deep-reinforcement-learning-gym]](https://github.com/lilianweng/deep-reinforcement-learning-gym).
 
 
 ## Environment Setup
@@ -59,8 +59,8 @@ pip install -e '.[atari]'
 
 3) Finally clone the "playground" code and install the requirements.
 ```bash
-git clone git@github.com:lilianweng/playground-drl.git
-cd playground-drl
+git clone git@github.com:lilianweng/deep-reinforcement-learning-gym.git
+cd deep-reinforcement-learning-gym
 pip install -e .  # install the "playground" project.
 pip install -r requirements.txt  # install required packages.
 ```
@@ -193,7 +193,7 @@ for step in range(n_steps):
     else:
         ob = ob_next
 ```
-Often we start with a high `epsilon` and gradually decrease it during the training, known as "epsilon annealing". The full code of `QLearningPolicy` is available [here](https://github.com/lilianweng/playground-drl/blob/master/playground/policies/qlearning.py).
+Often we start with a high `epsilon` and gradually decrease it during the training, known as "epsilon annealing". The full code of `QLearningPolicy` is available [here](https://github.com/lilianweng/deep-reinforcement-learning-gym/blob/master/playground/policies/qlearning.py).
 
 
 
@@ -210,7 +210,7 @@ $$
 \end{aligned}
 $$
 
-The Q network can be a multi-layer dense neural network, a convolutional network, or a recurrent network, depending on the problem. In the [full implementation](https://github.com/lilianweng/playground-drl/blob/master/playground/policies/dqn.py) of the DQN policy, it is determined by the `model_type` parameter, one of ("dense", "conv", "lstm").
+The Q network can be a multi-layer dense neural network, a convolutional network, or a recurrent network, depending on the problem. In the [full implementation](https://github.com/lilianweng/deep-reinforcement-learning-gym/blob/master/playground/policies/dqn.py) of the DQN policy, it is determined by the `model_type` parameter, one of ("dense", "conv", "lstm").
 
 In the following example,  I'm using a 2-layer densely connected neural network to learn Q values for the cart pole balancing problem.
 ```python
@@ -374,7 +374,7 @@ q = v + (adv - tf.reduce_mean(adv, reduction_indices=1, keepdims=True))
 ![dueling-q-network]({{ '/assets/images/dueling-q-network.png' | relative_url }})
 *(Image source: [Wang et al., 2016](https://arxiv.org/pdf/1511.06581.pdf))*
 
-Check the [code](https://github.com/lilianweng/playground-drl/blob/master/playground/policies/dqn.py) for the complete flow.
+Check the [code](https://github.com/lilianweng/deep-reinforcement-learning-gym/blob/master/playground/policies/dqn.py) for the complete flow.
 
 
 
@@ -448,7 +448,7 @@ for _ in range(n_episodes):
     })
 ```
 
-The full implementation of REINFORCE is [here](https://github.com/lilianweng/playground-drl/blob/master/playground/policies/reinforce.py).
+The full implementation of REINFORCE is [here](https://github.com/lilianweng/deep-reinforcement-learning-gym/blob/master/playground/policies/reinforce.py).
 
 
 ## Actor-Critic

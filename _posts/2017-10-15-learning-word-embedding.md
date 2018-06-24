@@ -3,6 +3,7 @@ layout: post
 comments: false
 title: "Learning Word Embedding"
 date: 2017-10-15 23:00:00
+tags: review
 ---
 
 > Word embedding is a dense representation of words in the form of numeric vectors. It can be learned using a variety of language models. The word embedding representation is able to reveal many hidden relationships between words. For example, vector("cat") - vector("kitten") is similar to vector("dog") - vector("puppy"). This post introduces several models for learning word embedding and how their loss functions are designed for the purpose.

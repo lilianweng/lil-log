@@ -395,6 +395,13 @@ One detail in the paper that is particularly useful in robotics is on how to nor
 *Fig 3. DDPG Algorithm. (Image source: [Lillicrap, et al., 2015](https://arxiv.org/pdf/1509.02971.pdf))*
 
 
+### D4PG
+
+Gabriel Barth-Maron, et al. ["Distributed Distributional Deterministic Policy Gradients."](https://arxiv.org/pdf/1804.08617.pdf) arXiv preprint arXiv:1804.08617 (2018).
+
+TBA soon.
+
+
 
 ### MADDPG
 
@@ -606,6 +613,13 @@ Here is a high level summary from the K-FAC [paper](https://arxiv.org/pdf/1503.0
 > “This approximation is built in two stages. In the first, the rows and columns of the Fisher are divided into groups, each of which corresponds to all the weights in a given layer, and this gives rise to a block-partitioning of the matrix. These blocks are then approximated as Kronecker products between much smaller matrices, which we show is equivalent to making certain approximating assumptions regarding the statistics of the network’s gradients. 
 
 > In the second stage, this matrix is further approximated as having an inverse which is either block-diagonal or block-tridiagonal. We justify this approximation through a careful examination of the relationships between inverse covariances, tree-structured graphical models, and linear regression. Notably, this justification doesn’t apply to the Fisher itself, and our experiments confirm that while the inverse Fisher does indeed possess this structure (approximately), the Fisher itself does not.”
+
+
+### Soft Actor-Critic
+
+Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. ["Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor."](https://arxiv.org/pdf/1801.01290.pdf) arXiv preprint arXiv:1801.01290 (2018).
+
+TBA soon.
 
 
 ## Quick Summary

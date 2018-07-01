@@ -171,7 +171,7 @@ Or in other words, the future and the past are **conditionally independent** giv
 *Fig. 3. The agent-environment interaction in a Markov decision process. (Image source: Sec. 3.1 Sutton & Barto (2017).)*
 
 
-A Markov deicison process consists of five elements $$\mathcal{M} = <\mathcal{S}, \mathcal{A}, P, R, \gamma>$$, where the symbols carry the same meanings as key conceps in the [previsous](#key-concepts) section, well aligned with RL problem settings:
+A Markov deicison process consists of five elements $$\mathcal{M} = <\mathcal{S}, \mathcal{A}, P, R, \gamma>$$, where the symbols carry the same meanings as key conceps in the [previous](#key-concepts) section, well aligned with RL problem settings:
 - $$\mathcal{S}$$ - a set of states;
 - $$\mathcal{A}$$ - a set of actions;
 - $$P$$ - transition probability function;
@@ -414,9 +414,9 @@ There are many extensions of DQN to improve the original design, such as DQN wit
 
 ### Combining TD and MC Learning
 
-In previous [section](#value-estimation) on value estimation in TD learning, we only trace one step further down the action chain when calculating the TD target. One can easily extend it to take multiple steps to estimate the return. 
+In the previous [section](#value-estimation) on value estimation in TD learning, we only trace one step further down the action chain when calculating the TD target. One can easily extend it to take multiple steps to estimate the return. 
 
-Let's label the estimated return following n steps as $$G_t^{(n)}, $$n=1, \dots, \infty$$, then:
+Let's label the estimated return following n steps as $$G_t^{(n)}, n=1, \dots, \infty$$, then:
 
 {: class="info"}
 | $$n$$        | $$G_t$$           | Notes  |
@@ -475,7 +475,7 @@ $$
 \mathcal{J}(\theta) = \sum_{s \in \mathcal{S}} d_{\pi_\theta}(s) V_{\pi_\theta}(s) = \sum_{s \in \mathcal{S}} \Big( d_{\pi_\theta}(s) \sum_{a \in \mathcal{A}} \pi(a \vert s, \theta) Q_\pi(s, a) \Big)
 $$
 
-where $$d_{\pi_\theta}(s)$$ is stationary distribution of Markov chain for $$\pi_\theta$$. If you don't know what is stationary distribution of Markov chain, check [this](https://jeremykun.com/2015/04/06/markov-chain-monte-carlo-without-all-the-bullshit/).
+where $$d_{\pi_\theta}(s)$$ is stationary distribution of Markov chain for $$\pi_\theta$$. If you are unfamiliar with the definition of a "stationary distribution," please check this [reference](https://jeremykun.com/2015/04/06/markov-chain-monte-carlo-without-all-the-bullshit/).
 
 Using *gradient ascent* we can find the best θ that produces the highest return. It is natural to expect policy-based methods are more useful in continuous space, because there is an infinite number of actions and/or states to estimate the values for in continuous space and hence value-based approaches are computationally much more expensive.
 
@@ -621,7 +621,7 @@ $$
 *Fig. 9. A simple parallel evolution-strategies-based RL algorithm. Parallel workers share the random seeds so that they can reconstruct the Gaussian noises with tiny communication bandwidth. (Image source: Salimans et al. 2017.)*
 
 
-ES, as a black-box optimization algorithm, is a nice alternative to RL problems. It has a couple of good characteristics (Salimans et al., 2017) keeping it fast and easy to train:
+ES, as a black-box optimization algorithm, is another approach to RL problems (<span style="color: #999999;">*In my original writing, I used the phrase "a nice alternative"; [Seita](https://danieltakeshi.github.io/) pointed me to this [discussion](https://www.reddit.com/r/MachineLearning/comments/6gke6a/d_requesting_openai_to_justify_the_grandiose/dir9wde/) and thus I updated my wording.*</span>). It has a couple of good characteristics (Salimans et al., 2017) keeping it fast and easy to train:
 - ES does not need value function approximation;
 - ES does not perform gradient back-propagation;
 - ES is invariant to delayed or long-term rewards;

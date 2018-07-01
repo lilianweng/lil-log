@@ -6,10 +6,13 @@ date: 2018-04-08 00:15:06
 tags: reinforcement-learning review
 ---
 
-> Abstract: In this post, we are going to look deep into policy gradient, why it works, and many new policy gradient algorithms proposed in recent years: vanilla policy gradient, actor-critic, off-policy actor-critic, A3C, A2C, DPG, DDPG, MADDPG, TRPO, PPO, ACER, and ACTKR.
+> Abstract: In this post, we are going to look deep into policy gradient, why it works, and many new policy gradient algorithms proposed in recent years: vanilla policy gradient, actor-critic, off-policy actor-critic, A3C, A2C, DPG, DDPG, D4PG, MADDPG, TRPO, PPO, ACER, ACTKR, and Soft AC.
 
 
 <!--more-->
+
+<span style="color: #286ee0;">**[Updated on 2018-06-30: Two new policy gradient methods, [Soft AC](#soft-actor-critic) and [D4PG](#d4pg).]**</span>
+
 
 {: class="table-of-content"}
 * TOC
@@ -36,7 +39,7 @@ Here is a list of notations to help you read through equations in the post easil
 | $$G_t$$ | Return; or discounted future reward; $$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$$. |
 | $$P(s’, r \vert s, a)$$ | Transition probability of getting to the next state s’ from the current state s with action a and reward r. |
 | $$\pi(a \vert s)$$ | Stochastic policy (agent behavior strategy); $$\pi_\theta(.)$$ is a policy parameterized by θ. |
-| $$\mu(a)$$ | Deterministic policy; we can also label this as $$\pi(s)$$, but using a different letter gives better distinction so that we can easily tell when the policy is stochastic or deterministic without further explanation :) Both π and μ are what a reinforcement learning algorithm targets to learn. |
+| $$\mu(a)$$ | Deterministic policy; we can also label this as $$\pi(s)$$, but using a different letter gives better distinction so that we can easily tell when the policy is stochastic or deterministic without further explanation. Either $$\pi$$ or $$\mu$$ is what a reinforcement learning algorithm aims to learn. |
 | $$V(s)$$ | State-value function measures the expected return of state s; $$V_w(.)$$ is a value function parameterized by w.|
 | $$V^\pi(s)$$ | The value of state s when we follow a policy π; $$V^\pi (s) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s]$$. |
 | $$Q(s, a)$$ | Action-value function is similar to $$V(s)$$, but it assesses the expected return of a pair of state and action (s, a); $$Q_w(.)$$ is a action value function parameterized by w. |
@@ -173,11 +176,11 @@ $$
 \nabla_\theta J(\theta)  = \mathbb{E}_\pi [Q^\pi(s, a) \nabla_\theta \ln \pi_\theta(a \vert s)]
 $$
 
-Here is a nice summary of a general form of policy gradient methods borrowed from the [GAE](https://arxiv.org/pdf/1506.02438.pdf) (general advantage estimation) paper (Schulman et al., 2016):
+Here is a nice summary of a general form of policy gradient methods borrowed from the [GAE](https://arxiv.org/pdf/1506.02438.pdf) (general advantage estimation) paper ([Schulman et al., 2016](https://arxiv.org/abs/1506.02438)) and this [post](https://danieltakeshi.github.io/2017/04/02/notes-on-the-generalized-advantage-estimation-paper/) thoroughly discussed several components in GAE , highly recommended.
 
 ![General form]({{ '/assets/images/general_form_policy_gradient.png' | relative_url }})
 {: class="center"}
-*Fig. 1. A general form of policy gradient methods. (Image source: [Schulman et al., 2016](https://arxiv.org/pdf/1506.02438.pdf))*
+*Fig. 1. A general form of policy gradient methods. (Image source: [Schulman et al., 2016](https://arxiv.org/abs/1506.02438))*
 
 
 
@@ -208,15 +211,16 @@ The process is pretty straightforward:
     1. Estimate the the return $$G_t$$;
     2. Update policy parameters: $$\theta \leftarrow \theta + \alpha \gamma^t G_t \nabla_\theta \ln \pi_\theta(A_t \vert S_t)$$
 
-A widely used variation of REINFORCE is to subtract a baseline value from the return $$G_t$$ to *reduce the variance of gradient estimation while keeping the bias unchanged* (Remember we always want to do this when possible). For example, a common baseline is to subtract state-value from action-value, and if applied, we would use advantage $$A(s, a) = Q(s, a) - V(s)$$ in the gradient ascent update.
+A widely used variation of REINFORCE is to subtract a baseline value from the return $$G_t$$ to *reduce the variance of gradient estimation while keeping the bias unchanged* (Remember we always want to do this when possible). For example, a common baseline is to subtract state-value from action-value, and if applied, we would use advantage $$A(s, a) = Q(s, a) - V(s)$$ in the gradient ascent update. This [post](https://danieltakeshi.github.io/2017/03/28/going-deeper-into-reinforcement-learning-fundamentals-of-policy-gradients/) nicely explained why a baseline works for reducing the variance, in addition to a set of fundamentals of policy gradient.
 
 
 
 ### Actor-Critic
 
-Two main components in policy gradient are the policy model and the value function. It makes a lot of sense to learn the value function in addition to the policy, since the value function is typically unknown, and that is exactly what the **Actor-Critic** method does. 
+Two main components in policy gradient are the policy model and the value function. It makes a lot of sense to learn the value function in addition to the policy, since knowing the value function can assist the policy update, such as by reducing gradient variance in vanilla policy gradients, and that is exactly what the **Actor-Critic** method does. 
 
-Actor-critic is consist of two models:
+
+Actor-critic methods consist of two models, which may optionally share parameters:
 * **Critic** updates the value function parameters w and depending on the algorithm it could be action-value $$Q_w(a \vert s)$$ or state-value $$V_w(s)$$.
 * **Actor** updates the policy parameters θ for $$\pi_\theta(a \vert s)$$, in the direction suggested by the critic.
 
@@ -234,7 +238,7 @@ Two learning rates, $$\alpha_\theta$$ and $$\alpha_w$$, are predefined for polic
 
 ### Off-Policy Policy Gradient
 
-Both REINFORCE and the vanilla version of actor-critic method are on-policy: training samples are collected according to the target policy --- the very same policy that we try to optimize for. It lack of several advantages that we could harvest if switch to *off-policy*:
+Both REINFORCE and the vanilla version of actor-critic method are on-policy: training samples are collected according to the target policy --- the very same policy that we try to optimize for. Off policy methods, however, result in several additional advantages:
 1. The off-policy approach does not require full trajectories and can reuse any past episodes ([“experience replay”]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#deep-q-network)) for much better sample efficiency.
 2. The sample collection follows a behavior policy different from the target policy, bringing better [exploration]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#exploration-exploitation-dilemma).
 
@@ -395,12 +399,39 @@ One detail in the paper that is particularly useful in robotics is on how to nor
 *Fig 3. DDPG Algorithm. (Image source: [Lillicrap, et al., 2015](https://arxiv.org/pdf/1509.02971.pdf))*
 
 
+
 ### D4PG
 
-Gabriel Barth-Maron, et al. ["Distributed Distributional Deterministic Policy Gradients."](https://arxiv.org/pdf/1804.08617.pdf) arXiv preprint arXiv:1804.08617 (2018).
+[[paper](https://openreview.net/forum?id=SyZipzbCb)\|code (Search “github d4pg” and you will see a few.)]
 
-TBA soon.
+**Distributed Distributional DDPG (D4PG)** applies a set of improvements on DDPG to make it run in the distributional fashion.
 
+(1) **Distributional Critic**: The critic estimates the expected Q value as a random variable ~ a distribution $$Z_w$$ parameterized by $$w$$ and therefore $$Q_w(s, a) = \mathbb{E} Z_w(x, a)$$. The loss for learning the distribution parameter is to minimize some measure of the distance between two distributions --- distributional TD error: $$L(w) = \mathbb{E}[d(\mathcal{T}_{\mu_\theta}, Z_{w’}(s, a), Z_w(s, a)]$$, where $$\mathcal{T}_{\mu_\theta}$$ is the Bellman operator.
+
+The deterministic policy gradient update becomes:
+
+$$
+\begin{aligned}
+\nabla_\theta J(\theta) 
+&\approx \mathbb{E}_{\rho^\mu} [\nabla_a Q_w(s, a) \nabla_\theta \mu_\theta(s) \rvert_{a=\mu_\theta(s)}] & \scriptstyle{\text{; gradient update in DPG}} \\
+&= \mathbb{E}_{\rho^\mu} [\mathbb{E}[\nabla_a Q_w(s, a)] \nabla_\theta \mu_\theta(s) \rvert_{a=\mu_\theta(s)}] & \scriptstyle{\text{; expectation of the Q-value distribution.}}
+\end{aligned}
+$$
+
+(2) **$$N$$-step returns**: When calculating the TD error, D4PG computes TD(N) rather than TD(1) to incorporate rewards in more future steps. Thus the new TD target is:
+
+$$
+r(s_0, a_0) + \mathbb{E}[\sum_{n=1}^{N-1} r(s_n, a_n) + \gamma^N Q(s_N, \mu_\theta(s_N)) \vert s_0, a_0 ]
+$$
+
+(3) **Multiple Distributed Parallel Actors**: D4PG utilizes $$K$$ independent actors, gathering experience in parallel and feeding data into the same replay buffer.
+
+(4) **Prioritized Experience Replay ([PER](https://arxiv.org/abs/1511.05952))**: The last piece of modification is to do sampling from the replay buffer of size $$R$$ with an non-uniform probability $$p_i$$. In this way, a sample $$i$$ has the probability $$(Rp_i)^{-1}$$ to be selected and thus the importance weight is $$(Rp_i)^{-1}$$.
+
+
+![DDPG]({{ '/assets/images/D4PG_algo.png' | relative_url }})
+{: class="center"}
+*Fig. 4. D4PG algorithm (Image source: [Barth-Maron, et al. 2018](https://openreview.net/forum?id=SyZipzbCb)); Note that in the original paper, the variable letters are chosen slightly differently from what in the post; i.e. I use $$\mu(.)$$ for representing a deterministic policy instead of $$\pi(.)$$.*
 
 
 ### MADDPG
@@ -451,9 +482,9 @@ In summary, MADDPG added three additional ingredients on top of DDPG to make it 
 * Policy ensembling is good for reducing variance.
 
 
-![DDPG]({{ '/assets/images/MADDPG.png' | relative_url }})
+![MADDPG]({{ '/assets/images/MADDPG.png' | relative_url }})
 {: class="center" style="width: 70%;"}
-*Fig. 4. The architecture design of MADDPG. (Image source: [Lowe et al., 2017](https://arxiv.org/pdf/1706.02275.pdf))**
+*Fig. 5. The architecture design of MADDPG. (Image source: [Lowe et al., 2017](https://arxiv.org/pdf/1706.02275.pdf))*
 
 
 ### TRPO
@@ -610,17 +641,89 @@ I listed ACTKR here mainly for the completeness of this post, but I would not di
 
 Here is a high level summary from the K-FAC [paper](https://arxiv.org/pdf/1503.05671.pdf):
 
-> “This approximation is built in two stages. In the first, the rows and columns of the Fisher are divided into groups, each of which corresponds to all the weights in a given layer, and this gives rise to a block-partitioning of the matrix. These blocks are then approximated as Kronecker products between much smaller matrices, which we show is equivalent to making certain approximating assumptions regarding the statistics of the network’s gradients. 
+> "This approximation is built in two stages. In the first, the rows and columns of the Fisher are divided into groups, each of which corresponds to all the weights in a given layer, and this gives rise to a block-partitioning of the matrix. These blocks are then approximated as Kronecker products between much smaller matrices, which we show is equivalent to making certain approximating assumptions regarding the statistics of the network’s gradients. 
 
-> In the second stage, this matrix is further approximated as having an inverse which is either block-diagonal or block-tridiagonal. We justify this approximation through a careful examination of the relationships between inverse covariances, tree-structured graphical models, and linear regression. Notably, this justification doesn’t apply to the Fisher itself, and our experiments confirm that while the inverse Fisher does indeed possess this structure (approximately), the Fisher itself does not.”
+> In the second stage, this matrix is further approximated as having an inverse which is either block-diagonal or block-tridiagonal. We justify this approximation through a careful examination of the relationships between inverse covariances, tree-structured graphical models, and linear regression. Notably, this justification doesn’t apply to the Fisher itself, and our experiments confirm that while the inverse Fisher does indeed possess this structure (approximately), the Fisher itself does not."
+
 
 
 ### Soft Actor-Critic
 
-Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. ["Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor."](https://arxiv.org/pdf/1801.01290.pdf) arXiv preprint arXiv:1801.01290 (2018).
+[[paper](https://arxiv.org/abs/1801.01290)\|[code](https://github.com/haarnoja/sac)]
 
-TBA soon.
+**Soft Actor-Critic (SAC)** ([Haarnoja et al. 2018](https://arxiv.org/abs/1801.01290)) incorporates the entropy measure of the policy into the reward to encourage exploration: we expect to learn a policy that acts as randomly as possible while it is still able to succeed at the task. It is an off-policy actor-critic model following the maximum entropy reinforcement learning framework. A precedent work is [Soft Q-learning](https://arxiv.org/abs/1702.08165).
 
+Three key components in SAC:
+- An [actor-critic](#actor-critic) architecture with separate policy and value function networks;
+- An [off-policy](#off-policy-policy-gradient) formulation that enables reuse of previously collected data for efficiency;
+- Entropy maximization to enable stability and exploration.
+
+The policy is trained with the objective to maximize the expected return and the entropy at the same time:
+
+$$
+J(\theta) = \sum_{t=1}^T \mathbb{E}_{(s_t, a_t) \sim \rho_{\pi_\theta}} [r(s_t, a_t) + \alpha \mathcal{H}(\pi_\theta(.\vert s_t))]
+$$
+
+where $$\mathcal{H}(.)$$ is the entropy measure and $$\alpha$$ controls how important the entropy term is, known as **temperature parameter**. The entropy maximization leads to policies that can (1) explore more and (2) capture multiple modes of near-optimal strategies (i.e., if there exist multiple options that seem to be equally good, the policy should assign each with an equal probability to be chosen).
+
+Precisely, SAC aims to learn three functions:
+- The policy with parameter $$\theta$$, $$\pi_\theta$$.
+- Soft Q-value function parameterized by $$w$$, $$Q_w$$.
+- Soft state value function parameterized by $$\psi$$, $$V_\psi$$; theoretically we can infer $$V$$ by knowing $$Q$$ and $$\pi$$, but in practice, it helps stabilize the training.
+
+
+Soft Q-value and soft state value are defined as:
+
+$$
+\begin{aligned}
+Q(s_t, a_t) &= r(s_t, a_t) + \gamma \mathbb{E}_{s_{t+1} \sim \rho_{\pi}(s)} [V(s_{t+1})] & \scriptstyle{\text{; according to Bellman equation.}}\\
+V(s_t) &= \mathbb{E}_{a_t \sim \pi} [Q(s_t, a_t) - \log \pi(s_t, a_t)] &
+\end{aligned}
+$$
+
+$$\rho_\pi(s)$$ and $$\rho_\pi(s, a)$$ denote the state and the state-action marginals of the state distribution induced by the policy $$\pi(a \vert s)$$; see the similar definitions in [DPG](#dpg) section.
+
+The soft state value function is trained to minimize the mean squared error:
+
+$$
+\begin{aligned}
+J_V(\psi) &= \mathbb{E}_{s_t \sim \mathcal{D}} [\frac{1}{2} \big(V_\psi(s_t) - \mathbb{E}[Q_w(s_t, a_t) - \log \pi_\theta(a_t \vert s_t)] \big)^2] \\
+\text{with gradient: }\nabla_\psi J_V(\psi) &= \nabla_\psi V_\psi(s_t)\big( V_\psi(s_t) - Q_w(s_t, a_t) + \log \pi_\theta (a_t \vert s_t) \big)
+\end{aligned}
+$$
+
+where $$\mathcal{D}$$ is the replay buffer.
+
+The soft Q function is trained to minimize the soft Bellman residual:
+
+$$
+\begin{aligned}
+J_Q(w) &= \mathbb{E}_{(s_t, a_t) \sim \mathcal{D}} [\frac{1}{2}\big( Q_w(s_t, a_t) - (r(s_t, a_t) + \gamma \mathbb{E}_{s_{t+1} \sim \rho_\pi(s)}[V_{\bar{\psi}}(s_{t+1})]) \big)^2] \\
+\text{with gradient: } \nabla_w J_Q(w) &= \nabla_w Q_w(s_t, a_t) \big( Q_w(s_t, a_t) - r(s_t, a_t) - \gamma V_{\bar{\psi}}(s_{t+1})\big) 
+\end{aligned}
+$$
+
+where $$\bar{\psi}$$ is the target value function which is the exponential moving average (or only gets updated periodically in a “hard” way), just like how the parameter of the target Q network is treated in [DQN]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning%}#deep-q-network) to stabilize the training.
+
+SAC updates the policy to minimize the [KL-divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence):
+
+$$
+\begin{aligned}
+\pi_\text{new} &= \arg\min_{\pi' \in \Pi} \pi_\text{old} D_\text{KL} \big( \pi'(.\vert s_t) \| \exp(Q^{\pi_\text{old}}(s_t, .) - \log Z^{\pi_\text{old}}(s_t)) \big) \\
+\text{objective for update: } J_\pi(\theta) &= D_\text{KL} \big( \pi_\theta(. \vert s_t) \| \exp(Q_w(s_t, .) - \log Z_w(s_t)) \big)
+\end{aligned}
+$$
+
+where $$\Pi$$ is the set of potential policies that we can model our policy as to keep them tractable; for example, $$\Pi$$ can be the family of Gaussian mixture distributions, expensive to model but highly expressive and still tractable. $$Z^{\pi_\text{old}}(s_t)$$ is the partition function. How to minimize $$J_\pi(\theta)$$ depends our choice of $$\Pi$$.
+
+This update guarantees that $$Q^{\pi_\text{new}}(s_t, a_t) \geq Q^{\pi_\text{old}}(s_t, a_t)$$, please check the proof on this lemma in the Appendix B.2 in the original [paper](https://arxiv.org/abs/1801.01290).
+
+Once we have defined the objective functions and gradients for soft action-state value, soft state value and the policy network, the soft actor-critic algorithm is straightforward:
+
+
+![SAC]({{ '/assets/images/SAC_algo.png' | relative_url }})
+{: class="center" style="width: 85%;"}
+*Fig. 6. The soft actor-critic algorithm.*
 
 ## Quick Summary
 
@@ -629,7 +732,7 @@ After reading through all the algorithms above, I list a few building blocks or 
 * Try to reduce the variance and keep the bias unchanged.
 * Off-policy gives us better exploration and helps us use data samples more efficiently.
 * Experience replay (training data sampled from a replay memory buffer);
-* Target network that is either frozen periodically or updated slower than the actively learnt policy network;
+* Target network that is either frozen periodically or updated slower than the actively learned policy network;
 * Batch normalization;
 * Entropy-regularized reward;
 * The critic and actor can share lower layer parameters of the network and two output heads for policy and value functions.
@@ -671,4 +774,11 @@ After reading through all the algorithms above, I list a few building blocks or 
 
 [15] Sham Kakade. ["A Natural Policy Gradient."](https://papers.nips.cc/paper/2073-a-natural-policy-gradient.pdf). NIPS. 2002.
 
+[16] ["Going Deeper Into Reinforcement Learning: Fundamentals of Policy Gradients."](https://danieltakeshi.github.io/2017/03/28/going-deeper-into-reinforcement-learning-fundamentals-of-policy-gradients/) - Seita's Place, Mar 2017.
+
+[17] ["Notes on the Generalized Advantage Estimation Paper."](https://danieltakeshi.github.io/2017/04/02/notes-on-the-generalized-advantage-estimation-paper/) - Seita's Place, Apr, 2017.
+
+[18] Gabriel Barth-Maron, et al. ["Distributed Distributional Deterministic Policy Gradients."](https://arxiv.org/pdf/1804.08617.pdf) ICLR 2018 poster.
+
+[19] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. ["Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor."](https://arxiv.org/pdf/1801.01290.pdf) arXiv preprint arXiv:1801.01290 (2018).
 

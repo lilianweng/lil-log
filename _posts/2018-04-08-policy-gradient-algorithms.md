@@ -739,7 +739,7 @@ After reading through all the algorithms above, I list a few building blocks or 
 * It is possible to learn with deterministic policy rather than stochastic one.
 * Put constraint on the divergence between policy updates.
 * New optimization methods (such as K-FAC).
-
+* Entropy maximization of the policy helps encourage exploration.
 
 
 ## References

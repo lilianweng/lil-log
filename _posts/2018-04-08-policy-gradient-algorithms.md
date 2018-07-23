@@ -11,7 +11,7 @@ tags: reinforcement-learning review
 
 <!--more-->
 
-<span style="color: #286ee0;">**[Updated on 2018-06-30: Two new policy gradient methods, [Soft AC](#soft-actor-critic) and [D4PG](#d4pg).]**</span>
+<span style="color: #286ee0;">[Updated on 2018-06-30: Two new policy gradient methods, [Soft AC](#soft-actor-critic) and [D4PG](#d4pg).]</span>
 
 
 {: class="table-of-content"}
@@ -725,6 +725,14 @@ Once we have defined the objective functions and gradients for soft action-state
 {: class="center" style="width: 85%;"}
 *Fig. 6. The soft actor-critic algorithm.*
 
+
+### Twin Delayed Deep Deterministic (TD3)
+
+Scott Fujimoto, Herke van Hoof, and Dave Meger. "Addressing Function Approximation Error in Actor-Critic Methods." arXiv preprint arXiv:1802.09477 (2018).
+
+TBA.
+
+
 ## Quick Summary
 
 After reading through all the algorithms above, I list a few building blocks or principles that seem to be common among them:
@@ -740,6 +748,7 @@ After reading through all the algorithms above, I list a few building blocks or 
 * Put constraint on the divergence between policy updates.
 * New optimization methods (such as K-FAC).
 * Entropy maximization of the policy helps encourage exploration.
+* TBA more.
 
 
 ## References

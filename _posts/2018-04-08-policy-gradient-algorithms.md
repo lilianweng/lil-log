@@ -487,6 +487,15 @@ In summary, MADDPG added three additional ingredients on top of DDPG to make it 
 *Fig. 5. The architecture design of MADDPG. (Image source: [Lowe et al., 2017](https://arxiv.org/pdf/1706.02275.pdf))*
 
 
+### TD3
+
+TD3 = Twin Delayed Deep Deterministic
+
+Scott Fujimoto, Herke van Hoof, and Dave Meger. "Addressing Function Approximation Error in Actor-Critic Methods." arXiv preprint arXiv:1802.09477 (2018).
+
+TBA.
+
+
 ### TRPO
 
 [[paper](https://arxiv.org/pdf/1502.05477.pdf)\|[code](https://github.com/openai/baselines/tree/master/baselines/trpo_mpi)]
@@ -724,13 +733,6 @@ Once we have defined the objective functions and gradients for soft action-state
 ![SAC]({{ '/assets/images/SAC_algo.png' | relative_url }})
 {: class="center" style="width: 85%;"}
 *Fig. 6. The soft actor-critic algorithm.*
-
-
-### Twin Delayed Deep Deterministic (TD3)
-
-Scott Fujimoto, Herke van Hoof, and Dave Meger. "Addressing Function Approximation Error in Actor-Critic Methods." arXiv preprint arXiv:1802.09477 (2018).
-
-TBA.
 
 
 ## Quick Summary

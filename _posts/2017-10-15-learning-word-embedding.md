@@ -74,7 +74,7 @@ According to Fig. 1,
 - Both input word $$w_i$$ and the output word $$w_j$$ are one-hot encoded into binary vectors $$\mathbf{x}$$ and $$\mathbf{y}$$ of size $$V$$.
 - First, the multiplication of the binary vector $$\mathbf{x}$$ and the word embedding matrix $$W$$ of size $$V \times N$$ gives us the embedding vector of the input word $$w_i$$: the i-th row of the matrix $$W$$. 
 - This newly discovered embedding vector of dimension $$N$$ forms the hidden layer.
-- The multiplication of the hidden layer and the word context matrix $$W’$$ of size $$N \times W$$ produces the output one-hot encoded vector $$\mathbf{y}$$. 
+- The multiplication of the hidden layer and the word context matrix $$W’$$ of size $$N \times V$$ produces the output one-hot encoded vector $$\mathbf{y}$$. 
 - The output context matrix $$W’$$ encodes the meanings of words as context, different from the embedding matrix $$W$$. NOTE: Despite the name, $$W’$$ is independent of $$W$$, not a transpose or inverse or whatsoever.
 
 

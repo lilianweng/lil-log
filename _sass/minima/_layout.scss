@@ -181,7 +181,8 @@
     &:hover {
       border: 1px solid $brand-color;
       text-decoration: none;
-      color: $brand-color;
+      color: #ffffff;
+      background: $brand-color;
     }
   }
 }

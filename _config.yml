@@ -1,7 +1,9 @@
 title: Lil'Log
+name: "Lilian's Notes"
 author: Lilian Weng
+twitter_username: lilianweng
 baseurl: "/lil-log"
-description: Trace my thoughts
+description: Document my learning notes
 profile_url: "http://lilianweng.github.io"
 
 # Build settings

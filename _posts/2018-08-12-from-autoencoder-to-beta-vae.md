@@ -199,7 +199,7 @@ Now let’s update the equation to better demonstrate the data generation proces
 
 
 $$
-p_\theta(\mathbf{x}^{(i)}) = \int_{\mathbf{z}} p_\theta(\mathbf{x}^{(i)}\vert\mathbf{z}) p_\theta(\mathbf{z}) d\mathbf{z} 
+p_\theta(\mathbf{x}^{(i)}) = \int p_\theta(\mathbf{x}^{(i)}\vert\mathbf{z}) p_\theta(\mathbf{z}) d\mathbf{z} 
 $$
 
 Unfortunately it is not easy to compute $$p_\theta(\mathbf{x}^{(i)})$$ in this way, as it is very expensive to check all the possible values of $$\mathbf{z}$$ and sum them up. To narrow down the value space to facilitate faster search, we would like to introduce a new approximation function to output what is a likely code given an input $$\mathbf{x}$$, $$q_\phi(\mathbf{z}\vert\mathbf{x})$$, parameterized by $$\phi$$.
@@ -237,11 +237,11 @@ Let's now expand the equation:
 $$
 \begin{aligned}
 & D_\text{KL}( q_\phi(\mathbf{z}\vert\mathbf{x}) \| p_\theta(\mathbf{z}\vert\mathbf{x}) ) & \\
-&=\int_\mathbf{z} q_\phi(\mathbf{z} \vert \mathbf{x}) \log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{z} \vert \mathbf{x})} & \\
-&=\int_\mathbf{z} q_\phi(\mathbf{z} \vert \mathbf{x}) \log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})p_\theta(\mathbf{x})}{p_\theta(\mathbf{z}, \mathbf{x})} &  \scriptstyle{\text{; Because }p(z \vert x) = p(z, x) / p(x)} \\
-&=\int_\mathbf{z} q_\phi(\mathbf{z} \vert \mathbf{x}) \big( \log p_\theta(\mathbf{x}) + \log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{z}, \mathbf{x})} \big) & \\
-&=\log p_\theta(\mathbf{x}) + \int_\mathbf{z} q_\phi(\mathbf{z} \vert \mathbf{x})\log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{z}, \mathbf{x})} & \scriptstyle{\text{; Because }\int_z q(z \vert x) = 1}\\
-&=\log p_\theta(\mathbf{x}) + \int_\mathbf{z} q_\phi(\mathbf{z} \vert \mathbf{x})\log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{x}\vert\mathbf{z})p_\theta(\mathbf{z})} & \scriptstyle{\text{; Because }p(z, x) = p(x \vert z) p(z)} \\
+&=\int q_\phi(\mathbf{z} \vert \mathbf{x}) \log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{z} \vert \mathbf{x})} d\mathbf{z} & \\
+&=\int q_\phi(\mathbf{z} \vert \mathbf{x}) \log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})p_\theta(\mathbf{x})}{p_\theta(\mathbf{z}, \mathbf{x})} d\mathbf{z} & \scriptstyle{\text{; Because }p(z \vert x) = p(z, x) / p(x)} \\
+&=\int q_\phi(\mathbf{z} \vert \mathbf{x}) \big( \log p_\theta(\mathbf{x}) + \log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{z}, \mathbf{x})} \big) d\mathbf{z} & \\
+&=\log p_\theta(\mathbf{x}) + \int q_\phi(\mathbf{z} \vert \mathbf{x})\log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{z}, \mathbf{x})} d\mathbf{z} & \scriptstyle{\text{; Because }\int q(z \vert x) dz = 1}\\
+&=\log p_\theta(\mathbf{x}) + \int q_\phi(\mathbf{z} \vert \mathbf{x})\log\frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{x}\vert\mathbf{z})p_\theta(\mathbf{z})} d\mathbf{z} & \scriptstyle{\text{; Because }p(z, x) = p(x \vert z) p(z)} \\
 &=\log p_\theta(\mathbf{x}) + \mathbb{E}_{\mathbf{z}\sim q_\phi(\mathbf{z} \vert \mathbf{x})}[\log \frac{q_\phi(\mathbf{z} \vert \mathbf{x})}{p_\theta(\mathbf{z})} - \log p_\theta(\mathbf{x} \vert \mathbf{z})] &\\
 &=\log p_\theta(\mathbf{x}) + D_\text{KL}(q_\phi(\mathbf{z}\vert\mathbf{x}) \| p_\theta(\mathbf{z})) - \mathbb{E}_{\mathbf{z}\sim q_\phi(\mathbf{z}\vert\mathbf{x})}\log p_\theta(\mathbf{x}\vert\mathbf{z}) &
 \end{aligned}
@@ -283,7 +283,7 @@ $$
 Therefore by minimizing the loss, we are maximizing the lower bound of the probability of generating real data samples.
 
 
-### Reparameterizatin Trick
+### Reparameterization Trick
 
 The expectation term in the loss function invokes generating samples from $$\mathbf{z} \sim q_\phi(\mathbf{z}\vert\mathbf{x})$$. Sampling is a stochastic process and therefore we cannot backpropagate the gradient. To make it trainable, the reparameterization trick is introduced: It is often possible to express the random variable $$\mathbf{z}$$ as a deterministic variable $$\mathbf{z} = \mathcal{T}_\phi(\mathbf{x}, \boldsymbol{\epsilon})$$, where $$\boldsymbol{\epsilon}$$ is an auxiliary independent random variable, and the transformation function $$\mathcal{T}_\phi$$ parameterized by $$\phi$$ converts $$\boldsymbol{\epsilon}$$ to $$\mathbf{z}$$.
 
@@ -394,13 +394,14 @@ TBA.
 [9] [Tutorial - What is a variational autoencoder?](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/) on jaan.io
 
 [10] Youtube tutorial: [Variational Autoencoders](https://www.youtube.com/watch?v=9zKuYvjFFS8) by Arxiv Insights
-https://blog.evjang.com/2016/08/variational-bayes.html
 
-[11] Carl Doersch. ["Tutorial on variational autoencoders."](https://arxiv.org/abs/1606.05908) arXiv:1606.05908, 2016.
+[11] ["A Beginner's Guide to Variational Methods: Mean-Field Approximation"](https://blog.evjang.com/2016/08/variational-bayes.html) by Eric Jang.
 
-[12] Irina Higgins, et al. ["$$\beta$$-VAE: Learning basic visual concepts with a constrained variational framework."](https://openreview.net/forum?id=Sy2fzU9gl) ICLR 2017.
+[12] Carl Doersch. ["Tutorial on variational autoencoders."](https://arxiv.org/abs/1606.05908) arXiv:1606.05908, 2016.
 
-[13] Christopher P. Burgess, et al. ["Understanding disentangling in beta-VAE."](https://arxiv.org/abs/1804.03599) NIPS 2017.
+[13] Irina Higgins, et al. ["$$\beta$$-VAE: Learning basic visual concepts with a constrained variational framework."](https://openreview.net/forum?id=Sy2fzU9gl) ICLR 2017.
+
+[14] Christopher P. Burgess, et al. ["Understanding disentangling in beta-VAE."](https://arxiv.org/abs/1804.03599) NIPS 2017.
 
 
 

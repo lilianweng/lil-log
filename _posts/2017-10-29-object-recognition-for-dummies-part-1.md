@@ -4,6 +4,7 @@ comments: false
 title: "Object Recognition for Dummies Part 1: Gradient Vector, HOG, and SS"
 date: 2017-10-29 17:38:00
 tags: object-recognition
+image: "rcnn-family-summary.png"
 ---
 
 > In this series of posts on "Object Recognition for Dummies", we will go through several basic concepts, algorithms, and popular deep learning models for image processing and objection detection. Hopefully, it would be a good read for people with no experience in this field but want to learn more. The Part 1 introduces the concept of Gradient Vectors, the HOG (Histogram of Oriented Gradients) algorithm, and Selective Search for image segmentation. 

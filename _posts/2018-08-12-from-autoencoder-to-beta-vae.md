@@ -4,9 +4,10 @@ comments: false
 title: "From Autoencoder to Beta-VAE"
 date: 2018-08-12 10:18:00
 tags: review autoencoder
+image: "vae-gaussian.png"
 ---
 
-> Autocoders are a family of neural network models aiming to learn compressed latent variables of high-dimensional data. Starting from the basic autocoder model, this post reviews several variations, including denoising, sparse, and contractive autoencoders, and then Variational Autoencoder (VAE) and its modification $$\beta$$-VAE.
+> Autocoders are a family of neural network models aiming to learn compressed latent variables of high-dimensional data. Starting from the basic autocoder model, this post reviews several variations, including denoising, sparse, and contractive autoencoders, and then Variational Autoencoder (VAE) and its modification beta-VAE.
 
 
 <!--more-->

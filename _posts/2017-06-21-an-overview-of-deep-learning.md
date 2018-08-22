@@ -4,6 +4,7 @@ comments: false
 title: "An Overview of Deep Learning for Curious People"
 date: 2017-06-21 01:09:00
 tags: review
+image: "data_size_vs_model_performance.png"
 ---
 
 > Starting earlier this year, I grew a strong curiosity of deep learning and spent some time reading about this field. To document what I’ve learned and to provide some interesting pointers to people with similar interests, I wrote this overview of deep learning models and their applications.

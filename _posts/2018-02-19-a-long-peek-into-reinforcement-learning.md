@@ -4,6 +4,7 @@ comments: false
 title: "A (Long) Peek into Reinforcement Learning"
 date: 2018-02-19 17:31:00
 tags: reinforcement-learning review long-read
+image: "RL_illustration.png"
 ---
 
 > In this post, we are gonna briefly go over the field of Reinforcement Learning (RL), from fundamental concepts to classic algorithms. Hopefully, this review is helpful enough so that newbies would not get lost in specialized terms and jargons while starting. [WARNING] This is a long read.

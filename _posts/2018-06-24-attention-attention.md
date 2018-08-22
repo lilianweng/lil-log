@@ -4,6 +4,7 @@ comments: false
 title: "Attention? Attention!"
 date: 2018-06-24 11:07:00
 tags: review
+image: "transformer.png"
 ---
 
 > Attention has been a fairly popular concept and a useful tool in the deep learning community in recent years. In this post, we are gonna look into how attention was invented, and various attention mechanisms and models, such as transformer and SNAIL.

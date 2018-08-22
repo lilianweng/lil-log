@@ -4,6 +4,7 @@ comments: false
 title: "Object Recognition for Dummies Part 2: CNN, DPM and Overfeat"
 date: 2017-12-15 23:00:00
 tags: object-recognition
+image: "residual-block.png"
 ---
 
 > Part 2 introduces several classic convolutional neural work architecture designs for image classification (AlexNet, VGG, ResNet), as well as DPM (Deformable Parts Model) and Overfeat models for object recognition.

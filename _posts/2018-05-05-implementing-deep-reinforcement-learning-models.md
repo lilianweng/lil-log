@@ -4,6 +4,7 @@ comments: false
 title: "Implementing Deep Reinforcement Learning Models with Tensorflow + OpenAI Gym"
 date: 2018-05-05 16:00:00
 tags: tutorial tensorflow reinforcement-learning
+image: "pacman-original.gif"
 ---
 
 > Let's see how to implement a number of classic deep reinforcement learning models in code. The full implementation is available in [lilianweng/deep-reinforcement-learning-gym](https://github.com/lilianweng/deep-reinforcement-learning-gym)

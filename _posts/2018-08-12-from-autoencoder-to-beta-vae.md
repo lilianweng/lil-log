@@ -33,10 +33,10 @@ Autocoder is invented to reconstruct high-dimensional data using a neural networ
 | $$\tilde{\mathbf{x}}$$ | The corrupted version of $$\mathbf{x}$$. |
 | $$\mathbf{z}$$ | The compressed code learned in the bottleneck layer. |
 | $$a_j^{(l)}$$ | The activation function for the $$j$$-th neuron in the $$l$$-th hidden layer. |
-| $$g_{\phi}(.)$$ | The encoding function parameterized by $$\phi$$. |
-| $$f_{\theta}(.)$$ | The decoding function parameterized by $$\theta$$. |
-| $$p_{\theta}(\mathbf{x}\vert\mathbf{z})$$ | Likelihood of generating true data sample given the latent code, also known as probabilistic decoder. |
-| $$q_{\phi}(\mathbf{z}\vert\mathbf{x})$$ |Estimated posterior probability function, also known as probabilistic encoder.  |
+| $$g_{\phi}(.)$$ | The **encoding** function parameterized by $$\phi$$. |
+| $$f_{\theta}(.)$$ | The **decoding** function parameterized by $$\theta$$. |
+| $$q_{\phi}(\mathbf{z}\vert\mathbf{x})$$ |Estimated posterior probability function, also known as **probabilistic encoder**.  |
+| $$p_{\theta}(\mathbf{x}\vert\mathbf{z})$$ | Likelihood of generating true data sample given the latent code, also known as **probabilistic decoder**. |
 | ---------- | ---------- |
 
 
@@ -57,12 +57,12 @@ It consists of two networks:
 
 The encoder network essentially accomplishes the [dimensionality reduction](https://en.wikipedia.org/wiki/Dimensionality_reduction), just like how we would use Principal Component Analysis (PCA) or Matrix Factorization (MF) for. In addition, the autoencoder is explicitly optimized for the data reconstruction from the code. A good intermediate representation not only can capture latent variables, but also benefits a full [decompression](https://ai.googleblog.com/2016/09/image-compression-with-neural-networks.html) process.
 
-The model contains an encoder function $$f(.)$$ parameterized by $$\theta$$ and a decoder function $$g(.)$$ parameterized by $$\phi$$. The low-dimensional code learned for input $$\mathbf{x}$$ in the bottleneck layer is $$\mathbf{z} = f_\theta(\mathbf{x})$$ and the reconstructed input is $$\mathbf{x}’ = g_\phi(f_\theta(\mathbf{x}))$$.
+The model contains an encoder function $$g(.)$$ parameterized by $$\phi$$ and a decoder function $$f(.)$$ parameterized by $$\theta$$. The low-dimensional code learned for input $$\mathbf{x}$$ in the bottleneck layer is $$\mathbf{z} = $$ and the reconstructed input is $$\mathbf{x}' = f_\theta(g_\phi(\mathbf{x}))$$.
 
-The parameters $$(\theta, \phi)$$ are learned together to output a reconstructed data sample same as the original input, $$\mathbf{x} \approx g_\phi(f_\theta(\mathbf{x}))$$, or in other words, to learn an identity function. There are various metrics to quantify the difference between two vectors, such as cross entropy when the activation function is sigmoid, or as simple as MSE loss:
+The parameters $$(\theta, \phi)$$ are learned together to output a reconstructed data sample same as the original input, $$\mathbf{x} \approx f_\theta(g_\phi(\mathbf{x}))$$, or in other words, to learn an identity function. There are various metrics to quantify the difference between two vectors, such as cross entropy when the activation function is sigmoid, or as simple as MSE loss:
 
 $$
-L_\text{AE}(\theta, \phi) = \frac{1}{n}\sum_{i=1}^n (\mathbf{x}^{(i)} - g_\phi(f_\theta(\mathbf{x}^{(i)})))^2
+L_\text{AE}(\theta, \phi) = \frac{1}{n}\sum_{i=1}^n (\mathbf{x}^{(i)} - f_\theta(g_\phi(\mathbf{x}^{(i)})))^2
 $$
 
 
@@ -76,7 +76,7 @@ To avoid overfitting and improve the robustness, **Denoising Autoencoder** (Vinc
 $$
 \begin{aligned}
 \tilde{\mathbf{x}}^{(i)} &\sim \mathcal{M}_\mathcal{D}(\tilde{\mathbf{x}}^{(i)} \vert \mathbf{x}^{(i)})\\
-L_\text{DAE}(\theta, \phi) &= \frac{1}{n} \sum_{i=1}^n (\mathbf{x}^{(i)} - g_\phi(f_\theta(\tilde{\mathbf{x}}^{(i)})))^2
+L_\text{DAE}(\theta, \phi) &= \frac{1}{n} \sum_{i=1}^n (\mathbf{x}^{(i)} - f_\theta(g_\phi(\tilde{\mathbf{x}}^{(i)})))^2
 \end{aligned}
 $$
 
@@ -97,12 +97,14 @@ The noise is controlled by a stochastic mapping $$\mathcal{M}_\mathcal{D}(\tilde
 
 In the experiment of the original DAE paper, the noise is applied in this way: a fixed proportion of input dimensions are selected at random and their values are forced to 0. Sounds a lot like dropout, right? Well, the denoising autoencoder was proposed in 2008, 4 years before the dropout paper ([Hinton, et al. 2012](https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf)) ;)
 
+<!-- 
 **Stacked Denoising Autoencoder**: In the old days when it was still hard to train deep neural networks, stacking denoising autoencoders was a way to build deep models ([Vincent et al., 2010](http://www.jmlr.org/papers/volume11/vincent10a/vincent10a.pdf)). The denoising autoencoders are trained layer by layer. Once one layer has been trained, it is fed with clean, uncorrupted inputs to learn the encoding in the next layer.
 
 
 ![Stacking denoising autoencoder]({{ '/assets/images/stacking-dae.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 3. Stacking denoising autoencoders. (Image source: [Vincent et al., 2010](http://www.jmlr.org/papers/volume11/vincent10a/vincent10a.pdf))*
+-->
 
 
 ## Sparse Autoencoder
@@ -138,9 +140,9 @@ $$
 **$$k$$-Sparse Autoencoder**
 
 In $$k$$-Sparse Autoencoder ([Makhzani and Frey, 2013](https://arxiv.org/abs/1312.5663)), the sparsity is enforced by only keeping the top k highest activations in the bottleneck layer with linear activation function. 
-First we run feedforward through the encoder network to get the compressed code: $$\mathbf{z} = f(\mathbf{x})$$.
+First we run feedforward through the encoder network to get the compressed code: $$\mathbf{z} = g(\mathbf{x})$$.
 Sort the values  in the code vector $$\mathbf{z}$$. Only the k largest values are kept while other neurons are set to 0. This can be done in a ReLU layer with an adjustable threshold too. Now we have a sparsified code: $$\mathbf{z}’ = \text{Sparsify}(\mathbf{z})$$.
-Compute the output and the loss from the sparsified code, $$L = \|\mathbf{x} - g(\mathbf{z}') \|_2^2$$.
+Compute the output and the loss from the sparsified code, $$L = \|\mathbf{x} - f(\mathbf{z}') \|_2^2$$.
 And, the back-propagation only goes through the top k activated hidden units!
 
 
@@ -359,19 +361,14 @@ When $$\beta=1$$, it is same as VAE. When $$\beta > 1$$, it applies a stronger c
 [Burgess, et al. (2017)](https://arxiv.org/pdf/1804.03599.pdf) discussed the distentangling in $$\beta$$-VAE in depth with an inspiration by the [information bottleneck theory]({{ site.baseurl }}{% post_url 2017-09-28-anatomize-deep-learning-with-information-theory %}) and further proposed a modification to $$\beta$$-VAE to better control the encoding representation capacity.
 
 
-
 ## Applications
 
 Although all the autoencoder models introduced in this post work in an unsupervised fashion, they can be used for supervised applications too. 
-
-TBA.
-
 
 
 ## Code
 
 TBA.
-
 
 
 ## References

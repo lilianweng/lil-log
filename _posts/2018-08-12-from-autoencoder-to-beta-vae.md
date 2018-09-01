@@ -366,11 +366,6 @@ When $$\beta=1$$, it is same as VAE. When $$\beta > 1$$, it applies a stronger c
 Although all the autoencoder models introduced in this post work in an unsupervised fashion, they can be used for supervised applications too. 
 
 
-## Code
-
-TBA.
-
-
 ## References
 
 [1] Geoffrey E. Hinton, and Ruslan R. Salakhutdinov. ["Reducing the dimensionality of data with neural networks."](https://pdfs.semanticscholar.org/c50d/ca78e97e335d362d6b991ae0e1448914e9a3.pdf) Science 313.5786 (2006): 504-507.

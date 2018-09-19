@@ -203,7 +203,7 @@ $$
 Similarly for Q-value,
 
 $$
-Q(s) = \mathbb{E} [R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) \vert S_t = s, A_t = a]
+Q(s, a) = \mathbb{E} [R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) \vert S_t = s, A_t = a]
 $$
 
 

@@ -15,6 +15,8 @@ image: "GAN.png"
 
 Here I would like to explain the maths behind the generative adversarial network framework,  why it is hard to be trained, and finally introduce a modified version of GAN intended to solve the training difficulties.
 
+<span style="color: #286ee0;">[Updated on 2018-09-30: thanks to Yoonju, we have this post translated in [Korean](https://github.com/yjucho1/articles/blob/master/fromGANtoWGAN/readme.md)!]</span>
+
 
 {: class="table-of-content"}
 * TOC

@@ -3,17 +3,18 @@ layout: post
 comments: false
 title: "Policy Gradient Algorithms"
 date: 2018-04-08 00:15:06
-tags: reinforcement-learning review
+tags: reinforcement-learning review long-read
 image: "A3C_vs_A2C.png"
 ---
 
-> Abstract: In this post, we are going to look deep into policy gradient, why it works, and many new policy gradient algorithms proposed in recent years: vanilla policy gradient, actor-critic, off-policy actor-critic, A3C, A2C, DPG, DDPG, D4PG, MADDPG, TRPO, PPO, ACER, ACTKR, and Soft AC.
+> Abstract: In this post, we are going to look deep into policy gradient, why it works, and many new policy gradient algorithms proposed in recent years: vanilla policy gradient, actor-critic, off-policy actor-critic, A3C, A2C, DPG, DDPG, D4PG, MADDPG, TRPO, PPO, ACER, ACTKR, SAC and TD3.
 
 
 <!--more-->
 
 <span style="color: #286ee0;">[Updated on 2018-06-30: Two new policy gradient methods, [Soft AC](#soft-actor-critic) and [D4PG](#d4pg).]</span>
-
+<br/>
+<span style="color: #286ee0;">[Updated on 2018-09-30: an new policy gradient method, [TD3](#td3).]</span>
 
 {: class="table-of-content"}
 * TOC
@@ -35,16 +36,16 @@ Here is a list of notations to help you read through equations in the post easil
 | $$s \in \mathcal{S}$$ | States. |
 | $$a \in \mathcal{A}$$ | Actions. |
 | $$r \in \mathcal{R}$$ | Rewards. |
-| $$S_t, A_t, R_t$$ | State, action and reward at time step t of one trajectory. I may occasionally use $$s_t, a_t, r_t$$ as well. |
+| $$S_t, A_t, R_t$$ | State, actionand reward at time step t of one trajectory. I may occasionally use $$s_t, a_t, r_t$$ as well. |
 | $$\gamma$$ | Discount factor; penalty to uncertainty of future rewards; $$0<\gamma \leq 1$$. |
 | $$G_t$$ | Return; or discounted future reward; $$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$$. |
 | $$P(s’, r \vert s, a)$$ | Transition probability of getting to the next state s’ from the current state s with action a and reward r. |
 | $$\pi(a \vert s)$$ | Stochastic policy (agent behavior strategy); $$\pi_\theta(.)$$ is a policy parameterized by θ. |
-| $$\mu(a)$$ | Deterministic policy; we can also label this as $$\pi(s)$$, but using a different letter gives better distinction so that we can easily tell when the policy is stochastic or deterministic without further explanation. Either $$\pi$$ or $$\mu$$ is what a reinforcement learning algorithm aims to learn. |
+| $$\mu(s)$$ | Deterministic policy; we can also label this as $$\pi(s)$$, but using a different letter gives better distinction so that we can easily tell when the policy is stochastic or deterministic without further explanation. Either $$\pi$$ or $$\mu$$ is what a reinforcement learning algorithm aims to learn. |
 | $$V(s)$$ | State-value function measures the expected return of state s; $$V_w(.)$$ is a value function parameterized by w.|
 | $$V^\pi(s)$$ | The value of state s when we follow a policy π; $$V^\pi (s) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s]$$. |
 | $$Q(s, a)$$ | Action-value function is similar to $$V(s)$$, but it assesses the expected return of a pair of state and action (s, a); $$Q_w(.)$$ is a action value function parameterized by w. |
-| $$Q^\pi(s, a)$$ | Similar to $$V_\pi(.)$$, the value of (state, action) pair when we follow a policy π; $$Q^\pi(s, a) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s, A_t = a]$$. |
+| $$Q^\pi(s, a)$$ | Similar to $$V^\pi(.)$$, the value of (state, action) pair when we follow a policy π; $$Q^\pi(s, a) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s, A_t = a]$$. |
 | $$A(s, a)$$ | Advantage function, $$A(s, a) = Q(s, a) - V(s)$$; it can be considered as another version of Q-value with lower variance by taking the state-value off as the baseline. |
 
 
@@ -275,7 +276,7 @@ In summary, when applying policy gradient in the off-policy setting, we can simp
 
 ### A3C
 
-[[paper](https://arxiv.org/abs/1602.01783)\|code]
+[[paper](https://arxiv.org/abs/1602.01783)\|[code](https://github.com/dennybritz/reinforcement-learning/tree/master/PolicyGradient/a3c)]
 
 **Asynchronous Advantage Actor-Critic** ([Mnih et al., 2016](https://arxiv.org/abs/1602.01783)), short for **A3C**, is a classic policy gradient method with a special focus on parallel training. 
 
@@ -308,7 +309,7 @@ A3C enables the parallelism in multiple agent training. The gradient accumulatio
 
 ### A2C
 
-[paper?\|[code](https://github.com/openai/baselines/blob/master/baselines/a2c/a2c.py)]
+[[paper](https://arxiv.org/abs/1602.01783)\|[code](https://github.com/openai/baselines/blob/master/baselines/a2c/a2c.py)]
 
 **A2C** is a synchronous, deterministic version of A3C; that’s why it is named as “A2C” with the first “A” (“asynchronous”) removed. In A3C each agent talks to the global parameters independently, so it is possible sometimes the thread-specific agents would be playing with policies of different versions and therefore the aggregated update would not be optimal. To resolve the inconsistency, a coordinator in A2C waits for all the parallel actors to finish their work before updating the global parameters and then in the next iteration parallel actors starts from the same policy. The synchronized gradient update keeps the training more cohesive and potentially to make convergence faster. 
 
@@ -486,15 +487,6 @@ In summary, MADDPG added three additional ingredients on top of DDPG to make it 
 ![MADDPG]({{ '/assets/images/MADDPG.png' | relative_url }})
 {: class="center" style="width: 70%;"}
 *Fig. 5. The architecture design of MADDPG. (Image source: [Lowe et al., 2017](https://arxiv.org/pdf/1706.02275.pdf))*
-
-
-### TD3
-
-TD3 = Twin Delayed Deep Deterministic
-
-Scott Fujimoto, Herke van Hoof, and Dave Meger. "Addressing Function Approximation Error in Actor-Critic Methods." arXiv preprint arXiv:1802.09477 (2018).
-
-TBA.
 
 
 ### TRPO
@@ -732,15 +724,70 @@ Once we have defined the objective functions and gradients for soft action-state
 
 
 ![SAC]({{ '/assets/images/SAC_algo.png' | relative_url }})
-{: class="center" style="width: 85%;"}
+{: class="center" style="width: 90%;"}
 *Fig. 6. The soft actor-critic algorithm.*
+
+
+### TD3
+
+[[paper](https://arxiv.org/abs/1802.09477)\|[code](https://github.com/sfujim/TD3)]
+
+The Q-learning algorithm is commonly known to suffer from the overestimation of the value function. This overestimation can propagate through the training iterations and negatively affect the policy. This property directly motivated [Double Q-learning](https://papers.nips.cc/paper/3964-double-q-learning) and [Double DQN](https://arxiv.org/abs/1509.06461): the action selection and Q-value update are decoupled by using two value networks.
+
+**Twin Delayed Deep Deterministic** (short for **TD3**; [Fujimoto et al., 2018](https://arxiv.org/abs/1802.09477)) applied a couple of tricks on [DDPG](#ddpg) to prevent the overestimation of the value function:
+
+
+(1) **Clipped Double Q-learning**: In Double Q-Learning, the action selection and Q-value estimation are made by two networks separately. In the DDPG setting, given two deterministic actors $$(\mu_{\theta_1}, \mu_{\theta_2})$$ with two corresponding critics $$(Q_{w_1}, Q_{w_2})$$, the Double Q-learning Bellman targets look like:
+
+$$
+\begin{aligned}
+y_1 &= r + \gamma Q_{w_2}(s', \mu_{\theta_1}(s'))\\
+y_2 &= r + \gamma Q_{w_1}(s', \mu_{\theta_2}(s'))
+\end{aligned}
+$$
+
+However, due to the slow changing policy, these two networks could be too similar to make independent decisions. The *Clipped Double Q-learning* instead uses the minimum estimation among two so as to favor underestimation bias which is hard to propagate through training:
+
+$$
+\begin{aligned}
+y_1 &= r + \gamma \min_{i=1,2}Q_{w_i}(s', \mu_{\theta_1}(s'))\\
+y_2 &= r + \gamma \min_{i=1,2} Q_{w_i}(s', \mu_{\theta_2}(s'))
+\end{aligned}
+$$
+
+
+(2) **Delayed update of Target and Policy Networks**:  In the [actor-critic]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#actor-critic) model, policy and value updates are deeply coupled: Value estimates diverge through overestimation when the policy is poor, and the policy will become poor if the value estimate itself is inaccurate. 
+
+To reduce the variance, TD3 updates the policy at a lower frequency than the Q-function. The policy network stays the same until the value error is small enough after several updates. The idea is similar to how the periodically-updated target network stay as a stable objective in [DQN]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#dqn).
+
+
+(3) **Target Policy Smoothing**: Given a concern with deterministic policies that they can overfit to narrow peaks in the value function, TD3 introduced a smoothing regularization strategy on the value function: adding a small amount of clipped random noises to the selected action and averaging over mini-batches.
+
+$$
+\begin{aligned}
+y &= r + \gamma Q_w (s', \mu_{\theta}(s') + \epsilon) & \\
+\epsilon &\sim \text{clip}(\mathcal{N}(0, \sigma), -c, +c) & \scriptstyle{\text{ ; clipped random noises.}}
+\end{aligned}
+$$
+
+This approach mimics the idea of [SARSA]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#sarsa-on-policy-td-control) update and enforces that similar actions should have similar values.
+
+
+
+Here is the final algorithm:
+
+
+![TD3]({{ '/assets/images/TD3.png' | relative_url }})
+{: class="center" style="width: 80%;"}
+*Fig 7. TD3 Algorithm. (Image source: [Fujimoto et al., 2018](https://arxiv.org/abs/1802.09477))*
+
 
 
 ## Quick Summary
 
 After reading through all the algorithms above, I list a few building blocks or principles that seem to be common among them:
 
-* Try to reduce the variance and keep the bias unchanged.
+* Try to reduce the variance and keep the bias unchanged to stabilize learning.
 * Off-policy gives us better exploration and helps us use data samples more efficiently.
 * Experience replay (training data sampled from a replay memory buffer);
 * Target network that is either frozen periodically or updated slower than the actively learned policy network;
@@ -751,6 +798,7 @@ After reading through all the algorithms above, I list a few building blocks or 
 * Put constraint on the divergence between policy updates.
 * New optimization methods (such as K-FAC).
 * Entropy maximization of the policy helps encourage exploration.
+* Try not to overestimate the value function.
 * TBA more.
 
 
@@ -794,3 +842,4 @@ After reading through all the algorithms above, I list a few building blocks or 
 
 [19] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. ["Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor."](https://arxiv.org/pdf/1801.01290.pdf) arXiv preprint arXiv:1801.01290 (2018).
 
+[20] Scott Fujimoto, Herke van Hoof, and Dave Meger. ["Addressing Function Approximation Error in Actor-Critic Methods."](https://arxiv.org/abs/1802.09477) arXiv preprint arXiv:1802.09477 (2018).

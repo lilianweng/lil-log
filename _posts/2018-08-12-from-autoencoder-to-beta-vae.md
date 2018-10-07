@@ -361,9 +361,17 @@ When $$\beta=1$$, it is same as VAE. When $$\beta > 1$$, it applies a stronger c
 [Burgess, et al. (2017)](https://arxiv.org/pdf/1804.03599.pdf) discussed the distentangling in $$\beta$$-VAE in depth with an inspiration by the [information bottleneck theory]({{ site.baseurl }}{% post_url 2017-09-28-anatomize-deep-learning-with-information-theory %}) and further proposed a modification to $$\beta$$-VAE to better control the encoding representation capacity.
 
 
-## Applications
+## VQ-VAE
 
-Although all the autoencoder models introduced in this post work in an unsupervised fashion, they can be used for supervised applications too. 
+Discrete VAE.
+
+TBA.
+
+## DRAW
+
+Recurrent VAE.
+
+TBA.
 
 
 ## References

@@ -802,6 +802,13 @@ After reading through all the algorithms above, I list a few building blocks or 
 * TBA more.
 
 
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be very happy to correct them right away!*
+
+See you in the next post :D
+
+
 ## References
 
 [1] jeremykun.com [Markov Chain Monte Carlo Without all the Bullshit](https://jeremykun.com/2015/04/06/markov-chain-monte-carlo-without-all-the-bullshit/)

@@ -3,7 +3,7 @@ layout: post
 comments: false
 title: "From Autoencoder to Beta-VAE"
 date: 2018-08-12 10:18:00
-tags: review autoencoder
+tags: review autoencoder generative
 image: "vae-gaussian.png"
 ---
 
@@ -372,6 +372,14 @@ TBA.
 Recurrent VAE.
 
 TBA.
+
+
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be very happy to correct them right away!*
+
+See you in the next post :D
+
 
 
 ## References

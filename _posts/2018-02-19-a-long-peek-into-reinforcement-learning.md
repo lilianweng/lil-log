@@ -677,7 +677,7 @@ where c is a hyperparameter controlling the intensity of L2 penalty to avoid ove
 
 AlphaGo Zero simplified AlphaGo by removing supervised learning and merging separated policy and value networks into one. It turns out that AlphaGo Zero achieved largely improved performance with a much shorter training time! I strongly recommend reading these [two](https://pdfs.semanticscholar.org/1740/eb993cc8ca81f1e46ddaadce1f917e8000b5.pdf) [papers](https://www.dropbox.com/s/yva172qos2u15hf/2017-silver.pdf?dl=0) side by side and compare the difference, super fun.
 
-I know this is a long read, but hopefully worth it. See you in the next post! :)
+I know this is a long read, but hopefully worth it. *If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com].* See you in the next post! :)
 
 
 ## References

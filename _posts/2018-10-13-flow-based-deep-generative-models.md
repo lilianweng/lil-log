@@ -98,7 +98,7 @@ where $$\det \frac{\partial f}{\partial\mathbf{z}}$$ is the Jacobian determinant
 
 ## What is Normalizing Flows?
 
-Being able to do good density estimation has direct applications in many machine learning problems, but it is very hard. For example, since we need to run backward propagation in deep learning models, the embedded probability distribution (i.e. posterior $$p(\mathbf{z})\ver\mathbf{x})$$) is expected to be simple enough to calculate the derivative easily and efficiently. That is why Gaussian distribution is often used in latent variable generative models, even through most of real world distributions are much more complicated than Gaussian. 
+Being able to do good density estimation has direct applications in many machine learning problems, but it is very hard. For example, since we need to run backward propagation in deep learning models, the embedded probability distribution (i.e. posterior $$p(\mathbf{z})\vert\mathbf{x})$$) is expected to be simple enough to calculate the derivative easily and efficiently. That is why Gaussian distribution is often used in latent variable generative models, even through most of real world distributions are much more complicated than Gaussian. 
 
 Here comes a **Normalizing Flow** (NF) model for better and more powerful distribution approximation. A normalizing flow transforms a simple distribution into a complex one by applying a sequence of invertible transformation functions. Flowing through a chain of transformations, we repeatedly substitute the variable for the new one according to the change of variables theorem and eventually obtain a probability distribution of the final target variable.
 
@@ -129,6 +129,7 @@ p_i(\mathbf{z}_i)
 \log p_i(\mathbf{z}_i) &= \log p_{i-1}(\mathbf{z}_{i-1}) - \log \left\vert \det \frac{\partial f_i}{\partial\mathbf{z}_{i-1}} \right\vert
 \end{aligned}
 $$
+
 
 Given such a chain of probability density functions, we know the relationship between each pair of consecutive variables. We can expand the equation of the output $$\mathbf{x}$$ step by step until tracing back to the initial distribution $$\mathbf{z}_0$$.
 
@@ -188,7 +189,7 @@ $$
 \Leftrightarrow 
 \begin{cases}
 \mathbf{x}_{1:d} &= \mathbf{y}_{1:d} \\ 
-\mathbf{x}_{d+1:D} &= (\mathbf{y}_{d+1:D} - t(\mathbf{y}_{d+1:D})) \odot \exp(-s(\mathbf{y}_{1:d}))
+\mathbf{x}_{d+1:D} &= (\mathbf{y}_{d+1:D} - t(\mathbf{y}_{1:d})) \odot \exp(-s(\mathbf{y}_{1:d}))
 \end{cases}
 $$
 
@@ -233,7 +234,7 @@ $$
 \Leftrightarrow 
 \begin{cases}
 \mathbf{x}_{1:d} &= \mathbf{y}_{1:d} \\ 
-\mathbf{x}_{d+1:D} &= \mathbf{y}_{d+1:D} - m(\mathbf{y}_{d+1:D})
+\mathbf{x}_{d+1:D} &= \mathbf{y}_{d+1:D} - m(\mathbf{y}_{1:d})
 \end{cases}
 $$
 
@@ -263,8 +264,8 @@ Both the input and output of 1x1 convolution here can be viewed as a matrix of s
 
 
 $$
-\left\vert\det \frac{\partial\texttt{conv2d}(\mathbf{h}; \mathbf{W})}{\partial\mathbf{h}}\right\vert
-= h \cdot w \cdot \vert\det\mathbf{W}\vert
+\log \left\vert\det \frac{\partial\texttt{conv2d}(\mathbf{h}; \mathbf{W})}{\partial\mathbf{h}}\right\vert
+= \log (\vert\det\mathbf{W}\vert^{h \cdot w}\vert) = h \cdot w \cdot \log \vert\det\mathbf{W}\vert
 $$
 
 The inverse 1x1 convolution depends on the inverse matrix $$\mathbf{W}^{-1}$$. Since the weight matrix is relatively small, the amount of computation for the matrix determinant ([tf.linalg.det](https://www.tensorflow.org/api_docs/python/tf/linalg/det)) and inversion ([tf.linalg.inv](https://www.tensorflow.org/api_docs/python/tf/linalg/inv)) is still under control.

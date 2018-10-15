@@ -51,7 +51,7 @@ $$
 \end{bmatrix}
 $$
 
-The determinant is one real number computed as a function of all the elements in a squared matrix. Note that the determinant only exists for square matrices. The absolute value of the determinant can be thought of as a measure of *”how much multiplication by the matrix expands or contracts space”.*
+The determinant is one real number computed as a function of all the elements in a squared matrix. Note that the determinant *only exists for **square** matrices*. The absolute value of the determinant can be thought of as a measure of *"how much multiplication by the matrix expands or contracts space".*
 
 The determinant of a nxn matrix $$M$$ is:
 
@@ -64,7 +64,11 @@ a_{n1} & a_{n2} & \dots & a_{nn} \\
 \end{bmatrix} = \sum_{j_1 j_2 \dots j_n} (-1)^{\tau(j_1 j_2 \dots j_n)} a_{1j_1} a_{2j_2} \dots a_{nj_n}
 $$
 
-where the subscript under the summation $$j_1 j_2 \dots j_n$$ are all permutations of the set {1, 2, …, n}, so there are $$n!$$ items in total; $$\tau(.)$$ indicates the [signature](https://en.wikipedia.org/wiki/Parity_of_a_permutation) of a permutation.
+where the subscript under the summation $$j_1 j_2 \dots j_n$$ are all permutations of the set {1, 2, ..., n}, so there are $$n!$$ items in total; $$\tau(.)$$ indicates the [signature](https://en.wikipedia.org/wiki/Parity_of_a_permutation) of a permutation.
+
+The determinant of a square matrix $$M$$ detects whether it is invertible: If $$\det(M)=0$$ then $$M$$ is not invertible (a *singular* matrix with linearly dependent rows or columns; or any row or column is all 0); otherwise, if $$\det(M)\neq 0$$, $$M$$ is invertible.
+
+The determinant of the product is equivalent to the product of the determinants: $$\det(AB) = \det(A)\det(B)$$. ([proof](https://proofwiki.org/wiki/Determinant_of_Matrix_Product))
 
 
 ### Change of Variable Theorem
@@ -88,8 +92,8 @@ $$
 \begin{aligned}
 \mathbf{z} &\sim \pi(\mathbf{z}), \mathbf{x} = f(\mathbf{z}), \mathbf{z} = f^{-1}(\mathbf{x}) \\
 p(\mathbf{x}) 
-&= \pi(\mathbf{z}) \left\vert \det \frac{\partial\mathbf{z}}{\partial\mathbf{x}} \right\vert  
-= \pi(f^{-1}(\mathbf{x})) \left\vert \det \frac{\partial f^{-1}}{\partial\mathbf{x}} \right\vert
+&= \pi(\mathbf{z}) \left\vert \det \dfrac{d \mathbf{z}}{d \mathbf{x}} \right\vert  
+= \pi(f^{-1}(\mathbf{x})) \left\vert \det \dfrac{d f^{-1}}{d \mathbf{x}} \right\vert
 \end{aligned}
 $$
 
@@ -114,7 +118,7 @@ $$
 \mathbf{z}_{i-1} &\sim p_{i-1}(\mathbf{z}_{i-1}) \\
 \mathbf{z}_i &= f_i(\mathbf{z}_{i-1})\text{, thus }\mathbf{z}_{i-1} = f_i^{-1}(\mathbf{z}_i) \\
 p_i(\mathbf{z}_i) 
-&= p_{i-1}(f_i^{-1}(\mathbf{z}_i)) \left\vert \det\frac{\partial f_i^{-1}}{\partial \mathbf{z}_i} \right\vert
+&= p_{i-1}(f_i^{-1}(\mathbf{z}_i)) \left\vert \det\dfrac{d f_i^{-1}}{d \mathbf{z}_i} \right\vert
 \end{aligned}
 $$
 
@@ -123,12 +127,21 @@ Then let's convert the equation to be a function of $$\mathbf{z}_i$$ so that we 
 $$
 \begin{aligned}
 p_i(\mathbf{z}_i) 
-&= p_{i-1}(f_i^{-1}(\mathbf{z}_i)) \left\vert \det\frac{\partial f_i^{-1}}{\partial \mathbf{z}_i} \right\vert \\
-&= p_{i-1}(\mathbf{z}_{i-1}) \left\vert \det \color{red}{\Big(\frac{\partial f_i}{\partial\mathbf{z}_{i-1}}\Big)^{-1}} \right\vert & \scriptstyle{\text{; According to the inverse func theorem.}} \\
-&= p_{i-1}(\mathbf{z}_{i-1}) \color{red}{\left\vert \det \frac{\partial f_i}{\partial\mathbf{z}_{i-1}} \right\vert^{-1}} & \scriptstyle{\text{; According to a property of Jacobians of invertible func.}} \\
-\log p_i(\mathbf{z}_i) &= \log p_{i-1}(\mathbf{z}_{i-1}) - \log \left\vert \det \frac{\partial f_i}{\partial\mathbf{z}_{i-1}} \right\vert
+&= p_{i-1}(f_i^{-1}(\mathbf{z}_i)) \left\vert \det\dfrac{d f_i^{-1}}{d \mathbf{z}_i} \right\vert \\
+&= p_{i-1}(\mathbf{z}_{i-1}) \left\vert \det \color{red}{\Big(\dfrac{d f_i}{d\mathbf{z}_{i-1}}\Big)^{-1}} \right\vert & \scriptstyle{\text{; According to the inverse func theorem.}} \\
+&= p_{i-1}(\mathbf{z}_{i-1}) \color{red}{\left\vert \det \dfrac{d f_i}{d\mathbf{z}_{i-1}} \right\vert^{-1}} & \scriptstyle{\text{; According to a property of Jacobians of invertible func.}} \\
+\log p_i(\mathbf{z}_i) &= \log p_{i-1}(\mathbf{z}_{i-1}) - \log \left\vert \det \dfrac{d f_i}{d\mathbf{z}_{i-1}} \right\vert
 \end{aligned}
 $$
+
+(\*) A note on the *"inverse function theorem"*: If $$y=f(x)$$ and $$x=f^{-1}(y)$$, we have:
+
+$$
+\dfrac{df^{-1}(y)}{dy} = \dfrac{dx}{dy} = (\dfrac{dy}{dx})^{-1} = (\dfrac{df(x)}{dx})^{-1}
+$$
+
+
+(\*) A note on *"Jacobians of invertible function"*: The determinant of the inverse of an invertible matrix is the inverse of the determinant: $$\det(M^{-1}) = (\det(M))^{-1}$$, [because](#jacobian-matrix-and-determinant) $$\det(M)\det(M^{-1}) = \det(M \cdot M^{-1}) = \det(I) = 1$$.
 
 
 Given such a chain of probability density functions, we know the relationship between each pair of consecutive variables. We can expand the equation of the output $$\mathbf{x}$$ step by step until tracing back to the initial distribution $$\mathbf{z}_0$$.
@@ -137,10 +150,10 @@ $$
 \begin{aligned}
 \mathbf{x} = \mathbf{z}_K &= f_K \circ f_{K-1} \circ \dots \circ f_1 (\mathbf{z}_0) \\
 \log p(\mathbf{x}) = \log \pi_K(\mathbf{z}_K) 
-&= \log \pi_{K-1}(\mathbf{z}_{K-1}) - \log\left\vert\det\frac{\partial f_K}{\partial\mathbf{z}_{K-1}}\right\vert \\
-&= \log \pi_{K-2}(\mathbf{z}_{K-2}) - \log\left\vert\det\frac{\partial f_{K-1}}{\partial\mathbf{z}_{K-2}}\right\vert - \log\left\vert\det\frac{\partial f_K}{\partial\mathbf{z}_{K-1}}\right\vert \\
+&= \log \pi_{K-1}(\mathbf{z}_{K-1}) - \log\left\vert\det\dfrac{d f_K}{d \mathbf{z}_{K-1}}\right\vert \\
+&= \log \pi_{K-2}(\mathbf{z}_{K-2}) - \log\left\vert\det\dfrac{d f_{K-1}}{d\mathbf{z}_{K-2}}\right\vert - \log\left\vert\det\dfrac{d f_K}{d\mathbf{z}_{K-1}}\right\vert \\
 &= \dots \\
-&= \log \pi_0(\mathbf{z}_0) - \sum_{i=1}^K \log\left\vert\det\frac{\partial f_i}{\partial\mathbf{z}_{i-1}}\right\vert
+&= \log \pi_0(\mathbf{z}_0) - \sum_{i=1}^K \log\left\vert\det\dfrac{d f_i}{d\mathbf{z}_{i-1}}\right\vert
 \end{aligned}
 $$
 
@@ -162,7 +175,7 @@ $$
 
 The **RealNVP** (Real-valued Non-Volume Preserving; [Dinh et al., 2017](https://arxiv.org/abs/1605.08803)) model implements a normalizing flow by stacking a sequence of invertible bijective transformation functions. In each bijection $$f: \mathbf{x} \mapsto \mathbf{y}$$, known as *affine coupling layer*,  the input dimensions are split into two parts: 
 - The first $$d$$ dimensions stay same;
-- The second part, $$d+1$$ to $$D$$ dimensions, undergo an affine transformation (“scale-and-shift”) and both the scale and shift parameters are functions of the first $$d$$ dimensions. 
+- The second part, $$d+1$$ to $$D$$ dimensions, undergo an affine transformation ("scale-and-shift") and both the scale and shift parameters are functions of the first $$d$$ dimensions. 
 
 $$
 \begin{aligned}
@@ -219,7 +232,7 @@ Even better, since (i) computing $$f^-1$$ does not require computing the inverse
 
 In one affine coupling layer, some dimensions (channels) remain unchanged. To make sure all the inputs have a chance to be altered, the model reverses the ordering in each layer so that different components are left unchanged. Following such an alternating pattern, the set of units which remain identical in one transformation layer are always modified in the next. Batch normalization is found to help training models with a very deep stack of coupling layers.
 
-Furthermore, RealNVP can work in a multi-scale architecture to build a more efficient model for large inputs. The multi-scale architecture applies several “sampling” operations to normal affine layers, including spatial checkerboard pattern masking, squeezing operation, and channel-wise masking. Read the [paper](https://arxiv.org/abs/1605.08803) for more details on the multi-scale architecture.
+Furthermore, RealNVP can work in a multi-scale architecture to build a more efficient model for large inputs. The multi-scale architecture applies several "sampling" operations to normal affine layers, including spatial checkerboard pattern masking, squeezing operation, and channel-wise masking. Read the [paper](https://arxiv.org/abs/1605.08803) for more details on the multi-scale architecture.
 
 
 ### NICE
@@ -314,7 +327,7 @@ $$
 {: style="width: 75%;" class="center"}
 *Fig. 5. Demonstration of how MADE works in a three-layer feed-forward neural network. (Image source: [Germain et al., 2015](https://arxiv.org/abs/1502.03509))*
 
-To zero out some connections between layers, we can simply element-wise multiply every weight matrix by a binary mask matrix. Each hidden node is assigned with a random “connectivity integer” between 1 and D-1; the assigned value for the $$k$$-th unit in the $$l$$-th layer is denoted by $$m^l_k$$. The binary mask matrix is determined by element-wise comparing values of two nodes in two layers. 
+To zero out some connections between layers, we can simply element-wise multiply every weight matrix by a binary mask matrix. Each hidden node is assigned with a random "connectivity integer" between 1 and D-1; the assigned value for the $$k$$-th unit in the $$l$$-th layer is denoted by $$m^l_k$$. The binary mask matrix is determined by element-wise comparing values of two nodes in two layers. 
 
 $$
 \begin{aligned}

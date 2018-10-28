@@ -376,7 +376,7 @@ One implementation that could capture the entire context is the *Diagonal BiLSTM
 
 $$
 \begin{aligned}
-\mathbf{o}_i, \mathbf{f}_i, \mathbf{i}_i, \mathbf{g}_i &= \sigma(\mathbf{K}^{ss} \circledast \mathbf{h}_{i-1} + \mathbf{K}^{is} \circledast \mathbf{x}_i) & \scriptstyle{\text{; }\sigma\scriptstyle{\text{ is sigmoid; }}\circledast\scriptstyle{\text{ is convolution operation.}}} \\
+\lbrack \mathbf{o}_i, \mathbf{f}_i, \mathbf{i}_i, \mathbf{g}_i \rbrack &= \sigma(\mathbf{K}^{ss} \circledast \mathbf{h}_{i-1} + \mathbf{K}^{is} \circledast \mathbf{x}_i) & \scriptstyle{\text{; }\sigma\scriptstyle{\text{ is tanh for g, but otherwise sigmoid; }}\circledast\scriptstyle{\text{ is convolution operation.}}} \\
 \mathbf{c}_i &= \mathbf{f}_i \odot \mathbf{c}_{i-1} + \mathbf{i}_i \odot \mathbf{g}_i & \scriptstyle{\text{; }}\odot\scriptstyle{\text{ is elementwise product.}}\\
 \mathbf{h}_i &= \mathbf{o}_i \odot \tanh(\mathbf{c}_i)
 \end{aligned}
@@ -404,7 +404,7 @@ One big drawback of convolution layer is a very limited size of receptive field.
 WaveNet uses the gated activation unit as the non-linear layer, as it is found to work significantly better than ReLU for modeling 1-D audio data. The residual connection is applied after the gated activation.
 
 $$
-\mathbf{z} = \tanh(\mathbf{W}_{f,k}\circledast\mathbf{x})\odot(\mathbf{W}_{g,k}\circledast\mathbf{x})
+\mathbf{z} = \tanh(\mathbf{W}_{f,k}\circledast\mathbf{x})\odot\sigma(\mathbf{W}_{g,k}\circledast\mathbf{x})
 $$
 
 where $$\mathbf{W}_{f,k}$$ and $$\mathbf{W}_{g,k}$$ are convolution filter and gate weight matrix of the $$k$$-th layer, respectively; both are learnable.

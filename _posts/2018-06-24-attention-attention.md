@@ -11,6 +11,8 @@ image: "transformer.png"
 
 <!--more-->
 
+<span style="color: #286ee0;">[Updated on 2018-10-28: Add [Pointer Network](#pointer-network) and the [link](https://github.com/lilianweng/transformer-tensorflow) to my tensorflow implementation of Transformer.]</span>
+
 {: class="table-of-content"}
 * TOC
 {:toc}
@@ -183,6 +185,28 @@ the [show, attend and tell](http://proceedings.mlr.press/v37/xuc15.pdf) paper. B
 *Fig. 8. Global vs local attention (Image source: Fig 2 & 3 in [Luong, et al., 2015](https://arxiv.org/pdf/1508.04025.pdf))*
 
 
+## Pointer Network
+
+In problems like sorting or travelling salesman, both input and output are sequential data. Unfortunately, they cannot be easily solved by classic seq-2-seq or NMT models, given that the discrete categories of output elements are not determined in advance, but depends on the variable input size. The **Pointer Net** (**Ptr-Net**; [Vinyals, et al. 2015](https://arxiv.org/abs/1506.03134)) is proposed to resolve this type of problems: When the output elements correspond to *positions* in an input sequence. Rather than using attention to blend hidden units of an encoder into a context vector (See Fig. 8), the Pointer Net applies attention over the input elements to pick one as the output at each decoder step.
+
+
+![pointer network]({{ '/assets/images/ptr-net.png' | relative_url }})
+{: style="width: 75%;" class="center"}
+*Fig. 9. The architecture of a Pointer Network model. (Image source: [Vinyals, et al. 2015](https://arxiv.org/abs/1506.03134))*
+
+The Ptr-Net outputs a sequence of integer indices, $$\boldsymbol{c} = (c_1, \dots, c_m)$$ given a sequence of input vectors $$\boldsymbol{x} = (x_1, \dots, x_n)$$ and $$1 \leq c_i \leq n$$. The model still embraces an encoder-decoder framework. The encoder and decoder hidden states are denoted as $$(\boldsymbol{h}_1, \dots, \boldsymbol{h}_n)$$ and $$(\boldsymbol{s}_1, \dots, \boldsymbol{s}_m)$$, respectively. Note that $$\mathbf{s}_i$$ is the output gate after cell activation in the decoder. The Ptr-Net applies addictive attention between states and then normalizes it by softmax to model the output conditional probability:
+
+
+$$
+\begin{aligned}
+y_i &= p(c_i \vert c_1, \dots, c_{i-1}, \boldsymbol{x}) \\
+    &= \sigma(\text{score}(\boldsymbol{s}_t; \boldsymbol{h}_i)) = \sigma(\mathbf{v}_a^\top \tanh(\mathbf{W}_a[\boldsymbol{s}_t; \boldsymbol{h}_i]))
+\end{aligned}
+$$
+
+The attention mechanism is simplified, as Ptr-Net does not blend the encoder states into the output with attention weights. In this way, the output only responds to the positions but not the input content. 
+
+
 ## Transformer
 
 ["Attention is All you Need"](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf)
@@ -205,7 +229,7 @@ $$
 
 ![multi-head scaled dot-product attention]({{ '/assets/images/multi-head-attention.png' | relative_url }})
 {: style="width: 40%;" class="center"}
-*Fig. 9. Multi-head scaled dot-product attention mechanism. (Image source: Fig 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
+*Fig. 10. Multi-head scaled dot-product attention mechanism. (Image source: Fig 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
 
 
 Rather than only computing the attention once, the multi-head mechanism runs through the scaled dot-product attention multiple times in parallel. The independent attention outputs are simply concatenated and linearly transformed into the expected dimensions. I assume the motivation is because ensembling always helps? ;) According to the paper, *"multi-head attention allows the model to jointly attend to information from different representation **subspaces** at different positions. With a single attention head, averaging inhibits this."*
@@ -224,7 +248,7 @@ where $$\mathbf{W}^Q_i$$, $$\mathbf{W}^K_i$$, $$\mathbf{W}^V_i$$, and $$\mathbf{
 
 ![Transformer encoder]({{ '/assets/images/transformer-encoder.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 10. The transformer’s encoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
+*Fig. 11. The transformer’s encoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
 
 The encoder generates an attention-based representation with capability to locate a specific piece of information from a potentially infinitely-large context.
 - A stack of N=6 identical layers.
@@ -237,7 +261,7 @@ All the sub-layers output data of the same dimension $$d_\text{model} = 512$$.
 
 ![Transformer decoder]({{ '/assets/images/transformer-decoder.png' | relative_url }})
 {: style="width: 58%;" class="center"}
-*Fig. 11. The transformer’s decoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
+*Fig. 12. The transformer’s decoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
 
 The decoder is able to retrieval from the encoded representation.
 - A stack of N = 6 identical layers
@@ -255,8 +279,9 @@ Finally here is the complete view of the transformer's architecture:
 
 ![Transformer model]({{ '/assets/images/transformer.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 12. The full model architecture of the transformer. (Image source: Fig 1 & 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf).)*
+*Fig. 13. The full model architecture of the transformer. (Image source: Fig 1 & 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf).)*
 
+Try to implement the transformer model is an interesting experience, here is mine: [lilianweng/transformer-tensorflow](https://github.com/lilianweng/transformer-tensorflow). Read the comments in the code if you are interested.
 
 
 ## SNAIL
@@ -356,3 +381,5 @@ See you in the next post :D
 [12] Nikhil Mishra, Mostafa Rohaninejad, Xi Chen, and Pieter Abbeel. ["A simple neural attentive meta-learner."](http://metalearning.ml/papers/metalearn17_mishra.pdf) NIPS Workshop on Meta-Learning. 2017.
 
 [13] ["WaveNet: A Generative Model for Raw Audio"](https://deepmind.com/blog/wavenet-generative-model-raw-audio/) - Sep 8, 2016 by DeepMind.
+
+[14]  Oriol Vinyals, Meire Fortunato, and Navdeep Jaitly. ["Pointer networks."](https://arxiv.org/abs/1506.03134) NIPS 2015.

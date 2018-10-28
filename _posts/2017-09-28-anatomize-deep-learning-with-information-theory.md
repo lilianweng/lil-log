@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Anatomize Deep Learning with Information Theory"
 date: 2017-09-28 23:42:00
 tags: information-theory review

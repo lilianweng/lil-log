@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Object Recognition for Dummies Part 2: CNN, DPM and Overfeat"
 date: 2017-12-15 23:00:00
 tags: object-recognition

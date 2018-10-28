@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "How to Explain the Prediction of a Machine Learning Model?"
 date: 2017-08-01 00:23:00
 tags: review

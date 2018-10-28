@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Object Recognition for Dummies Part 1: Gradient Vector, HOG, and SS"
 date: 2017-10-29 17:38:00
 tags: object-recognition

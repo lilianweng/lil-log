@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Object Recognition for Dummies Part 3: R-CNN and Fast/Faster/Mask R-CNN and YOLO"
 date: 2017-12-31 23:00:00
 tags: object-recognition

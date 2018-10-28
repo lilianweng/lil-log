@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Learning Word Embedding"
 date: 2017-10-15 23:00:00
 tags: review

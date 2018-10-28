@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "From Autoencoder to Beta-VAE"
 date: 2018-08-12 10:18:00
 tags: review autoencoder generative

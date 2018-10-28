@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Policy Gradient Algorithms"
 date: 2018-04-08 00:15:06
 tags: reinforcement-learning review long-read

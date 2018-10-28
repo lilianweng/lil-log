@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Implementing Deep Reinforcement Learning Models with Tensorflow + OpenAI Gym"
 date: 2018-05-05 16:00:00
 tags: tutorial tensorflow reinforcement-learning

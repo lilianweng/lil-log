@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "A (Long) Peek into Reinforcement Learning"
 date: 2018-02-19 17:31:00
 tags: reinforcement-learning review long-read

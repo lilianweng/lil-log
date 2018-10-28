@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "From GAN to WGAN"
 date: 2017-08-20 00:23:00
 tags: gan long-read generative

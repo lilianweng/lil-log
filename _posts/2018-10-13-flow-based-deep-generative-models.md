@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: false
+comments: true
 title: "Flow-based Deep Generative Models"
 date: 2018-10-13 12:15:00
 tags: review generative

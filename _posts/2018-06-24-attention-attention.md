@@ -345,7 +345,7 @@ See you in the next post :D
 
 [7] Denny Britz, Anna Goldie, Thang Luong, and Quoc Le. ["Massive exploration of neural machine translation architectures."](https://arxiv.org/abs/1703.03906) ACL 2017.
 
-[8] Ashish Vaswani, et al. "Attention is all you need." NIPS 2017. http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf
+[8] Ashish Vaswani, et al. ["Attention is all you need."](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf) NIPS 2017.
 
 [9] Jianpeng Cheng, Li Dong, and Mirella Lapata. ["Long short-term memory-networks for machine reading."](https://arxiv.org/pdf/1601.06733.pdf) EMNLP 2016.
 

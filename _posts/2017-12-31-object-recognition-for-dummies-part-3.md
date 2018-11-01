@@ -267,7 +267,7 @@ The YOLO model ("You Only Look Once"; [Redmon et al., 2016](https://www.cv-found
 
 ![YOLO]({{ '/assets/images/yolo.png' | relative_url }})
 {: style="width: 760px;" class="center"}
-*Fig. 8. The workflow of POLO model. (Image source: [Redmon et al., 2016](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf))*
+*Fig. 8. The workflow of YOLO model. (Image source: [Redmon et al., 2016](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf))*
 
 1. Pre-train a CNN network on image classification tasks.
 2. Split an image into S x S cells. Each cell is responsible for identifying the object (if any) with its center located in this cell. Each cell predicts the location of B bounding boxes and a confidence score, and a probability of object class conditioned on the existence of an object in the bounding box.

@@ -64,7 +64,7 @@ There are two important attributes of an image gradient:
 
 
 ![Pixels for Gradient Vector]({{ '/assets/images/image-gradient-vector-pixel-location.png' | relative_url }})
-{: style="width: 420px;" class="center"}
+{: style="width: 70%;" class="center"}
 *Fig. 1. To compute the gradient vector of a target pixel at location (x, y), we need to know the colors of its four neighbors (or eight surrounding pixels depending on the kernel).*
 
 

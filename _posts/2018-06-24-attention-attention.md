@@ -281,7 +281,9 @@ Finally here is the complete view of the transformer's architecture:
 {: style="width: 100%;" class="center"}
 *Fig. 13. The full model architecture of the transformer. (Image source: Fig 1 & 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf).)*
 
+<!--
 Try to implement the transformer model is an interesting experience, here is mine: [lilianweng/transformer-tensorflow](https://github.com/lilianweng/transformer-tensorflow). Read the comments in the code if you are interested.
+-->
 
 
 ## SNAIL

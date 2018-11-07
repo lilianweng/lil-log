@@ -13,6 +13,8 @@ image: "transformer.png"
 
 <span style="color: #286ee0;">[Updated on 2018-10-28: Add [Pointer Network](#pointer-network) and the [link](https://github.com/lilianweng/transformer-tensorflow) to my tensorflow implementation of Transformer.]</span>
 
+<span style="color: #286ee0;">[Updated on 2018-11-06: Add a [link](https://github.com/lilianweng/transformer-tensorflow) to the implementation of Transformer model.]</span>
+
 {: class="table-of-content"}
 * TOC
 {:toc}

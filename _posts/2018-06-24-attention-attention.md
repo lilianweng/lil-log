@@ -15,6 +15,8 @@ image: "transformer.png"
 
 <span style="color: #286ee0;">[Updated on 2018-11-06: Add a [link](https://github.com/lilianweng/transformer-tensorflow) to the implementation of Transformer model.]</span>
 
+<span style="color: #286ee0;">[Updated on 2018-11-18: Add [Neural Turing Machines](#neural-turing-machines).]</span>
+
 {: class="table-of-content"}
 * TOC
 {:toc}
@@ -133,8 +135,9 @@ Below is a summary table of several popular attention mechanisms (or broader cat
 {: class="info"}
 | Name | Alignment score function | Citation |
 | -------------------------- | ------------- | ------------- |
+| Content-base attention | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \text{cosine}[\boldsymbol{s}_t, \boldsymbol{h}_i]$$ | [Graves2014](https://arxiv.org/abs/1410.5401) |
 | Additive(*) | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \mathbf{v}_a^\top \tanh(\mathbf{W}_a[\boldsymbol{s}_t; \boldsymbol{h}_i])$$ | [Bahdanau2015](https://arxiv.org/pdf/1409.0473.pdf) |
-| Location-Base | $$\alpha_{t,i} = \text{softmax}(\mathbf{W}_a \boldsymbol{s}_t)$$<br/>Note: This simplifies the softmax alignment max to only depend on the target position. | [Luong2015](https://arxiv.org/pdf/1508.04025.pdf) |
+| Location-Base | $$\alpha_{t,i} = \text{softmax}(\mathbf{W}_a \boldsymbol{s}_t)$$<br/>Note: This simplifies the softmax alignment to only depend on the target position. | [Luong2015](https://arxiv.org/pdf/1508.04025.pdf) |
 | General | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{s}_t^\top\mathbf{W}_a\boldsymbol{h}_i$$<br/>where $$\mathbf{W}_a$$ is a trainable weight matrix in the attention layer. | [Luong2015](https://arxiv.org/pdf/1508.04025.pdf) |
 | Dot-Product | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{s}_t^\top\boldsymbol{h}_i$$ | [Luong2015](https://arxiv.org/pdf/1508.4025.pdf) |
 | Scaled Dot-Product(^) | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \frac{\boldsymbol{s}_t^\top\boldsymbol{h}_i}{\sqrt{n}}$$<br/>Note: very similar to the dot-product attention except for a scaling factor; where n is the dimension of the source hidden state. | [Vaswani2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf) |
@@ -145,7 +148,6 @@ Below is a summary table of several popular attention mechanisms (or broader cat
 (*) Referred to as "concat" in Luong, et al., 2015 and as "additive attention" in Vaswani, et al., 2017.<br/>
 (^) It adds a scaling factor $$1/\sqrt{n}$$, motivated by the concern when the input is large, the softmax function may have an extremely small gradient, hard for efficient learning.<br/>
 (&) Also, referred to as "intra-attention" in Cheng et al., 2016 and some other papers.
-
 
 
 ### Self-Attention
@@ -187,6 +189,101 @@ the [show, attend and tell](http://proceedings.mlr.press/v37/xuc15.pdf) paper. B
 *Fig. 8. Global vs local attention (Image source: Fig 2 & 3 in [Luong, et al., 2015](https://arxiv.org/pdf/1508.04025.pdf))*
 
 
+## Neural Turing Machines
+
+Alan Turing in [1963](https://en.wikipedia.org/wiki/Turing_machine) proposed a minimalistic model of computation. It is composed of a infinitely long tape and a head to interact with the tape. The tape has countless cells on it, each filled with a symbol: 0, 1 or blank (" "). The operation head can read symbols, edit symbols and move left/right on the tape. Theoretically a Turing machine can simulate any computer algorithm, irrespective of how complex or expensive the procedure might be. The infinite memory gives a Turing machine an edge to be mathematically limitless. However, infinite memory is not feasible in real modern computers and then we only consider Turing machine as a mathematical model of computation.
+
+![turing-machine]({{ '/assets/images/turing-machine.jpg' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 9. How a Turing machine looks like: a tape + a head that handles the tape. (Image source: http://aturingmachine.com/)*
+
+**Neural Turing Machine** (**NTM**, [Graves, Wayne & Danihelka, 2014](https://arxiv.org/abs/1410.5401)) is a model architecture for coupling a neural network with external memory storage. The memory mimics the Turing machine tape and the neural network controls the operation heads to read from or write to the tape. However, the memory in NTM is finite, and thus it probably looks more like a “Neural [von Neumann](https://en.wikipedia.org/wiki/Von_Neumann_architecture) Machine”.
+
+NTM contains two major components, a *controller* neural network and a *memory* bank. 
+Controller: is in charge of executing operations on the memory. It can be any type of neural network, feed-forward or recurrent.
+Memory: stores processed information. It is a matrix of size $$N \times M$$, containing N vector rows and each has $$M$$ dimensions.
+
+In one update iteration, the controller processes the input and interacts with the memory bank accordingly to generate output. The interaction is handled by a set of parallel *read* and *write* heads. Both read and write operations are “blurry” by softly attending to all the memory addresses.
+
+![turing-machine]({{ '/assets/images/NTM.png' | relative_url }})
+{: style="width: 60%;" class="center"}
+*Fig 10. Neural Turing Machine Architecture.*
+
+
+### Reading and Writing
+
+When reading from the memory at time t, an attention vector of size $$N$$, $$\mathbf{w}_t$$ controls how much attention to assign to different memory locations (matrix rows). The read vector $$\mathbf{r}_t$$ is a sum weighted by attention intensity:
+
+$$
+\mathbf{r}_i = \sum_{i=1}^N w_t(i)\mathbf{M}_t(i)\text{, where }\sum_{i=1}^N w_t(i)=1, \forall i: 0 \leq w_t(i) \leq 1
+$$
+
+where $$w_t(i)$$ is the $$i$$-th element in $$\mathbf{w}_t$$ and $$\mathbf{M}_t(i)$$ is the $$i$$-th row vector in the memory.
+
+
+When writing into the memory at time t, as inspired by the input and forget gates in LSTM, a write head first wipes off some old content according to an erase vector $$\mathbf{e}_t$$ and then adds new information by an add vector $$\mathbf{a}_t$$.
+
+$$
+\begin{aligned}
+\tilde{\mathbf{M}}_t(i) &= \mathbf{M}_{t-1}(i) [\mathbf{1} - w_t(i)\mathbf{e}_t] &\scriptstyle{\text{; erase}}\\
+\mathbf{M}_t(i) &= \tilde{\mathbf{M}}_t(i) + w_t(i) \mathbf{a}_t &\scriptstyle{\text{; add}}
+\end{aligned}
+$$
+
+
+### Attention Mechanisms
+
+In Neural Turing Machine, how to generate the attention distribution $$\mathbf{w}_t$$ depends on the addressing mechanisms: NTM uses a mixture of content-based and location-based addressings. 
+
+
+**Content-based addressing**
+
+The content-addressing creates attention vectors based on the similarity between the key vector $$\mathbf{k}_t$$ extracted by the controller from the input and memory rows. The content-based attention scores are computed as cosine similarity and then normalized by softmax. In addition, NTM adds a strength multiplier $$\beta_t$$ to amplify or attenuate the focus of the distribution.
+
+
+$$
+w_t^c(i) 
+= \text{softmax}(\beta_t \cdot \text{cosine}[\mathbf{k}_t, \mathbf{M}_t(i)])
+= \frac{\exp(\beta_t \frac{\mathbf{k}_t \cdot \mathbf{M}_t(i)}{\|\mathbf{k}_t\| \cdot \|\mathbf{M}_t(i)\|})}{\sum_{j=1}^N \exp(\beta_t \frac{\mathbf{k}_t \cdot \mathbf{M}_t(j)}{\|\mathbf{k}_t\| \cdot \|\mathbf{M}_t(j)\|})}
+$$
+
+
+**Interpolation**
+
+Then an interpolation gate scalar $$g_t$$ is used to blend the newly generated content-based attention vector with the attention weights in the last time step:
+
+$$
+\mathbf{w}_t^g = g_t \mathbf{w}_t^c + (1 - g_t) \mathbf{w}_t^c 
+$$
+
+
+**Location-based addressing**
+
+The location-based addressing sums up the values at different positions in the attention vector, weighted by a weighting distribution over allowable integer shifts. It is equivalent to a 1-d convolution with a kernel $$\mathbf{s}_t(.)$$, a function of the position offset. There are multiple ways to define this distribution. See Fig. 11. for inspiration.
+
+
+![shift-weighting]({{ '/assets/images/shift-weighting.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 11. Two ways to represent the shift weighting distribution $$\mathbf{s}_t$$.*
+
+Finally the attention distribution is enhanced by a sharpening scalar $$\gamma_t \geq 1$$.
+
+
+$$
+\begin{aligned}
+\tilde{w}_t(i) &= \sum_{j=1}^N w_t^g(j) s_t(i-j) & \scriptstyle{\text{; circular convolution}}\\
+w_t(i) &= \frac{\tilde{w}_t(i)^{\gamma_t}}{\sum_{j=1}^N \tilde{w}_t(j)^{\gamma_t}} & \scriptstyle{\text{; sharpen}}
+\end{aligned}
+$$
+
+The complete process of generating the attention vector $$\mathbf{w}_t$$ at time step t is illustrated in Fig. X. All the parameters produced by the controller are unique for each head. If there are multiple read and write heads in parallel, the controller would output multiple sets.
+
+
+![NTM-flow-addressing]({{ '/assets/images/NTM-flow-addressing.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 12. Flow diagram of the addressing mechanisms in Neural Turing Machine. (Image source: [Graves, Wayne & Danihelka, 2014](https://arxiv.org/abs/1410.5401))*
+
+
 ## Pointer Network
 
 In problems like sorting or travelling salesman, both input and output are sequential data. Unfortunately, they cannot be easily solved by classic seq-2-seq or NMT models, given that the discrete categories of output elements are not determined in advance, but depends on the variable input size. The **Pointer Net** (**Ptr-Net**; [Vinyals, et al. 2015](https://arxiv.org/abs/1506.03134)) is proposed to resolve this type of problems: When the output elements correspond to *positions* in an input sequence. Rather than using attention to blend hidden units of an encoder into a context vector (See Fig. 8), the Pointer Net applies attention over the input elements to pick one as the output at each decoder step.
@@ -194,7 +291,7 @@ In problems like sorting or travelling salesman, both input and output are seque
 
 ![pointer network]({{ '/assets/images/ptr-net.png' | relative_url }})
 {: style="width: 75%;" class="center"}
-*Fig. 9. The architecture of a Pointer Network model. (Image source: [Vinyals, et al. 2015](https://arxiv.org/abs/1506.03134))*
+*Fig. 13. The architecture of a Pointer Network model. (Image source: [Vinyals, et al. 2015](https://arxiv.org/abs/1506.03134))*
 
 The Ptr-Net outputs a sequence of integer indices, $$\boldsymbol{c} = (c_1, \dots, c_m)$$ given a sequence of input vectors $$\boldsymbol{x} = (x_1, \dots, x_n)$$ and $$1 \leq c_i \leq n$$. The model still embraces an encoder-decoder framework. The encoder and decoder hidden states are denoted as $$(\boldsymbol{h}_1, \dots, \boldsymbol{h}_n)$$ and $$(\boldsymbol{s}_1, \dots, \boldsymbol{s}_m)$$, respectively. Note that $$\mathbf{s}_i$$ is the output gate after cell activation in the decoder. The Ptr-Net applies addictive attention between states and then normalizes it by softmax to model the output conditional probability:
 
@@ -231,7 +328,7 @@ $$
 
 ![multi-head scaled dot-product attention]({{ '/assets/images/multi-head-attention.png' | relative_url }})
 {: style="width: 40%;" class="center"}
-*Fig. 10. Multi-head scaled dot-product attention mechanism. (Image source: Fig 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
+*Fig. 14. Multi-head scaled dot-product attention mechanism. (Image source: Fig 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
 
 
 Rather than only computing the attention once, the multi-head mechanism runs through the scaled dot-product attention multiple times in parallel. The independent attention outputs are simply concatenated and linearly transformed into the expected dimensions. I assume the motivation is because ensembling always helps? ;) According to the paper, *"multi-head attention allows the model to jointly attend to information from different representation **subspaces** at different positions. With a single attention head, averaging inhibits this."*
@@ -250,7 +347,7 @@ where $$\mathbf{W}^Q_i$$, $$\mathbf{W}^K_i$$, $$\mathbf{W}^V_i$$, and $$\mathbf{
 
 ![Transformer encoder]({{ '/assets/images/transformer-encoder.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 11. The transformer’s encoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
+*Fig. 15. The transformer’s encoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
 
 The encoder generates an attention-based representation with capability to locate a specific piece of information from a potentially infinitely-large context.
 - A stack of N=6 identical layers.
@@ -263,7 +360,7 @@ All the sub-layers output data of the same dimension $$d_\text{model} = 512$$.
 
 ![Transformer decoder]({{ '/assets/images/transformer-decoder.png' | relative_url }})
 {: style="width: 58%;" class="center"}
-*Fig. 12. The transformer’s decoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
+*Fig. 16. The transformer’s decoder. (Image source: [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf))*
 
 The decoder is able to retrieval from the encoded representation.
 - A stack of N = 6 identical layers
@@ -281,7 +378,7 @@ Finally here is the complete view of the transformer's architecture:
 
 ![Transformer model]({{ '/assets/images/transformer.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 13. The full model architecture of the transformer. (Image source: Fig 1 & 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf).)*
+*Fig. 17. The full model architecture of the transformer. (Image source: Fig 1 & 2 in [Vaswani, et al., 2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf).)*
 
 Try to implement the transformer model is an interesting experience, here is mine: [lilianweng/transformer-tensorflow](https://github.com/lilianweng/transformer-tensorflow). Read the comments in the code if you are interested.
 
@@ -294,7 +391,7 @@ The **Simple Neural Attention [Meta-Learner](http://bair.berkeley.edu/blog/2017/
 
 ![SNAIL]({{ '/assets/images/snail.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 13. SNAIL model architecture (Image source: [Mishra et al., 2017](http://metalearning.ml/papers/metalearn17_mishra.pdf))*
+*Fig. 18. SNAIL model architecture (Image source: [Mishra et al., 2017](http://metalearning.ml/papers/metalearn17_mishra.pdf))*
 
 
 SNAIL was born in the field of meta-learning, which is another big topic worthy of a post by itself. But in simple words, the meta-learning model is expected to be generalizable to novel, unseen tasks in the similar distribution. Read [this](http://bair.berkeley.edu/blog/2017/07/18/learning-to-learn/) nice introduction if interested.
@@ -312,7 +409,7 @@ As the (soft) self-attention in the vision context is designed to explicitly lea
 
 ![Conv vs self-attention on images]({{ '/assets/images/conv-vs-self-attention.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 14. Convolution operation and self-attention have access to regions of very different sizes.*
+*Fig. 19. Convolution operation and self-attention have access to regions of very different sizes.*
 
 The SAGAN adopts the [non-local neural network](https://arxiv.org/pdf/1711.07971.pdf) to apply the attention computation. The convolutional image feature maps $$\mathbf{x}$$ is branched out into three copies, corresponding to the concepts of [key, value, and query](#key-value-and-query) in the transformer:
 - Key: $$f(\mathbf{x}) = \mathbf{W}_f \mathbf{x}$$
@@ -331,7 +428,7 @@ $$
 
 ![SAGAN]({{ '/assets/images/self-attention-gan-network.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 15. The self-attention mechanism in SAGAN. (Image source: Fig. 2 in [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf))*
+*Fig. 20. The self-attention mechanism in SAGAN. (Image source: Fig. 2 in [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf))*
 
 Note that $$\alpha_{i,j}$$ is one entry in the attention map, indicating how much attention the model should pay to the i-th position when synthesizing the j-th location. $$\mathbf{W}_f$$, $$\mathbf{W}_g$$, and $$\mathbf{W}_h$$ are all 1x1 convolution filters. If you feel that 1x1 conv sounds like a weird concept (i.e., isn't it just to multiply the whole feature map with one number?), watch this short [tutorial](https://www.youtube.com/watch?v=9EZVpLTPGz8) by Andrew Ng. The output $$\mathbf{o}_j$$ is a column vector of the final output $$\mathbf{o}= (\mathbf{o}_1, \mathbf{o}_2, \dots, \mathbf{o}_j, \dots, \mathbf{o}_N)$$.
 
@@ -346,7 +443,7 @@ While the scaling parameter $$\gamma$$ is increased gradually from 0 during the 
 
 ![SAGAN examples]({{ '/assets/images/SAGAN-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 16. 128×128 example images generated by SAGAN for different classes. (Image source: Partial Fig. 6 in [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf))*
+*Fig. 21. 128×128 example images generated by SAGAN for different classes. (Image source: Partial Fig. 6 in [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf))*
 
 
 ---
@@ -385,3 +482,5 @@ See you in the next post :D
 [13] ["WaveNet: A Generative Model for Raw Audio"](https://deepmind.com/blog/wavenet-generative-model-raw-audio/) - Sep 8, 2016 by DeepMind.
 
 [14]  Oriol Vinyals, Meire Fortunato, and Navdeep Jaitly. ["Pointer networks."](https://arxiv.org/abs/1506.03134) NIPS 2015.
+
+[15] Alex Graves, Greg Wayne, and Ivo Danihelka. ["Neural turing machines."](https://arxiv.org/abs/1410.5401) arXiv preprint arXiv:1410.5401 (2014).

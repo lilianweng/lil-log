@@ -321,7 +321,7 @@ To learn the optimal policy by MC, we iterate it by following a similar idea to 
 ![Policy Iteration by MC]({{ '/assets/images/MC_control.png' | relative_url }})
 {: style="width: 50%;" class="center"}
 
-1. Improve the policy greedily with respect to the current value function: $$\pi'(s) \arg\max_{a \in \mathcal{A}} Q(s, a)$$.
+1. Improve the policy greedily with respect to the current value function: $$\pi(s) = \arg\max_{a \in \mathcal{A}} Q(s, a)$$.
 2. Generate a new episode with the new policy $$\pi$$ (i.e. using algorithms like [ε-greedy]({{ site.baseurl }}{% post_url 2018-01-23-the-multi-armed-bandit-problem-and-its-solutions %}#%CE%B5-greedy-algorithm) helps us balance between exploitation and exploration.)
 3. Estimate Q using the new episode: $$q_\pi(s, a) = \frac{\sum_{t=1}^T \big( \mathbb{1}[S_t = s, A_t = a] \sum_{k=0}^{T-t-1} \gamma^k R_{t+k+1} \big)}{\sum_{t=1}^T \mathbb{1}[S_t = s, A_t = a]}$$
 

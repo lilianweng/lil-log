@@ -4,7 +4,7 @@ comments: true
 title: "Flow-based Deep Generative Models"
 date: 2018-10-13 12:15:00
 tags: review generative
-image: "vae-gaussian.png"
+image: "three-generative-models.png"
 ---
 
 > In this post, we are looking into the third type of generative models: flow-based generative models. Different from GAN and VAE, they explicitly learn the probability density function of the input data. 

@@ -7,11 +7,12 @@ tags: tutorial tensorflow reinforcement-learning
 image: "pacman-original.gif"
 ---
 
-> Let's see how to implement a number of classic deep reinforcement learning models in code. The full implementation is available in [lilianweng/deep-reinforcement-learning-gym](https://github.com/lilianweng/deep-reinforcement-learning-gym)
+> Let's see how to implement a number of classic deep reinforcement learning models in code. 
 
 
 <!--more-->
 
+The full implementation is available in [lilianweng/deep-reinforcement-learning-gym](https://github.com/lilianweng/deep-reinforcement-learning-gym)
 
 {: class="table-of-content"}
 * TOC

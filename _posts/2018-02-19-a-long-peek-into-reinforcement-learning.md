@@ -460,7 +460,7 @@ This weighted sum of many n-step returns is called λ-return $$G_t^{\lambda} = (
 
 ### Policy Gradient
 
-All the methods we have introduced above aim to learn the state/action value function and then to select actions accordingly. Policy Gradient methods instead learn the policy directly with a parameterized function respect to $$\theta$$, $$\pi(a \vert s; \theta)$$. Let's define the reward function (opposite of loss function) as *the expected return* and train the algorithm with the goal to maximize the reward function. My [next post]({{ site.baseurl }}{% post_url 2018-04-07-policy-gradient-algorithms %}) described why the policy gradient theorem works (proof) and introduced a number of policy gradient algorithms.
+All the methods we have introduced above aim to learn the state/action value function and then to select actions accordingly. Policy Gradient methods instead learn the policy directly with a parameterized function respect to $$\theta$$, $$\pi(a \vert s; \theta)$$. Let's define the reward function (opposite of loss function) as *the expected return* and train the algorithm with the goal to maximize the reward function. My [next post]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}) described why the policy gradient theorem works (proof) and introduced a number of policy gradient algorithms.
 
 In discrete space:
 

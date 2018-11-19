@@ -10,7 +10,7 @@ profile_url: "http://lilianweng.github.io"
 markdown: kramdown
 highlighter: rouge
 excerpt_separator: <!--more-->
-gems:
+plugins:
   - jekyll-feed
 exclude:
   - Gemfile

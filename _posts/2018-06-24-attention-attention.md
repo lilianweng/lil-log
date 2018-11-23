@@ -213,7 +213,7 @@ In one update iteration, the controller processes the input and interacts with t
 When reading from the memory at time t, an attention vector of size $$N$$, $$\mathbf{w}_t$$ controls how much attention to assign to different memory locations (matrix rows). The read vector $$\mathbf{r}_t$$ is a sum weighted by attention intensity:
 
 $$
-\mathbf{r}_i = \sum_{i=1}^N w_t(i)\mathbf{M}_t(i)\text{, where }\sum_{i=1}^N w_t(i)=1, \forall i: 0 \leq w_t(i) \leq 1
+\mathbf{r}_t = \sum_{i=1}^N w_t(i)\mathbf{M}_t(i)\text{, where }\sum_{i=1}^N w_t(i)=1, \forall i: 0 \leq w_t(i) \leq 1
 $$
 
 where $$w_t(i)$$ is the $$i$$-th element in $$\mathbf{w}_t$$ and $$\mathbf{M}_t(i)$$ is the $$i$$-th row vector in the memory.

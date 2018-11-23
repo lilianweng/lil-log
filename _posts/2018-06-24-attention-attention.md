@@ -251,7 +251,7 @@ $$
 Then an interpolation gate scalar $$g_t$$ is used to blend the newly generated content-based attention vector with the attention weights in the last time step:
 
 $$
-\mathbf{w}_t^g = g_t \mathbf{w}_t^c + (1 - g_t) \mathbf{w}_t^c 
+\mathbf{w}_t^g = g_t \mathbf{w}_t^c + (1 - g_t) \mathbf{w}_{t-1}^c 
 $$
 
 
@@ -455,7 +455,7 @@ See you in the next post :D
 
 [1] ["Attention and Memory in Deep Learning and NLP."](http://www.wildml.com/2016/01/attention-and-memory-in-deep-learning-and-nlp/) - Jan 3, 2016 by Denny Britz
 
-[2] ["Neural Machine Translation (seq2seq) Tutorial"](https://www.tensorflow.org/versions/master/tutorials/seq2seq)
+[2] ["Neural Machine Translation (seq2seq) Tutorial"](https://github.com/tensorflow/nmt)
 
 [3] Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio. ["Neural machine translation by jointly learning to align and translate."](https://arxiv.org/pdf/1409.0473.pdf) ICLR 2015.
 

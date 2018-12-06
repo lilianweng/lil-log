@@ -309,7 +309,7 @@ The attention mechanism is simplified, as Ptr-Net does not blend the encoder sta
 ["Attention is All you Need"](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf)
  (Vaswani, et al., 2017), without a doubt, is one of the most impactful and interesting paper in 2017. It presented a lot of improvements to the soft attention and make it possible to do seq2seq modeling *without* recurrent network units. The proposed "**transformer**" model is entirely built on the self-attention mechanisms without using sequence-aligned recurrent architecture.
 
-The secret receipt is carried in its model architecture.
+The secret recipe is carried in its model architecture.
 
 ### Key, Value and Query
 

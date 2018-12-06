@@ -47,7 +47,7 @@ The following example demonstrates multiple pairs of target and context words as
 
 
 
-| Sliding window (size = 2)  |  Target word  |  Context |
+| Sliding window (size = 5)  |  Target word  |  Context |
 | ------------ | ------------ | ------------ |
 | [The man who] | the  | man, who | 
 | [The man who passes] | man | the, who, passes | 

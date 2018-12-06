@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Meta-Learning: Leaning to Learn Fast"
 date: 2018-11-30 00:00:00
-tags: review meta-learning
+tags: review meta-learning long-read
 ---
 
 > Meta-learning, also known as "learning to learn", intends to design models that can learn new skills or adapt to new environments rapidly with a few training examples. There are three common approaches: 1) learn an efficient distance metric (metric-based); 2) use (recurrent) network with external or internal memory (model-based); 3) optimize the model parameters explicitly for fast learning (optimization-based).
@@ -739,6 +739,12 @@ $$
 
 It is not clear to me whether the ignored term $$O(\alpha^2)$$ might play a big impact on the parameter learning. But given that FOMAML is able to obtain a similar performance as the full version of MAML, it might be safe to say higher-level derivatives would not be critical during gradient descent update.
 
+
+---
+
+*If you notice mistakes and errors in this post, don't hesitate to leave a comment or contact me at [lilian dot wengweng at gmail dot com] and I would be very happy to correct them asap.*
+
+See you in the next post!
 
 
 ## Reference

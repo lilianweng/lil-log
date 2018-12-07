@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "Meta-Learning: Leaning to Learn Fast"
+title: "Meta-Learning: Learning to Learn Fast"
 date: 2018-11-30 00:00:00
 tags: review meta-learning long-read
 ---

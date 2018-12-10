@@ -12,7 +12,7 @@ image: "three-generative-models.png"
 <!--more-->
 
 
-So far, I've written about two types of generative models, [GAN]({{ site.base_url }}{% post_url 2017-08-20-from-GAN-to-WGAN %}) and [VAE]({{ site.base_url }}{% post_url 2018-08-12-from-autoencoder-to-beta-vae %}). Neither of them explicitly learns the probability density function of real data, $$p(\mathbf{x})$$ (where $$\mathbf{x} \in \mathcal{D}$$) --- because it is really hard! Taking the generative model with latent variables as an example, $$p(\mathbf{x}) = \int p(\mathbf{x}\vert\mathbf{z})p(\mathbf{z})d\mathbf{z}$$ can hardly be calculated as it is intractable to go through all possible values of the latent code $$\mathbf{z}$$.
+So far, I've written about two types of generative models, [GAN]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}) and [VAE]({{ site.baseurl }}{% post_url 2018-08-12-from-autoencoder-to-beta-vae %}). Neither of them explicitly learns the probability density function of real data, $$p(\mathbf{x})$$ (where $$\mathbf{x} \in \mathcal{D}$$) --- because it is really hard! Taking the generative model with latent variables as an example, $$p(\mathbf{x}) = \int p(\mathbf{x}\vert\mathbf{z})p(\mathbf{z})d\mathbf{z}$$ can hardly be calculated as it is intractable to go through all possible values of the latent code $$\mathbf{z}$$.
 
 Flow-based deep generative models conquer this hard problem with the help of [normalizing flows](https://arxiv.org/abs/1505.05770), a powerful statistics tool for density estimation. A good estimation of $$p(\mathbf{x})$$ makes it possible to efficiently complete many downstream tasks: sample unobserved but realistic new data points (data generation), predict the rareness of future events (density estimation), infer latent variables, fill in incomplete data samples, etc.
 
@@ -366,7 +366,7 @@ Let's consider an image of size $$n \times n$$, $$\mathbf{x} = \{x_1, \dots, x_{
 {: style="width: 30%;" class="center"}
 *Fig. 6. The context for generating one pixel in PixelRNN. (Image source: [Oord et al, 2016](https://arxiv.org/abs/1601.06759)*
 
-Every pixel $$x_i$$ is sampled from a probability distribution conditional over the the past context: pixels above it or on the left of it when in the same row. The definition of such context looks pretty arbitrary, because how visual [attention]({{ site.base_url}}{% post_url 2018-06-24-attention-attention %}) is attended to an image is more flexible. Somehow magically a generative model with such a strong assumption works.
+Every pixel $$x_i$$ is sampled from a probability distribution conditional over the the past context: pixels above it or on the left of it when in the same row. The definition of such context looks pretty arbitrary, because how visual [attention]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}) is attended to an image is more flexible. Somehow magically a generative model with such a strong assumption works.
 
 One implementation that could capture the entire context is the *Diagonal BiLSTM*. First, apply the **skewing** operation by offsetting each row of the input feature map by one position with respect to the previous row, so that computation for each row can be parallelized. Then the LSTM states are computed with respect to the current pixel and the pixels on the left.
 

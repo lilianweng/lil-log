@@ -475,7 +475,7 @@ Computations of the individual elements $$\tilde{x}_i$$ do not depend on each ot
 
 ## VAE + Flows
 
-In [Variational Autoencoder]({{ site.base_url }}{% post_url 2018-08-12-from-autoencoder-to-beta-vae %}#vae-variational-autoencoder), if we want to model the posterior $$p(\mathbf{z}\vert\mathbf{x})$$ as a more complicated distribution rather than simple Gaussian. Intuitively we can use normalizing flow to transform the base Gaussian for better density approximation. The encoder then would predict a set of scale and shift terms $$(\mu_i, \sigma_i)$$ which are all functions of input $$\mathbf{x}$$. Read the [paper](https://arxiv.org/abs/1809.05861) for more details if interested.
+In [Variational Autoencoder]({{ site.baseurl }}{% post_url 2018-08-12-from-autoencoder-to-beta-vae %}#vae-variational-autoencoder), if we want to model the posterior $$p(\mathbf{z}\vert\mathbf{x})$$ as a more complicated distribution rather than simple Gaussian. Intuitively we can use normalizing flow to transform the base Gaussian for better density approximation. The encoder then would predict a set of scale and shift terms $$(\mu_i, \sigma_i)$$ which are all functions of input $$\mathbf{x}$$. Read the [paper](https://arxiv.org/abs/1809.05861) for more details if interested.
 
 ---
 

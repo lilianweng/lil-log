@@ -87,7 +87,7 @@ $$
 The reward function R predicts the next reward triggered by one action:
 
 $$
-R(s, a) = \mathbb{E} [R_{t+1} \vert S_t = s, A_t = a] = \sum_{s' \in \mathcal{S}} P(s', r \vert s, a)
+R(s, a) = \mathbb{E} [R_{t+1} \vert S_t = s, A_t = a] = \sum_{r\in\mathcal{R}} r \sum_{s' \in \mathcal{S}} P(s', r \vert s, a)
 $$
 
 

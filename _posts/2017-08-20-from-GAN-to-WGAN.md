@@ -170,7 +170,7 @@ Essentially the loss function of GAN quantifies the similarity between the gener
 > **Other Variations of GAN**: There are many variations of GANs in different contexts or designed for different tasks. For example, for semi-supervised learning, one idea is to update the discriminator to output real class labels, $$1, \dots, K-1$$, as well as one fake class label $$K$$. The generator model aims to trick the discriminator to output a classification label smaller than $$K$$.
 
 
-**Tensorfor Implementation**: [carpedm20/DCGAN-tensorflow](https://github.com/carpedm20/DCGAN-tensorflow)
+**Tensorflow Implementation**: [carpedm20/DCGAN-tensorflow](https://github.com/carpedm20/DCGAN-tensorflow)
 
 
 

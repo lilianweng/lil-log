@@ -1,18 +1,21 @@
 ---
 layout: post
 comments: true
-title: "Object Recognition for Dummies Part 3: R-CNN and Fast/Faster/Mask R-CNN and YOLO"
+title: "Object Recognition for Dummies Part 3: R-CNN Family"
 date: 2017-12-31 23:00:00
 tags: object-recognition
 image: "manu-2013-segmentation.png"
 ---
 
-> In Part 3, we would examine five object recognition models: R-CNN, Fast R-CNN, Faster R-CNN, Mask R-CNN and YOLO. These models are highly related and the new versions show great speed improvement compared to the older ones.
+> In Part 3, we would examine five object recognition models: R-CNN, Fast R-CNN, Faster R-CNN, and Mask R-CNN. These models are highly related and the new versions show great speed improvement compared to the older ones.
 
 
 <!--more-->
 
-In the series of "Object Recognition for Dummies", we started with basic concepts in image processing, such as gradient vectors and HOG, in [Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}). Then we introduced classic convolutional neural network architecture designs for classification and pioneer models for object recognition, Overfeat and DPM, in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}). In the last post of this series, we are about to review a set of models in the R-CNN ("Region-based CNN") family and YOLO for fast recognition.
+<span style="color: #286ee0;">[Updated on 2018-12-20: Remove YOLO here. Part 4 will cover multiple fast object detection algorithms, including YOLO.]</span>
+
+å
+In the series of "Object Recognition for Dummies", we started with basic concepts in image processing, such as gradient vectors and HOG, in [Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}). Then we introduced classic convolutional neural network architecture designs for classification and pioneer models for object recognition, Overfeat and DPM, in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}). In the third post of this series, we are about to review a set of models in the R-CNN ("Region-based CNN") family.
 
 {: class="table-of-content"}
 * TOC
@@ -27,7 +30,6 @@ Here is a list of papers covered in this post ;)
 | Fast R-CNN   | Object recognition | [[paper](https://arxiv.org/abs/1504.08083)][[code](https://github.com/rbgirshick/fast-rcnn)]   |
 | Faster R-CNN | Object recognition | [[paper](https://arxiv.org/abs/1506.01497)][[code](https://github.com/rbgirshick/py-faster-rcnn)]  |
 | Mask R-CNN   | Image segmentation | [[paper](https://arxiv.org/abs/1703.06870)][[code](https://github.com/CharlesShang/FastMaskRCNN)] |
-| YOLO         | Fast object recognition | [[paper](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf)][[code](https://pjreddie.com/darknet/yolo/)]   |
 {:.info}
 
 
@@ -251,70 +253,6 @@ Here I illustrate model designs of R-CNN, Fast R-CNN, Faster R-CNN and Mask R-CN
 
 ![R-CNN family summary]({{ '/assets/images/rcnn-family-summary.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-
-
-
-## YOLO: You Only Look Once
-
-The YOLO model ("You Only Look Once"; [Redmon et al., 2016](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf)) treats the object recognition task as a unified **regression** problem, different from the models in the R-CNN family which learn to solve a **classification** task. In the meantime, YOLO sees the entire image during training and thus it has better performance in recognizing the background with the knowledge of the full context.
-
-
-- **Pros**: Very fast.
-- **Cons**: Accuracy tradeoff; not good at recognizing irregularly shaped objects or a group of small objects (i.e. a flock of birds?)
-
-
-### Workflow
-
-![YOLO]({{ '/assets/images/yolo.png' | relative_url }})
-{: style="width: 760px;" class="center"}
-*Fig. 8. The workflow of YOLO model. (Image source: [Redmon et al., 2016](https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf))*
-
-1. Pre-train a CNN network on image classification tasks.
-2. Split an image into S x S cells. Each cell is responsible for identifying the object (if any) with its center located in this cell. Each cell predicts the location of B bounding boxes and a confidence score, and a probability of object class conditioned on the existence of an object in the bounding box.
-	- A bounding box is defined by a tuple of (center x, center y, width, height) --- $$(x, y, w, h)$$. $$x$$ and $$y$$ are normalized to be the offsets of a cell location; $$w$$ and $$h$$ are normalized by the image width and height, and thus between (0, 1].
-	- A confidence score is: *probability*(containing an object) x IoU(pred, truth).
-	- If the cell contains an object, it predicts a probability of this object belonging to one class $$C_i$$, i=1,2,..., K: *probability*(the object belongs to the class $$C_i$$ | containing an object). At this stage, the model only predicts one set of class probabilities per cell, regardless of the number of boxes B.
-	<br />
-	In total, one image contains S x S x B bounding boxes, each box corresponding to 4 location predictions, 1 confidence score, and K conditional probability for object classification. The total prediction values for one image is S x S x (5B + K).
-3. The final layer of the pre-trained CNN is modified to output a prediction tensor of size S x S x (5B + K).
-
-
-### Loss Function
-
-The YOLO is trained to minimize the sum of squared errors, with scale parameters to control how much we want to increase the loss from bounding box coordinate predictions ($$\lambda_\text{coord}$$) and how much we want to decrease the loss from confidence predictions for boxes that don't contain objects ($$\lambda_\text{noobj}$$). In the paper, the model uses $$\lambda_\text{coord} = 5$$ and $$\lambda_\text{noobj} = 0.5$$.
-
-When 
-
-$$
-\begin{align*}
-\mathcal{L} &= 
-\lambda_\text{coord} \sum_{i=0}^{S^2} \sum_{j=0}^B \mathbb{1}_{ij}^\text{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2 + (\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2 ] \\
-&+ \sum_{i=0}^{S^2} \sum_{j=0}^B \mathbb{1}_{ij}^\text{obj} (C_{ij} - \hat{C}_{ij})^2 + \lambda_\text{noobj} \sum_{i=0}^{S^2} \sum_{j=0}^B \mathbb{1}_{ij}^\text{noobj} (C_{ij} - \hat{C}_{ij})^2 + \sum_{i=0}^{S^2} \mathbb{1}_i^\text{obj} \sum_{c \in \text{classes}} (p_i(c) - \hat{p}_i(c))^2
-\end{align*}
-$$
-
-where:
-
-| **Symbol**                     | **Explanation** |
-| $$\mathbb{1}_i^\text{obj}$$    | whether the cell i contains an object. | 
-| $$\mathbb{1}_{ij}^\text{obj}$$ | j-th bounding box predictor of the cell i is "responsible" for that prediction (See Fig. 9). |
-| $$C_{ij}$$     | confidence score of the j-th box in cell i, probability(containing an object) * IoU(pred, truth). |
-| $$\hat{C}_{ij}$$ | predicted confidence score. |
-| $$p_i(c)$$       | conditional probability of whether cell i contains an object of class c.   |
-| $$\hat{p}_i(c)$$       | predicted conditional probability of whether cell i contains an object of class c.  |
-{:.info}
-
-> NOTE: In the original YOLO paper, the loss function uses $$C_i$$ instead of $$C_{ij}$$. I made the correction based on my own understanding. Please kindly let me if you do not agree. Many thanks.
-
-
-![YOLO responsible predictor]({{ '/assets/images/yolo-responsible-predictor.png' | relative_url }})
-{: style="width: 640px;" class="center"}
-*Fig. 9. At one location, in cell i, the model proposes B bounding box candidates and the one with highest IoU with the ground truth is the "responsible" predictor.*
-
-
-The loss function only penalizes classification error if an object is present in that grid cell, $$\mathbb{1}_i^\text{obj} = 1$$. It also only penalizes bounding box coordinate error if that predictor is "responsible" for the ground truth box, $$\mathbb{1}_{ij}^\text{obj} = 1$$.
-
-
 
 
 ## Reference

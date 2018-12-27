@@ -13,8 +13,10 @@ image: "manu-2013-segmentation.png"
 <!--more-->
 
 <span style="color: #286ee0;">[Updated on 2018-12-20: Remove YOLO here. Part 4 will cover multiple fast object detection algorithms, including YOLO.]</span>
+<br/>
+<span style="color: #286ee0;">[Updated on 2018-12-27: Add [bbox regression](#bounding-box-regression) and [tricks](#common-tricks) sections for R-CNN.]</span>
 
-å
+
 In the series of "Object Recognition for Dummies", we started with basic concepts in image processing, such as gradient vectors and HOG, in [Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}). Then we introduced classic convolutional neural network architecture designs for classification and pioneer models for object recognition, Overfeat and DPM, in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}). In the third post of this series, we are about to review a set of models in the R-CNN ("Region-based CNN") family.
 
 {: class="table-of-content"}
@@ -47,16 +49,80 @@ R-CNN ([Girshick et al., 2014](https://arxiv.org/abs/1311.2524)) is short for "R
 
 How R-CNN works can be summarized as follows:
 
-1. Pre-train a CNN network on image classification tasks; for example, VGG or ResNet trained on [ImageNet](http://image-net.org/index) dataset. The classification task involves N classes. 
+1. **Pre-train** a CNN network on image classification tasks; for example, VGG or ResNet trained on [ImageNet](http://image-net.org/index) dataset. The classification task involves N classes. 
 <br />
-*NOTE: You can find a pre-trained [AlexNet](https://github.com/BVLC/caffe/tree/master/models/bvlc_alexnet) in Caffe Model [Zoo](https://github.com/caffe2/caffe2/wiki/Model-Zoo). I don’t think you can [find it](https://github.com/tensorflow/models/issues/1394) in Tensorflow, but Tensorflow-slim model [library](https://github.com/tensorflow/models/tree/master/research/slim) provides pre-trained ResNet, VGG, and others.*
+> NOTE: You can find a pre-trained [AlexNet](https://github.com/BVLC/caffe/tree/master/models/bvlc_alexnet) in Caffe Model [Zoo](https://github.com/caffe2/caffe2/wiki/Model-Zoo). I don’t think you can [find it](https://github.com/tensorflow/models/issues/1394) in Tensorflow, but Tensorflow-slim model [library](https://github.com/tensorflow/models/tree/master/research/slim) provides pre-trained ResNet, VGG, and others.
 2. Propose category-independent regions of interest by selective search (~2k candidates per image). Those regions may contain target objects and they are of different sizes.
-3. Region candidates are warped to have a fixed size as required by CNN.
+3. Region candidates are **warped** to have a fixed size as required by CNN.
 4. Continue fine-tuning the CNN on warped proposal regions for K + 1 classes; The additional one class refers to the background (no object of interest). In the fine-tuning stage, we should use a much smaller learning rate and the mini-batch oversamples the positive cases because most proposed regions are just background.
-5. Given every image region, one forward propagation through the CNN generates a feature vector. This feature vector is then consumed by a binary SVM trained for each class independently. 
+5. Given every image region, one forward propagation through the CNN generates a feature vector. This feature vector is then consumed by a **binary SVM** trained for **each class** independently. 
 <br />
 The positive samples are proposed regions with IoU (intersection over union) overlap threshold >= 0.3, and negative samples are irrelevant others.
 6. To reduce the localization errors, a regression model is trained to correct the predicted detection window on bounding box correction offset using CNN features.
+
+
+### Bounding Box Regression
+
+Given a predicted bounding box coordinate $$\mathbf{p} = (p_x, p_y, p_w, p_h)$$ (center coordinate, width, height) and its corresponding ground truth box coordinates $$\mathbf{g} = (g_x, g_y, g_w, g_h)$$ , the regressor is configured to learn scale-invariant transformation between two centers and log-scale transformation between widths and heights. All the transformation functions take $$\mathbf{p}$$ as input.
+
+$$
+\begin{aligned}
+\hat{g}_x &= p_w d_x(\mathbf{p}) + p_x \\
+\hat{g}_y &= p_h d_y(\mathbf{p}) + p_y \\
+\hat{g}_w &= p_w \exp({d_w(\mathbf{p})}) \\
+\hat{g}_h &= p_h \exp({d_h(\mathbf{p})})
+\end{aligned}
+$$
+
+
+![bbox regression]({{ '/assets/images/RCNN-bbox-regression.png' | relative_url }})
+{: style="width: 60%;" class="center"}
+*Fig. 2. Illustration of transformation between predicted and ground truth bounding boxes.*
+
+An obvious benefit of applying such transformation is that all the bounding box correction functions, $$d_i(\mathbf{p})$$ where $$i \in \{ x, y, w, h \}$$, can take any value between [-∞, +∞]. The targets for them to learn are:
+
+$$
+\begin{aligned}
+t_x &= (g_x - p_x) / p_w \\
+t_y &= (g_y - p_y) / p_h \\
+t_w &= \log(g_w/p_w) \\
+t_h &= \log(g_h/p_h)
+\end{aligned}
+$$
+
+A standard regression model can solve the problem by minimizing the SSE loss with regularization: 
+
+$$
+\mathcal{L}_\text{reg} = \sum_{i \in \{x, y, w, h\}} (t_i - d_i(\mathbf{p}))^2 + \lambda \|\mathbf{w}\|^2
+$$
+
+The regularization term is critical here and RCNN paper picked the best λ by cross validation. It is also noteworthy that not all the predicted bounding boxes have corresponding ground truth boxes. For example, if there is no overlap, it does not make sense to run bbox regression. Here, only a predicted box with a nearby ground truth box with at least 0.6 IoU is kept for training the bbox regression model.
+
+
+### Common Tricks
+
+Several tricks are commonly used in RCNN and other detection models.
+
+**Non-Maximum Suppression**
+
+Likely the model is able to find multiple bounding boxes for the same object. Non-max suppression helps avoid repeated detection of the same instance. After we get a set of matched bounding boxes for the same object category:
+Sort all the bounding boxes by confidence score.
+Discard boxes with low confidence scores.
+*While* there is any remaining bounding box, repeat the following:
+Greedily select the one with the highest score.
+Skip the remaining boxes with high IoU (i.e. > 0.5) with previously selected one.
+
+
+![Non-max suppression]({{ '/assets/images/non-max-suppression.png' | relative_url }})
+{: class="center"}
+*Fig. 3. Multiple bounding boxes detect the car in the image. After non-maximum suppression, only the best remains and the rest are ignored as they have large overlaps with the selected one. (Image source: [DPM paper](http://lear.inrialpes.fr/~oneata/reading_group/dpm.pdf))*
+
+
+**Hard Negative Mining**
+
+We consider bounding boxes without objects as negative examples. Not all the negative examples are equally hard to be identified. For example, if it holds pure empty background, it is likely an “*easy negative*”; but if the box contains weird noisy texture or partial object, it could be hard to be recognized and these are “*hard negative*”. 
+
+The hard negative examples are easily misclassified. We can explicitly find those false positive samples during the training loops and include them in the training data so as to improve the classifier.
 
 
 ### Speed Bottleneck
@@ -74,7 +140,7 @@ To make R-CNN faster, Girshick ([2015](https://arxiv.org/pdf/1504.08083.pdf)) im
 
 ![Fast R-CNN]({{ '/assets/images/fast-RCNN.png' | relative_url }})
 {: style="width: 540px;" class="center"}
-*Fig. 2. The architecture of Fast R-CNN. (Image source: [Girshick, 2015](https://arxiv.org/pdf/1504.08083.pdf))*
+*Fig. 4. The architecture of Fast R-CNN. (Image source: [Girshick, 2015](https://arxiv.org/pdf/1504.08083.pdf))*
 
 
 ### RoI Pooling
@@ -84,7 +150,7 @@ It is a type of max pooling to convert features in the projected region of the i
 
 ![RoI pooling]({{ '/assets/images/roi-pooling.png' | relative_url }})
 {: style="width: 540px;" class="center"}
-*Fig. 3. RoI pooling (Image source: [Stanford CS231n slides](http://cs231n.stanford.edu/slides/2016/winter1516_lecture8.pdf).)*
+*Fig. 5. RoI pooling (Image source: [Stanford CS231n slides](http://cs231n.stanford.edu/slides/2016/winter1516_lecture8.pdf).)*
 
 
 ### Model Workflow
@@ -108,7 +174,7 @@ The model is optimized for a loss combining two tasks (classification + localiza
 | $$u$$ | True class label, $$ u \in 0, 1, \dots, K$$; by convention, the catch-all background class has $$u = 0$$. |
 | $$p$$ | Discrete probability distribution (per RoI) over K + 1 classes: $$p = (p_0, \dots, p_K)$$, computed by a softmax over the K + 1 outputs of a fully connected layer. |
 | $$v$$ | True bounding box $$ v = (v_x, v_y, v_w, v_h) $$. |
-| $$t^u$$ | Predicted bounding box correction, $$t^u = (t^u_x, t^u_y, t^u_w, t^u_h)$$. |
+| $$t^u$$ | Predicted bounding box correction, $$t^u = (t^u_x, t^u_y, t^u_w, t^u_h)$$. See [above](#bounding-box-regression). |
 {:.info}
 
 
@@ -142,7 +208,7 @@ $$
 
 ![Smooth L1 loss]({{ '/assets/images/l1-smooth.png' | relative_url }})
 {: style="width: 240px;" class="center"}
-*Fig. 4. The plot of smooth L1 loss, $$y = L_1^\text{smooth}(x)$$. (Image source: [link](https://github.com/rbgirshick/py-faster-rcnn/files/764206/SmoothL1Loss.1.pdf))*
+*Fig. 6. The plot of smooth L1 loss, $$y = L_1^\text{smooth}(x)$$. (Image source: [link](https://github.com/rbgirshick/py-faster-rcnn/files/764206/SmoothL1Loss.1.pdf))*
 
 
 
@@ -157,7 +223,7 @@ An intuitive speedup solution is to integrate the region proposal algorithm into
 
 ![Faster R-CNN]({{ '/assets/images/faster-RCNN.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 5. An illustration of Faster R-CNN model. (Image source: [Ren et al., 2016](https://arxiv.org/pdf/1506.01497.pdf))*
+*Fig. 7. An illustration of Faster R-CNN model. (Image source: [Ren et al., 2016](https://arxiv.org/pdf/1506.01497.pdf))*
 
 
 ### Model Workflow
@@ -209,14 +275,14 @@ Mask R-CNN ([He et al., 2017](https://arxiv.org/pdf/1703.06870.pdf)) extends Fas
 
 ![Mask R-CNN]({{ '/assets/images/mask-rcnn.png' | relative_url }})
 {: style="width: 550px;" class="center"}
-*Fig. 6. Mask R-CNN is Faster R-CNN model with image segmentation. (Image source: [He et al., 2017](https://arxiv.org/pdf/1703.06870.pdf))*
+*Fig. 8. Mask R-CNN is Faster R-CNN model with image segmentation. (Image source: [He et al., 2017](https://arxiv.org/pdf/1703.06870.pdf))*
 
 Because pixel-level segmentation requires much more fine-grained alignment than bounding boxes, mask R-CNN improves the RoI pooling layer (named "RoIAlign layer") so that RoI can be better and more precisely mapped to the regions of the original image.
 
 
 ![Mask R-CNN Examples]({{ '/assets/images/mask-rcnn-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 7. Predictions by Mask R-CNN on COCO test set. (Image source: [He et al., 2017](https://arxiv.org/pdf/1703.06870.pdf))*
+*Fig. 9. Predictions by Mask R-CNN on COCO test set. (Image source: [He et al., 2017](https://arxiv.org/pdf/1703.06870.pdf))*
 
 
 ### RoIAlign
@@ -226,7 +292,7 @@ The RoIAlign layer is designed to fix the location misalignment caused by quanti
 
 ![RoI Align]({{ '/assets/images/roi-align.png' | relative_url }})
 {: style="width: 640px;" class="center"}
-*Fig. 8. A region of interest is mapped **accurately** from the original image onto the feature map without rounding up to integers. (Image source: [link](https://blog.athelas.com/a-brief-history-of-cnns-in-image-segmentation-from-r-cnn-to-mask-r-cnn-34ea83205de4))*
+*Fig. 10. A region of interest is mapped **accurately** from the original image onto the feature map without rounding up to integers. (Image source: [link](https://blog.athelas.com/a-brief-history-of-cnns-in-image-segmentation-from-r-cnn-to-mask-r-cnn-34ea83205de4))*
 
 
 ### Loss Function

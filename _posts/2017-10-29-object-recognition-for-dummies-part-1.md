@@ -1,18 +1,21 @@
 ---
 layout: post
 comments: true
-title: "Object Recognition for Dummies Part 1: Gradient Vector, HOG, and SS"
+title: "Object Detection for Dummies Part 1: Gradient Vector, HOG, and SS"
 date: 2017-10-29 17:38:00
-tags: object-recognition
+tags: object-detection object-recognition
 image: "rcnn-family-summary.png"
 ---
 
-> In this series of posts on "Object Recognition for Dummies", we will go through several basic concepts, algorithms, and popular deep learning models for image processing and objection detection. Hopefully, it would be a good read for people with no experience in this field but want to learn more. The Part 1 introduces the concept of Gradient Vectors, the HOG (Histogram of Oriented Gradients) algorithm, and Selective Search for image segmentation. 
+> In this series of posts on "Object Detection for Dummies", we will go through several basic concepts, algorithms, and popular deep learning models for image processing and objection detection. Hopefully, it would be a good read for people with no experience in this field but want to learn more. The Part 1 introduces the concept of Gradient Vectors, the HOG (Histogram of Oriented Gradients) algorithm, and Selective Search for image segmentation. 
 
 
 <!--more-->
 
-I've never worked in the field of computer vision and has no idea how the magic could work when an autonomous car is configured to tell apart a stop sign from a pedestrian in a red hat. To motivate myself to look into the maths behind object recognition algorithms, I'm writing a few posts on this topic "Object Recognition for Dummies". This post, part 1, starts with super rudimentary concepts in image processing and a few methods for image segmentation. Nothing related to deep neural networks yet. Deep learning models for object recognition will be discussed in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}) and [Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %}).
+I've never worked in the field of computer vision and has no idea how the magic could work when an autonomous car is configured to tell apart a stop sign from a pedestrian in a red hat. To motivate myself to look into the maths behind object recognition and detection algorithms, I'm writing a few posts on this topic "Object Detection for Dummies". This post, part 1, starts with super rudimentary concepts in image processing and a few methods for image segmentation. Nothing related to deep neural networks yet. Deep learning models for object detection and recognition will be discussed in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}) and [Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %}).
+
+
+> Disclaimer: When I started, I was using "object recognition" and "object detection" interchangeably. I don't think they are the same: the former is more about telling whether an object exists in an image while the latter needs to spot where the object is. However, they are highly related and many object recognition algorithms lay the foundation for detection.
 
 
 {: class="table-of-content"}

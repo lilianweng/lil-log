@@ -1,13 +1,13 @@
 ---
 layout: post
 comments: true
-title: "Object Recognition for Dummies Part 3: R-CNN Family"
+title: "Object Detection for Dummies Part 3: R-CNN Family"
 date: 2017-12-31 23:00:00
-tags: object-recognition
+tags: object-detection object-recognition
 image: "manu-2013-segmentation.png"
 ---
 
-> In Part 3, we would examine five object recognition models: R-CNN, Fast R-CNN, Faster R-CNN, and Mask R-CNN. These models are highly related and the new versions show great speed improvement compared to the older ones.
+> In Part 3, we would examine five object detection models: R-CNN, Fast R-CNN, Faster R-CNN, and Mask R-CNN. These models are highly related and the new versions show great speed improvement compared to the older ones.
 
 
 <!--more-->
@@ -17,7 +17,7 @@ image: "manu-2013-segmentation.png"
 <span style="color: #286ee0;">[Updated on 2018-12-27: Add [bbox regression](#bounding-box-regression) and [tricks](#common-tricks) sections for R-CNN.]</span>
 
 
-In the series of "Object Recognition for Dummies", we started with basic concepts in image processing, such as gradient vectors and HOG, in [Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}). Then we introduced classic convolutional neural network architecture designs for classification and pioneer models for object recognition, Overfeat and DPM, in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}). In the third post of this series, we are about to review a set of models in the R-CNN ("Region-based CNN") family.
+In the series of "Object Detection for Dummies", we started with basic concepts in image processing, such as gradient vectors and HOG, in [Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}). Then we introduced classic convolutional neural network architecture designs for classification and pioneer models for object recognition, Overfeat and DPM, in [Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %}). In the third post of this series, we are about to review a set of models in the R-CNN ("Region-based CNN") family.
 
 {: class="table-of-content"}
 * TOC

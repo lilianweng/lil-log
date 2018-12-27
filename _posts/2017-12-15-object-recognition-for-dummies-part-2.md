@@ -1,9 +1,9 @@
 ---
 layout: post
 comments: true
-title: "Object Recognition for Dummies Part 2: CNN, DPM and Overfeat"
+title: "Object Detection for Dummies Part 2: CNN, DPM and Overfeat"
 date: 2017-12-15 23:00:00
-tags: object-recognition
+tags: object-detection object-recognition
 image: "residual-block.png"
 ---
 
@@ -12,9 +12,9 @@ image: "residual-block.png"
 
 <!--more-->
 
-[Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}) of the "Object Recognition for Dummies" series introduced: (1) the concept of image gradient vector and how HOG algorithm summarizes the information across all the gradient vectors in one image; (2) how the image segmentation algorithm works to detect regions that potentially contain objects; (3) how the Selective Search algorithm refines the outcomes of image segmentation for better region proposal. 
+[Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %}) of the "Object Detection for Dummies" series introduced: (1) the concept of image gradient vector and how HOG algorithm summarizes the information across all the gradient vectors in one image; (2) how the image segmentation algorithm works to detect regions that potentially contain objects; (3) how the Selective Search algorithm refines the outcomes of image segmentation for better region proposal. 
 
-In Part 2, we are about to find out more on the classic convolution neural network architectures for image classification. They lay the ___foundation___ for further progress on the deep learning models for object recognition. Go check [Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %}) if you want to learn more on R-CNN and related models.
+In Part 2, we are about to find out more on the classic convolution neural network architectures for image classification. They lay the ___foundation___ for further progress on the deep learning models for object detection. Go check [Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %}) if you want to learn more on R-CNN and related models.
 
 
 {: class="table-of-content"}
@@ -77,7 +77,7 @@ Figure 2 showcases two real examples of how to convolve a 3x3 kernel over a 5x5 
 
 ## Evaluation Metrics: mAP
 
-A common evaluation metric used in many object recognition tasks is "**mAP**", short for "**mean average precision**". It is a number from 0 to 100; higher value is better.
+A common evaluation metric used in many object recognition and detection tasks is "**mAP**", short for "**mean average precision**". It is a number from 0 to 100; higher value is better.
 - Combine all detections from all test images to draw a precision-recall curve (PR curve) for each class; The "average precision" (AP) is the area under the PR curve.
 - Given that target objects are in different classes, we first compute AP separately for each class, and then average over classes.
 - A detection is a true positive if it has **"intersection over union" (IoU)** with a ground-truth box greater than some threshold (usually 0.5; if so, the metric is "mAP@0.5")

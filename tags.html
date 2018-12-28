@@ -1,0 +1,19 @@
+---
+layout: default
+---
+<div class="home">
+  <h1 class="page-heading">Tags</h1>
+  {% capture temp_tags %}
+    {% for tag in site.tags %}
+      {{ tag[1].size | plus: 1000 }}#{{ tag[0] }}#{{ tag[1].size }}
+    {% endfor %}
+  {% endcapture %}
+  {% assign sorted_temp_tags = temp_tags | split:' ' | sort %}
+  {% for temp_tag in sorted_temp_tags %}
+    {% assign tag_items = temp_tag | split: '#' %}
+    {% capture tag_name %}{{ tag_items[1] }}{% endcapture %}
+    <span class="post-meta">
+      <a class="post-tag" href="/lil-log/tag/{{ tag_name }}">{{ tag_name }}</a>
+    </span><br/>
+  {% endfor %}
+</div>

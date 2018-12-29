@@ -336,7 +336,7 @@ TD learning methods update targets with regard to existing estimates rather than
 
 #### Value Estimation
 
-The most essential idea in TD learning is to update the value function $$V(S_t)$$ towards an estimated return $$R_{t+1} + \gamma V(S_{t+1})$$ (known as "**TD target**"). To what extent we want to update the value function is controlled by the learning rate hyperparameter α:
+The key idea in TD learning is to update the value function $$V(S_t)$$ towards an estimated return $$R_{t+1} + \gamma V(S_{t+1})$$ (known as "**TD target**"). To what extent we want to update the value function is controlled by the learning rate hyperparameter α:
 
 $$
 \begin{aligned}

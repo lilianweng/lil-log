@@ -159,7 +159,7 @@ $$
 \end{aligned}
 $$
 
-In the episodic case, the constant of proportionality ($$\sum_s \eta(s)$$) is the average length of an episode; in the continuing case, it is 1 ([Sutton & Barto, 2017](http://incompleteideas.net/book/bookdraft2017nov5.pdf); Sec. 13.1). The gradient can be further written as:
+In the episodic case, the constant of proportionality ($$\sum_s \eta(s)$$) is the average length of an episode; in the continuing case, it is 1 ([Sutton & Barto, 2017](http://incompleteideas.net/book/bookdraft2017nov5.pdf); Sec. 13.2). The gradient can be further written as:
 
 $$
 \begin{aligned}
@@ -420,7 +420,7 @@ $$
 \end{aligned}
 $$
 
-(2) **$$N$$-step returns**: When calculating the TD error, D4PG computes TD(N) rather than TD(1) to incorporate rewards in more future steps. Thus the new TD target is:
+(2) **$$N$$-step returns**: When calculating the TD error, D4PG computes $$N$$-step TD target rather than one-step to incorporate rewards in more future steps. Thus the new TD target is:
 
 $$
 r(s_0, a_0) + \mathbb{E}[\sum_{n=1}^{N-1} r(s_n, a_n) + \gamma^N Q(s_N, \mu_\theta(s_N)) \vert s_0, a_0 ]

@@ -304,7 +304,7 @@ The loss function of the vanilla GAN measures the JS divergence between the dist
 ### What is Wasserstein distance?
 
 [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric) is a measure of the distance between two probability distributions.
-It is also called **Earth Mover's distance**, short for EM distance, because informally it can be interpreted as moving piles of dirt that follow one probability distribution at a minimum cost to follow the other distribution. The cost is quantified by the amount of dirt moved times the moving distance.
+It is also called **Earth Mover's distance**, short for EM distance, because informally it can be interpreted as the minimum energy cost of moving and transforming a pile of dirt in the shape of one probability distribution to the shape of the other distribution. The cost is quantified by: the amount of dirt moved x the moving distance.
 
 <!-- 
 https://en.wikipedia.org/wiki/Hungarian_algorithm

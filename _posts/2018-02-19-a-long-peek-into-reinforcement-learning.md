@@ -42,7 +42,7 @@ The model defines the reward function and transition probabilities. We may or ma
 - **Know the model**: planning with perfect information; do model-based RL. When we fully know the environment, we can find the optimal solution by [Dynamic Programming](https://en.wikipedia.org/wiki/Dynamic_programming) (DP). Do you still remember "longest increasing subsequence" or "traveling salesmen problem" from your Algorithms 101 class? LOL. This is not the focus of this post though. 
 - **Does not know the model**: learning with incomplete information; do model-free RL or try to learn the model explicitly as part of the algorithm. Most of the following content serves the scenarios when the model is unknown.
 
-The agent's **policy** ($$\pi(s)$$) provides the guideline on what is the optimal action to take in a certain state with <span style="color: #e01f1f;">**the goal to maximize the total rewards**</span>. Each state is associated with a **value** function ($$V(s)$$) predicting the expected amount of future rewards we are able to receive in this state. In other words, the value function quantifies how good a state is. Both policy and value functions are what we try to learn in reinforcement learning. 
+The agent's **policy** $$\pi(s)$$ provides the guideline on what is the optimal action to take in a certain state with <span style="color: #e01f1f;">**the goal to maximize the total rewards**</span>. Each state is associated with a **value** function $$V(s)$$ predicting the expected amount of future rewards we are able to receive in this state by acting the corresponding policy. In other words, the value function quantifies how good a state is. Both policy and value functions are what we try to learn in reinforcement learning.
 
 
 ![Categorization of RL Algorithms]({{ '/assets/images/RL_algorithm_categorization.png' | relative_url }})
@@ -50,13 +50,11 @@ The agent's **policy** ($$\pi(s)$$) provides the guideline on what is the optima
 *Fig. 2. Summary of approaches in RL based on whether we want to model the value, policy, or the environment. (Image source: reproduced from David Silver's RL course [lecture 1](https://youtu.be/2pWv7GOvuf0).)*
 
 
-The interaction between the agent and the environment involves a sequence of actions and observed rewards in time, $$t=1, 2, \dots, T$$. During the process, the agent accumulates the knowledge about the environment, learns the optimal policy, and makes decisions on which action to take next so as to efficiently learn the best policy. Let's label the state, action, and reward at time step t as $$S_t$$, $$A_t$$, and $$R_t$$, respectively. Thus the interaction sequence is fully described by:
+The interaction between the agent and the environment involves a sequence of actions and observed rewards in time, $$t=1, 2, \dots, T$$. During the process, the agent accumulates the knowledge about the environment, learns the optimal policy, and makes decisions on which action to take next so as to efficiently learn the best policy. Let's label the state, action, and reward at time step t as $$S_t$$, $$A_t$$, and $$R_t$$, respectively. Thus the interaction sequence is fully described by one **episode** (also known as "trial" or "trajectory") and the sequence ends at the terminal state $$S_T$$:
 
 $$
 S_1, A_1, R_2, S_2, A_2, \dots, S_T
 $$
-
-$$S_T$$ is the terminal state.
 
 
 Terms you will encounter a lot when diving into different categories of RL algorithms:
@@ -70,7 +68,7 @@ Terms you will encounter a lot when diving into different categories of RL algor
 
 The model is a descriptor of the environment. With the model, we can learn or infer how the environment would interact with and provide feedback to the agent. The model has two major parts, transition probability function $$P$$ and reward function $$R$$.
 
-Let's say when we are in state s, we decide to take action a to arrive in the next state s' and obtain reward r. This is known as one **episode**, represented by a tuple (s, a, s', r).
+Let's say when we are in state s, we decide to take action a to arrive in the next state s' and obtain reward r. This is known as one **transition** step, represented by a tuple (s, a, s', r).
 
 The transition function P records the probability of transitioning from state s to s' after taking action a while obtaining reward r. We use $$\mathbb{P}$$ as a symbol of "probability".
 

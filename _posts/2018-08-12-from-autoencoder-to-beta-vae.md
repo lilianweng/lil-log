@@ -277,7 +277,7 @@ L_\text{VAE}(\theta, \phi)
 \end{aligned}
 $$
 
-In Variational Bayesian methods, this loss function is known as the *variational lower bound*, or *evidence lower bound*. The “lower bound” part in the name comes from the fact that KL divergence is always non-negative and thus $$L_\text{VAE}$$ is the lower bound of $$\log p_\theta (\mathbf{x})$$. 
+In Variational Bayesian methods, this loss function is known as the *variational lower bound*, or *evidence lower bound*. The “lower bound” part in the name comes from the fact that KL divergence is always non-negative and thus $$-L_\text{VAE}$$ is the lower bound of $$\log p_\theta (\mathbf{x})$$. 
 
 $$
 -L_\text{VAE} = \log p_\theta(\mathbf{x}) - D_\text{KL}( q_\phi(\mathbf{z}\vert\mathbf{x}) \| p_\theta(\mathbf{z}\vert\mathbf{x}) ) \leq \log p_\theta(\mathbf{x})

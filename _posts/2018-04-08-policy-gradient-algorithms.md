@@ -36,7 +36,7 @@ Here is a list of notations to help you read through equations in the post easil
 | $$s \in \mathcal{S}$$ | States. |
 | $$a \in \mathcal{A}$$ | Actions. |
 | $$r \in \mathcal{R}$$ | Rewards. |
-| $$S_t, A_t, R_t$$ | State, actionand reward at time step t of one trajectory. I may occasionally use $$s_t, a_t, r_t$$ as well. |
+| $$S_t, A_t, R_t$$ | State, action, and reward at time step t of one trajectory. I may occasionally use $$s_t, a_t, r_t$$ as well. |
 | $$\gamma$$ | Discount factor; penalty to uncertainty of future rewards; $$0<\gamma \leq 1$$. |
 | $$G_t$$ | Return; or discounted future reward; $$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$$. |
 | $$P(s’, r \vert s, a)$$ | Transition probability of getting to the next state s’ from the current state s with action a and reward r. |

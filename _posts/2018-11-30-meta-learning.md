@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Meta-Learning: Learning to Learn Fast"
 date: 2018-11-30 00:00:00
-tags: review meta-learning long-read
+tags: meta-learning long-read
 ---
 
 > Meta-learning, also known as "learning to learn", intends to design models that can learn new skills or adapt to new environments rapidly with a few training examples. There are three common approaches: 1) learn an efficient distance metric (metric-based); 2) use (recurrent) network with external or internal memory (model-based); 3) optimize the model parameters explicitly for fast learning (optimization-based).

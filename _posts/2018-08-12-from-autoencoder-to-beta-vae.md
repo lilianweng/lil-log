@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "From Autoencoder to Beta-VAE"
 date: 2018-08-12 10:18:00
-tags: review autoencoder generative
+tags: autoencoder generative-model
 image: "vae-gaussian.png"
 ---
 

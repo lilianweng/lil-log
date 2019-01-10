@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Learning Word Embedding"
 date: 2017-10-15 23:00:00
-tags: review
+tags: nlp
 image: "word2vec-skip-gram.png"
 ---
 
@@ -329,19 +329,19 @@ $$
 Finally,
 
 $$
-{w_i}^\top \tilde{w}_k = \log p_{\text{co}}(\tilde{w}_k \vert w_i) = \log \frac{C(w_i, \tilde{w})}{C(w_i)} = \log C(w_i, \tilde{w}) - \log C(w_i)
+{w_i}^\top \tilde{w}_k = \log p_{\text{co}}(\tilde{w}_k \vert w_i) = \log \frac{C(w_i, \tilde{w}_k)}{C(w_i)} = \log C(w_i, \tilde{w}_k) - \log C(w_i)
 $$
 
 Since the second term $$-\log C(w_i)$$ is independent of $$k$$, we can add bias term $$b_i$$ for $$w_i$$ to capture $$-\log C(w_i)$$. To keep the symmetric form, we also add in a bias $$\tilde{b}_k$$ for $$\tilde{w}_k$$.
 
 $$
-\log C(w_i, \tilde{w}) = {w_i}^\top \tilde{w}_k + b_i + \tilde{b}_k
+\log C(w_i, \tilde{w}_k) = {w_i}^\top \tilde{w}_k + b_i + \tilde{b}_k
 $$
 
 The loss function for the GloVe model is designed to preserve the above formula by minimizing the sum of the squared errors:
 
 $$
-\mathcal{L}_\theta = \sum_{i=1, j=1}^V f(C(w_i,w_j)) ({w_i}^\top \tilde{w} + b_i + \tilde{b}_k - \log C(w_i, \tilde{w}))^2
+\mathcal{L}_\theta = \sum_{i=1, j=1}^V f(C(w_i,w_j)) ({w_i}^\top \tilde{w}_j + b_i + \tilde{b}_j - \log C(w_i, \tilde{w}_j))^2
 $$
 
 The weighting schema $$f(c)$$ is a function of the co-occurrence of $$w_i$$ and $$w_j$$ and it is an adjustable model configuration. It should be close to zero as $$c \to 0$$; should be non-decreasing as higher co-occurrence should have more impact; should saturate when $$c$$ become extremely large. The paper proposed the following weighting function.

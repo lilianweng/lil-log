@@ -102,7 +102,7 @@ where $$\det \frac{\partial f}{\partial\mathbf{z}}$$ is the Jacobian determinant
 
 ## What is Normalizing Flows?
 
-Being able to do good density estimation has direct applications in many machine learning problems, but it is very hard. For example, since we need to run backward propagation in deep learning models, the embedded probability distribution (i.e. posterior $$p(\mathbf{z})\vert\mathbf{x})$$) is expected to be simple enough to calculate the derivative easily and efficiently. That is why Gaussian distribution is often used in latent variable generative models, even through most of real world distributions are much more complicated than Gaussian. 
+Being able to do good density estimation has direct applications in many machine learning problems, but it is very hard. For example, since we need to run backward propagation in deep learning models, the embedded probability distribution (i.e. posterior $$p(\mathbf{z})\vert\mathbf{x})$$) is expected to be simple enough to calculate the derivative easily and efficiently. That is why Gaussian distribution is often used in latent variable generative models, even though most of real world distributions are much more complicated than Gaussian. 
 
 Here comes a **Normalizing Flow** (NF) model for better and more powerful distribution approximation. A normalizing flow transforms a simple distribution into a complex one by applying a sequence of invertible transformation functions. Flowing through a chain of transformations, we repeatedly substitute the variable for the new one according to the change of variables theorem and eventually obtain a probability distribution of the final target variable.
 
@@ -364,7 +364,7 @@ Let's consider an image of size $$n \times n$$, $$\mathbf{x} = \{x_1, \dots, x_{
 
 ![Context in PixelRNN]({{ '/assets/images/pixel-rnn-context.png' | relative_url }})
 {: style="width: 30%;" class="center"}
-*Fig. 6. The context for generating one pixel in PixelRNN. (Image source: [Oord et al, 2016](https://arxiv.org/abs/1601.06759)*
+*Fig. 6. The context for generating one pixel in PixelRNN. (Image source: [Oord et al, 2016](https://arxiv.org/abs/1601.06759))*
 
 Every pixel $$x_i$$ is sampled from a probability distribution conditional over the the past context: pixels above it or on the left of it when in the same row. The definition of such context looks pretty arbitrary, because how visual [attention]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}) is attended to an image is more flexible. Somehow magically a generative model with such a strong assumption works.
 
@@ -372,7 +372,7 @@ One implementation that could capture the entire context is the *Diagonal BiLSTM
 
 ![Diagonal BiLSTM]({{ '/assets/images/diagonal-biLSTM.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 7. (a) PixelRNN with diagonal BiLSTM. (b) Skewing operation that offsets each row in the feature map by one with regards to the row above. (Image source: [Oord et al, 2016](https://arxiv.org/abs/1601.06759)*
+*Fig. 7. (a) PixelRNN with diagonal BiLSTM. (b) Skewing operation that offsets each row in the feature map by one with regards to the row above. (Image source: [Oord et al, 2016](https://arxiv.org/abs/1601.06759))*
 
 $$
 \begin{aligned}

@@ -7,22 +7,25 @@ tags: nlp
 image: "elmo-and-bert.png"
 ---
 
-> As a follow up of word embedding post, we will discuss the models on learning contextualized word vectors, as well as the new trend in large unsupervised pre-trained language models which have achieved amazing results on many language tasks.
+> As a follow up of word embedding post, we will discuss the models on learning contextualized word vectors, as well as the new trend in large unsupervised pre-trained language models which have achieved amazing SOTA results on a variety of language tasks.
 
 <!--more-->
 
 <br />
 ![Elmo & Bert]({{ '/assets/images/elmo-and-bert.png' | relative_url }})
 {: style="width: 60%;" class="center"}
+*Fig. 0. I guess they are Elmo & Bert? (Image source: [here](http://www.essentialkids.com.au/entertainment/tv/elmo-big-bird-lend-a-hand-20110825-1jcqt))*
 <br />
 
-We have seen amazing progress in NLP in 2018. Large-scale pretrained language modes like OpenAI GPT and BERT have achieved great performance over a variety of language tasks using generic model architectures. The idea is similar to how ImageNet classification pretraining helps many vision tasks (although recently He et al. (2018) [found](https://arxiv.org/abs/1811.08883) that pretraining might not be necessary for image segmentation task). Even better than vision, this simple and powerful approach in NLP does not required labeled data for pretraining, allowing us to experiment with increased training scale, up to our very limit.
+We have seen amazing progress in NLP in 2018. Large-scale pretrained language modes like [OpenAI GPT](https://blog.openai.com/language-unsupervised/) and [BERT](https://arxiv.org/abs/1810.04805) have achieved great performance on a variety of language tasks using generic model architectures. The idea is similar to how ImageNet classification pre-training helps many vision tasks (\*). Even better than vision classification pre-training, this simple and powerful approach in NLP does not require labeled data for pre-training, allowing us to experiment with increased training scale, up to our very limit.
 
-In my previous NLP [post on word embedding]({{ site.baseurl }}{% post_url 2017-10-15-learning-word-embedding %}), the introduced embeddings are not context specific - they are learned based on word concurrence but not sequential context. So in sentences “*I am eating an apple*” and “*I have an Apple phone*”, two “apple” words refer to very different things but they would still share the same word embedding vector. 
+*(\*) Although recently He et al. (2018) [found](https://arxiv.org/abs/1811.08883) that pre-training might not be necessary for image segmentation task.*
 
-Despite of this, early adoption of word embeddings is to use them as additional features for an existing task-specific model and thus the improvement is bounded.
+In my previous NLP [post on word embedding]({{ site.baseurl }}{% post_url 2017-10-15-learning-word-embedding %}), the introduced embeddings are not context-specific --- they are learned based on word concurrency but not sequential context. So in two sentences, "*I am eating an apple*" and "*I have an Apple phone*", two "apple" words refer to very different things but they would still share the same word embedding vector. 
 
-In this post we will discuss how various approaches are proposed to make embeddings context-dependent and much easier to be applied on downstream tasks in a generic form.
+Despite of this, early adoption of word embeddings in problem-solving is to use them as additional features for an existing task-specific model and in a way the improvement is bounded.
+
+In this post we will discuss how various approaches were proposed to make embeddings dependent on context, and to make them easier and cheaper to be applied on downstream tasks in general form.
 
 
 {: class="table-of-content"}
@@ -171,14 +174,14 @@ The improvements brought up by ELMo are largest for tasks with small supervised 
 
 ## Cross-View Training
 
-In ELMo the unsupervised pretraining and task-specific learning happen within two independent models in two separate training stages. **Cross-View Training** (abbr. **CVT**; [Clark et al., 2018](https://arxiv.org/abs/1809.08370)) combines them into one unified semi-supervised learning procedure where the representation of a biLSTM encoder is improved by both supervised learning with labeled data and unsupervised learning with unlabeled data on auxiliary tasks.
+In ELMo the unsupervised pre-training and task-specific learning happen within two independent models in two separate training stages. **Cross-View Training** (abbr. **CVT**; [Clark et al., 2018](https://arxiv.org/abs/1809.08370)) combines them into one unified semi-supervised learning procedure where the representation of a biLSTM encoder is improved by both supervised learning with labeled data and unsupervised learning with unlabeled data on auxiliary tasks.
 
 
 ### Model Architecture
 
 The model consists of a two-layer bidirectional LSTM encoder and a primary prediction module. During training the model is fed with labeled and unlabeled data batch alternatively.
 On *labeled examples*, $$\mathcal{D}$$, all the model parameters are updated by standard supervised learning. The loss is the standard cross entropy:
-On *unlabeled examples*, the primary prediction module still can produce a “soft” target, even though we cannot know exactly how accurate they are. In a couple of auxiliary tasks, the predictor only sees and processes a restricted view of the input, such as only using encoder hidden state representation on one direction. The auxiliary task outputs are expected to match the primary prediction target for a full view of input. In this way the encoder is forced to distill the knowledge of the full context into partial representation. At this stage, the biLSTM encoder is backpropagated but the primary prediction module is fixed. The loss is to minimize the distance between auxiliary and primary predictions:
+On *unlabeled examples*, the primary prediction module still can produce a "soft" target, even though we cannot know exactly how accurate they are. In a couple of auxiliary tasks, the predictor only sees and processes a restricted view of the input, such as only using encoder hidden state representation on one direction. The auxiliary task outputs are expected to match the primary prediction target for a full view of input. In this way the encoder is forced to distill the knowledge of the full context into partial representation. At this stage, the biLSTM encoder is backpropagated but the primary prediction module is fixed. The loss is to minimize the distance between auxiliary and primary predictions:
 
 
 ![CVT]({{ '/assets/images/CVT.png' | relative_url }})
@@ -229,7 +232,7 @@ $$
 {: style="width: 70%;" class="center"}
 *Fig. 5. The sequential tagging task depends on four auxiliary prediction models, their inputs only involving hidden states in one direction: forward, backward, future and past. (Image source: [original paper](https://arxiv.org/abs/1809.08370))*
 
-Note that if the primary prediction module has dropout, the dropout layer works as usual when training with labeled data, but it is not applied when generating “soft” target for auxiliary tasks at the unsupervised training stage.
+Note that if the primary prediction module has dropout, the dropout layer works as usual when training with labeled data, but it is not applied when generating "soft" target for auxiliary tasks at the unsupervised training stage.
 
 In the machine translation task, the primary prediction module is replaced with a standard unidirectional LSTM decoder with attention. There are two auxiliary tasks: (1) apply dropout on the attention weight vector by randomly zeroing out some values; (2) predict the future word in the target sequence. The primary prediction for auxiliary tasks to match is the best predicted target sequence produced by running the fixed primary decoder on the input sequence with [beam search](https://en.wikipedia.org/wiki/Beam_search).
 
@@ -306,7 +309,7 @@ One limitation of GPT is its uni-directional nature - the model is only trained 
 
 **BERT**, short for **Bidirectional Encoder Representations from Transformers** ([Devlin, et al., 2019](https://arxiv.org/abs/1810.04805)) is a direct descendant to [GPT](#gpt): train a large language model on free text and then finetune on specific tasks without customized network architectures.
 
-Compared to GPT, the largest difference and improvement of BERT is to make training **bi-directional**. The model learns to predict both context on the left and right. The paper also claimed that “bidirectional nature of our model is the single most important new contribution” according to the ablation study.
+Compared to GPT, the largest difference and improvement of BERT is to make training **bi-directional**. The model learns to predict both context on the left and right. The paper also claimed that "bidirectional nature of our model is the single most important new contribution" according to the ablation study.
 
 
 ### Auxiliary Tasks
@@ -321,9 +324,9 @@ To encourage the bi-directional prediction and sentence-level understanding, BER
 
 **Task 1: Mask language model (ML)**
 
-> From [Wikipedia](https://en.wikipedia.org/wiki/Cloze_test): “A cloze test (also cloze deletion test) is an exercise, test, or assessment consisting of a portion of language with certain items, words, or signs removed (cloze text), where the participant is asked to replace the missing language item. … The exercise was first described by W.L. Taylor in 1953.”
+> From [Wikipedia](https://en.wikipedia.org/wiki/Cloze_test): "A cloze test (also cloze deletion test) is an exercise, test, or assessment consisting of a portion of language with certain items, words, or signs removed (cloze text), where the participant is asked to replace the missing language item. … The exercise was first described by W.L. Taylor in 1953."
 
-It is common to believe that a representation that learns the context around a word rather than just after the word is able to better capture its meaning, both syntactically and semantically. BERT encourages the model to do so by training on the *“mask language model” task*:
+It is common to believe that a representation that learns the context around a word rather than just after the word is able to better capture its meaning, both syntactically and semantically. BERT encourages the model to do so by training on the *"mask language model" task*:
 Randomly mask 15% of tokens in each sequence. Because if we only replace masked tokens with a special placeholder `[MASK]`, the special token would never be encountered during fine-tuning. Hence, BERT employed several heuristic tricks:
 with 80% probability, replace the chosen words with `[MASK]`;
 with 10% probability, replace with a random word;
@@ -397,7 +400,7 @@ Overall the add-on parts for downstream task fine-tuning are very minimal - one 
 ## Summary
 
 {: class="info"}
-|     | Base model | Pretraining | Downstream tasks | Downstream model | Fine-tuning |
+|     | Base model | pre-training | Downstream tasks | Downstream model | Fine-tuning |
 | --- | --- | --- | --- | --- | --- |
 | CoVe | seq2seq NMT model | supervised | feature-based | task-specific | / |
 | ELMo | two-layer biLSTM | unsupervised | feature-based | task-specific | / |
@@ -439,7 +442,7 @@ Overall the add-on parts for downstream task fine-tuning are very minimal - one 
 - [IMDb](http://ai.stanford.edu/~amaas/data/sentiment/): A large dataset of movie reviews with binary sentiment classification labels.
 
 
-**Semantic Role Labeling (SRL)**: models the predicate-argument structure of a sentence, and is often described as answering “Who did what to whom”.
+**Semantic Role Labeling (SRL)**: models the predicate-argument structure of a sentence, and is often described as answering "Who did what to whom".
 - [CoNLL-2004 & CoNLL-2005](http://www.lsi.upc.edu/~srlconll/)
 
 
@@ -474,8 +477,8 @@ the Wall Street Journal portion of the Penn Treebank (Marcus et al., 1993).
 **GLUE** multi-task benchmark: [https://gluebenchmark.com](https://gluebenchmark.com/) 
 
 
-**Unsupervised pretraining dataset**
-- [Books corpus](https://googlebooks.byu.edu/): The corpus contains “over 7,000 unique unpublished books from a variety of genres including Adventure, Fantasy, and Romance.”
+**Unsupervised pre-training dataset**
+- [Books corpus](https://googlebooks.byu.edu/): The corpus contains "over 7,000 unique unpublished books from a variety of genres including Adventure, Fantasy, and Romance."
 - [1B Word Language Model Benchmark](http://www.statmt.org/lm-benchmark/)
 - [English Wikipedia](https://en.wikipedia.org/wiki/Wikipedia:Database_download#English-language_Wikipedia): ~2500M words
 
@@ -504,4 +507,4 @@ the Wall Street Journal portion of the Penn Treebank (Marcus et al., 1993).
 
 [11] Peter J. Liu, et al. ["Generating wikipedia by summarizing long sequences."](https://arxiv.org/abs/1801.10198) ICLR 2018.
 
-[12] Sebastian Ruder. [“10 Exciting Ideas of 2018 in NLP”](http://ruder.io/10-exciting-ideas-of-2018-in-nlp/) Dec 2018.
+[12] Sebastian Ruder. ["10 Exciting Ideas of 2018 in NLP"](http://ruder.io/10-exciting-ideas-of-2018-in-nlp/) Dec 2018.

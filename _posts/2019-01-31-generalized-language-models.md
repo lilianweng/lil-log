@@ -17,15 +17,15 @@ image: "elmo-and-bert.png"
 *Fig. 0. I guess they are Elmo & Bert? (Image source: [here](http://www.essentialkids.com.au/entertainment/tv/elmo-big-bird-lend-a-hand-20110825-1jcqt))*
 <br />
 
-We have seen amazing progress in NLP in 2018. Large-scale pretrained language modes like [OpenAI GPT](https://blog.openai.com/language-unsupervised/) and [BERT](https://arxiv.org/abs/1810.04805) have achieved great performance on a variety of language tasks using generic model architectures. The idea is similar to how ImageNet classification pre-training helps many vision tasks (\*). Even better than vision classification pre-training, this simple and powerful approach in NLP does not require labeled data for pre-training, allowing us to experiment with increased training scale, up to our very limit.
+We have seen amazing progress in NLP in 2018. Large-scale pre-trained language modes like [OpenAI GPT](https://blog.openai.com/language-unsupervised/) and [BERT](https://arxiv.org/abs/1810.04805) have achieved great performance on a variety of language tasks using generic model architectures. The idea is similar to how ImageNet classification pre-training helps many vision tasks (\*). Even better than vision classification pre-training, this simple and powerful approach in NLP does not require labeled data for pre-training, allowing us to experiment with increased training scale, up to our very limit.
 
 *(\*) Although recently He et al. (2018) [found](https://arxiv.org/abs/1811.08883) that pre-training might not be necessary for image segmentation task.*
 
 In my previous NLP [post on word embedding]({{ site.baseurl }}{% post_url 2017-10-15-learning-word-embedding %}), the introduced embeddings are not context-specific --- they are learned based on word concurrency but not sequential context. So in two sentences, "*I am eating an apple*" and "*I have an Apple phone*", two "apple" words refer to very different things but they would still share the same word embedding vector. 
 
-Despite of this, early adoption of word embeddings in problem-solving is to use them as additional features for an existing task-specific model and in a way the improvement is bounded.
+Despite this, early adoption of word embeddings in problem-solving is to use them as additional features for an existing task-specific model and in a way the improvement is bounded.
 
-In this post we will discuss how various approaches were proposed to make embeddings dependent on context, and to make them easier and cheaper to be applied on downstream tasks in general form.
+In this post, we will discuss how various approaches were proposed to make embeddings dependent on context, and to make them easier and cheaper to be applied to downstream tasks in general form.
 
 
 {: class="table-of-content"}
@@ -46,7 +46,7 @@ Different from traditional word embeddings introduced [here]({{ site.baseurl }}{
 
 ### NMT Recap
 
-Here the Neural Machine Translation ([NMT](https://github.com/THUNLP-MT/MT-Reading-List)) model is composed of a standard, two-layer, bidirectional LSTM encoder and an attentional two-layer unidirectional LSTM decoder. It is pretrained on the English-German translation task. The encoder learns and optimizes the embedding vectors of English words in order to translate them to German. With the intuition that the encoder should capture high-level semantic and syntactic meanings before transforming words into another language, the encoder output is used to provide contextualized word embeddings for various downstream language tasks.
+Here the Neural Machine Translation ([NMT](https://github.com/THUNLP-MT/MT-Reading-List)) model is composed of a standard, two-layer, bidirectional LSTM encoder and an attentional two-layer unidirectional LSTM decoder. It is pre-trained on the English-German translation task. The encoder learns and optimizes the embedding vectors of English words in order to translate them to German. With the intuition that the encoder should capture high-level semantic and syntactic meanings before transforming words into another language, the encoder output is used to provide contextualized word embeddings for various downstream language tasks.
 
 
 ![NMT Recap]({{ '/assets/images/nmt-recap.png' | relative_url }})
@@ -242,7 +242,7 @@ In the machine translation task, the primary prediction module is replaced with 
 Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
 The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
 The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT finetunes the base model for all downstream tasks.
-Generative pretrained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146). But in ULMFiT the fine-tuning happens in all layers gradually and ULMFiT focused on training techniques for stabilizing the fine-tuning process.
+Generative pre-trained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146). But in ULMFiT the fine-tuning happens in all layers gradually and ULMFiT focused on training techniques for stabilizing the fine-tuning process.
 
 
 ### Transformer Decoder as Language Model
@@ -268,7 +268,7 @@ $$
 
 The most substantial upgrade that OpenAI GPT proposed is to get rid of the task-specific model and use the pre-trained language model directly!
 
-Let’s take classification as an example. Say, in the labelled dataset, each input has $$n$$ tokens, $$\mathbf{x} = (x_1, \dots, x_n)$$, and one label $$y$$. GPT first processes the input sequence $$\mathbf{x}$$ through the pretrained transformer decoder and the last layer output for the last token $$x_n$$ is $$\mathbf{h}_L^{(n)}$$. Then with only one new trainable weight matrix $$\mathbf{W}_y$$, it can predict a distribution over class labels.
+Let’s take classification as an example. Say, in the labelled dataset, each input has $$n$$ tokens, $$\mathbf{x} = (x_1, \dots, x_n)$$, and one label $$y$$. GPT first processes the input sequence $$\mathbf{x}$$ through the pre-trained transformer decoder and the last layer output for the last token $$x_n$$ is $$\mathbf{h}_L^{(n)}$$. Then with only one new trainable weight matrix $$\mathbf{W}_y$$, it can predict a distribution over class labels.
 
 
 ![GPT classification]({{ '/assets/images/GPT-classification.png' | relative_url }})

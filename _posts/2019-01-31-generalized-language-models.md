@@ -330,7 +330,7 @@ To encourage the bi-directional prediction and sentence-level understanding, BER
 
 > From [Wikipedia](https://en.wikipedia.org/wiki/Cloze_test): "A cloze test (also cloze deletion test) is an exercise, test, or assessment consisting of a portion of language with certain items, words, or signs removed (cloze text), where the participant is asked to replace the missing language item. … The exercise was first described by W.L. Taylor in 1953."
 
-It is common to believe that a representation that learns the context around a word rather than just after the word is able to better capture its meaning, both syntactically and semantically. BERT encourages the model to do so by training on the *"mask language model" task*:
+It is unsurprising to believe that a representation that learns the context around a word rather than just after the word is able to better capture its meaning, both syntactically and semantically. BERT encourages the model to do so by training on the *"mask language model" task*:
 1. Randomly mask 15% of tokens in each sequence. Because if we only replace masked tokens with a special placeholder `[MASK]`, the special token would never be encountered during fine-tuning. Hence, BERT employed several heuristic tricks:
     - (a) with 80% probability, replace the chosen words with `[MASK]`;
     - (b) with 10% probability, replace with a random word;

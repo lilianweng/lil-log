@@ -120,15 +120,15 @@ p(x_1, \dots, x_n) = \prod_{i=1}^n p(x_i \mid x_{i+1}, \dots, x_n)
 $$
 
 The predictions in both directions are modeled by multi-layer LSTMs with hidden states $$\overrightarrow{\mathbf{h}}_{i,\ell}$$ and $$\overleftarrow{\mathbf{h}}_{i,\ell}$$ for input token $$x_i$$ at the layer level $$\ell=1,\dots,L$$.
-The final layer’s hidden state $$\mathbf{h}_{i,L} = [\overrightarrow{\mathbf{h}}_{i,L}; \overleftarrow{\mathbf{h}}_{i,L}]$$ is used to output the probabilities over tokens after softmax. They share the embedding layer and the softmax layer, parameterized by $$\Theta_e$$ and $$\Theta_s$$ respectively.
+The final layer’s hidden state $$\mathbf{h}_{i,L} = [\overrightarrow{\mathbf{h}}_{i,L}; \overleftarrow{\mathbf{h}}_{i,L}]$$ is used to output the probabilities over tokens after softmax normalization. They share the embedding layer and the softmax layer, parameterized by $$\Theta_e$$ and $$\Theta_s$$ respectively.
 
 
 
 ![ELMo biLSTM]({{ '/assets/images/ELMo-biLSTM.png' | relative_url }})
 {: style="width: 85%;" class="center"}
-*Fig. 3. (Image source: recreated based on [this](https://towardsdatascience.com/introduction-to-sequence-models-rnn-bidirectional-rnn-lstm-gru-73927ec9df15).)*
+*Fig. 3. The biLSTM base model of ELMo. (Image source: recreated based on [this](https://towardsdatascience.com/introduction-to-sequence-models-rnn-bidirectional-rnn-lstm-gru-73927ec9df15).)*
 
-The model is trained to minimize the negativd log likelihood (= maximize the log likelihood for true words) in both directions:
+The model is trained to minimize the negative log likelihood (= maximize the log likelihood for true words) in both directions:
 
 $$
 \begin{aligned}
@@ -155,33 +155,33 @@ v_i = f(R_i; \Theta^\text{task}) = \gamma^\text{task} \sum_{\ell=0}^L s^\text{ta
 $$
 
 To evaluate what kind of information is captured by hidden states across different layers, ELMo is applied on semantic-intensive and syntax-intensive tasks respectively using representations in different layers of biLM:
-Semantic task: The *word sense disambiguation (WSD)* task emphasizes the meaning of a word given a context. The biLM top layer is better at this task than the first layer.
-Syntax task: The *[part-of-speech](https://en.wikipedia.org/wiki/Part-of-speech_tagging) (POS) tagging* task aims to infer the grammatical role of a word in one sentence. A higher accuracy can be achieved by using the biLM first layer than the top layer.
+- **Semantic task**: The *word sense disambiguation (WSD)* task emphasizes the meaning of a word given a context. The biLM top layer is better at this task than the first layer.
+- **Syntax task**: The *[part-of-speech](https://en.wikipedia.org/wiki/Part-of-speech_tagging) (POS) tagging* task aims to infer the grammatical role of a word in one sentence. A higher accuracy can be achieved by using the biLM first layer than the top layer.
 
 The comparison study indicates that syntactic information is better represented at lower layers while semantic information is captured by higher layers. Because different layers tend to carry different type of information, *stacking them together helps*.
 
 
 ### Use ELMo in Downstream Tasks
 
-Similar to how [CoVe](#use-cove-in-downstream-tasks) can help different downstream tasks, ELMo embedding vectors are included in the input or lower level of task-specific models. Moreover, for some tasks (SNLI and SQuAD, but not SRL), adding them into the output level helps too.
+Similar to how [CoVe](#use-cove-in-downstream-tasks) can help different downstream tasks, ELMo embedding vectors are included in the input or lower levels of task-specific models. Moreover, for some tasks (i.e., [SNLI](#nli) and [SQuAD](#qa), but not [SRL](#srl)), adding them into the output level helps too.
 
-The improvements brought up by ELMo are largest for tasks with small supervised dataset. With ELMo, we can also achieve similar performance with much less labelled data.
+The improvements brought up by ELMo are largest for tasks with a small supervised dataset. With ELMo, we can also achieve similar performance with much less labeled data.
 
 
-**Summary**: The language model pre-training is unsupervised, so theoretically the pre-training can be scaled up as much as possible, since the unlabeled text corpora are abundant. However, it still has the dependency on task-customized models and thus the improvement is only incremental, while searching for a good model architecture for every task remains non-trivial.
+**Summary**: The language model pre-training is unsupervised and theoretically the pre-training can be scaled up as much as possible since the unlabeled text corpora are abundant. However, it still has the dependency on task-customized models and thus the improvement is only incremental, while searching for a good model architecture for every task remains non-trivial.
 
 
 
 ## Cross-View Training
 
-In ELMo the unsupervised pre-training and task-specific learning happen within two independent models in two separate training stages. **Cross-View Training** (abbr. **CVT**; [Clark et al., 2018](https://arxiv.org/abs/1809.08370)) combines them into one unified semi-supervised learning procedure where the representation of a biLSTM encoder is improved by both supervised learning with labeled data and unsupervised learning with unlabeled data on auxiliary tasks.
+In ELMo the unsupervised pre-training and task-specific learning happen for two independent models in two separate training stages. **Cross-View Training** (abbr. **CVT**; [Clark et al., 2018](https://arxiv.org/abs/1809.08370)) combines them into one unified semi-supervised learning procedure where the representation of a biLSTM encoder is improved by both supervised learning with labeled data and unsupervised learning with unlabeled data on auxiliary tasks.
 
 
 ### Model Architecture
 
-The model consists of a two-layer bidirectional LSTM encoder and a primary prediction module. During training the model is fed with labeled and unlabeled data batch alternatively.
-On *labeled examples*, $$\mathcal{D}$$, all the model parameters are updated by standard supervised learning. The loss is the standard cross entropy:
-On *unlabeled examples*, the primary prediction module still can produce a "soft" target, even though we cannot know exactly how accurate they are. In a couple of auxiliary tasks, the predictor only sees and processes a restricted view of the input, such as only using encoder hidden state representation on one direction. The auxiliary task outputs are expected to match the primary prediction target for a full view of input. In this way the encoder is forced to distill the knowledge of the full context into partial representation. At this stage, the biLSTM encoder is backpropagated but the primary prediction module is fixed. The loss is to minimize the distance between auxiliary and primary predictions:
+The model consists of a two-layer bidirectional LSTM encoder and a primary prediction module. During training, the model is fed with labeled and unlabeled data batches alternatively.
+- On *labeled examples*, all the model parameters are updated by standard supervised learning. The loss is the standard cross entropy.
+- On *unlabeled examples*, the primary prediction module still can produce a "soft" target, even though we cannot know exactly how accurate they are. In a couple of auxiliary tasks, the predictor only sees and processes a restricted view of the input, such as only using encoder hidden state representation in one direction. The auxiliary task outputs are expected to match the primary prediction target for a full view of input. <br/>In this way, the encoder is forced to distill the knowledge of the full context into partial representation. At this stage, the biLSTM encoder is backpropagated but the primary prediction module is *fixed*. The loss is to minimize the distance between auxiliary and primary predictions.
 
 
 ![CVT]({{ '/assets/images/CVT.png' | relative_url }})
@@ -202,8 +202,8 @@ The multi-task learning encourages better generality of representation and in th
 
 Theoretically the primary prediction module can take any form, generic or task-specific design. The examples presented in the CVT paper include both cases.
 
-In sequential tagging tasks (classification for every token) like NER or POS tagging, the predictor module contains two fully connected layers and a softmax layer on the output to produce a probability distribution over class labels.
-For each token $$\mathbf{x}_i$$, we take the corresponding hidden states, $$\mathbf{h}_1^{(i)}$$ and $$\mathbf{h}_2^{(i)}$$
+In sequential tagging tasks (classification for every token) like [NER](#ner) or [POS](#pos) tagging, the predictor module contains two fully connected layers and a softmax layer on the output to produce a probability distribution over class labels.
+For each token $$\mathbf{x}_i$$, we take the corresponding hidden states in two layers, $$\mathbf{h}_1^{(i)}$$ and $$\mathbf{h}_2^{(i)}$$:
 
 
 $$
@@ -215,7 +215,7 @@ p_\theta(y_i \mid \mathbf{x}_i)
 \end{aligned}
 $$
 
-The auxiliary tasks are only fed with forward or backward LSTM state in the first layer. Because they only observe partial context, either on the left or right, they have to learn like a language model, trying to predict the next token given the context. The `fwd` and `bwd` auxiliary tasks only take one direction. The `future` and `past` tasks take one step further in forward and backward direction respectively.
+The auxiliary tasks are only fed with forward or backward LSTM state in the first layer. Because they only observe partial context, either on the left or right, they have to learn like a language model, trying to predict the next token given the context. The `fwd` and `bwd` auxiliary tasks only take one direction. The `future` and `past` tasks take one step further in forward and backward direction, respectively.
 
 
 $$
@@ -232,7 +232,7 @@ $$
 {: style="width: 70%;" class="center"}
 *Fig. 5. The sequential tagging task depends on four auxiliary prediction models, their inputs only involving hidden states in one direction: forward, backward, future and past. (Image source: [original paper](https://arxiv.org/abs/1809.08370))*
 
-Note that if the primary prediction module has dropout, the dropout layer works as usual when training with labeled data, but it is not applied when generating "soft" target for auxiliary tasks at the unsupervised training stage.
+Note that if the primary prediction module has dropout, the dropout layer works as usual when training with labeled data, but it is not applied when generating "soft" target for auxiliary tasks during training with unlabeled data.
 
 In the machine translation task, the primary prediction module is replaced with a standard unidirectional LSTM decoder with attention. There are two auxiliary tasks: (1) apply dropout on the attention weight vector by randomly zeroing out some values; (2) predict the future word in the target sequence. The primary prediction for auxiliary tasks to match is the best predicted target sequence produced by running the fixed primary decoder on the input sequence with [beam search](https://en.wikipedia.org/wiki/Beam_search).
 
@@ -268,7 +268,7 @@ $$
 
 The most substantial upgrade that OpenAI GPT proposed is to get rid of the task-specific model and use the pre-trained language model directly!
 
-Let’s take classification as an example. Say, in the labelled dataset, each input has $$n$$ tokens, $$\mathbf{x} = (x_1, \dots, x_n)$$, and one label $$y$$. GPT first processes the input sequence $$\mathbf{x}$$ through the pre-trained transformer decoder and the last layer output for the last token $$x_n$$ is $$\mathbf{h}_L^{(n)}$$. Then with only one new trainable weight matrix $$\mathbf{W}_y$$, it can predict a distribution over class labels.
+Let’s take classification as an example. Say, in the labeled dataset, each input has $$n$$ tokens, $$\mathbf{x} = (x_1, \dots, x_n)$$, and one label $$y$$. GPT first processes the input sequence $$\mathbf{x}$$ through the pre-trained transformer decoder and the last layer output for the last token $$x_n$$ is $$\mathbf{h}_L^{(n)}$$. Then with only one new trainable weight matrix $$\mathbf{W}_y$$, it can predict a distribution over class labels.
 
 
 ![GPT classification]({{ '/assets/images/GPT-classification.png' | relative_url }})
@@ -300,7 +300,7 @@ With similar designs, no customized model structure is needed for other downstre
 *Fig. 7. Training objects in slightly modified GPT transformer models for downstream tasks. (Image source: [original paper](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf))*
 
 
-**Summary**: It is super neat and encouraging to see that such a general framework is able to beat SOTA on most language tasks at that time (June 2018).At the first stage, generative pre-training of a language model can absorb as much free text as possible. Then at the second stage, the model is fine-tuned on specific tasks with a small labelled dataset and a minimal set of new parameters to learn. 
+**Summary**: It is super neat and encouraging to see that such a general framework is able to beat SOTA on most language tasks at that time (June 2018).At the first stage, generative pre-training of a language model can absorb as much free text as possible. Then at the second stage, the model is fine-tuned on specific tasks with a small labeled dataset and a minimal set of new parameters to learn. 
 
 One limitation of GPT is its uni-directional nature - the model is only trained to predict the future left-to-right context.
 
@@ -412,6 +412,7 @@ Overall the add-on parts for downstream task fine-tuning are very minimal - one 
 
 ## Common Tasks and Datasets
 
+<a name='qa' />
 **Question-Answering**
 - [SQuAD](https://rajpurkar.github.io/SQuAD-explorer/) (Stanford Question Answering Dataset): 
 - [RACE](http://www.qizhexie.com/data/RACE_leaderboard) (ReAding Comprehension from Examinations): A large-scale reading comprehension dataset with more than 28,000 passages and nearly 100,000 questions. The dataset is collected from English examinations in China, which are designed for middle school and high school students.
@@ -421,7 +422,7 @@ Overall the add-on parts for downstream task fine-tuning are very minimal - one 
 - [Story Cloze Test](http://cs.rochester.edu/nlp/rocstories/): A commonsense reasoning framework for evaluating story understanding and generation. The test requires a system to choose the correct ending to multi-sentence stories from two options.
 - [SWAG](https://rowanzellers.com/swag/) (Situations With Adversarial Generations): multiple choices; contains 113k sentence-pair completion examples that evaluate grounded common-sense inference
 
-
+<a name='nli' />
 **Natural Language Inference (NLI)**: also known as **Text Entailment**, an exercise to discern in logic whether one sentence can be inferred from another. 
 - [RTE](https://aclweb.org/aclwiki/Textual_Entailment_Resource_Pool) (Recognizing Textual Entailment): A set of datasets initiated by text entailment challenges.
 - [SNLI](https://nlp.stanford.edu/projects/snli/) (Stanford Natural Language Inference): A collection of 570k human-written English sentence pairs manually labeled for balanced classification with the labels `entailment`, `contradiction`, and `neutral`.
@@ -430,6 +431,7 @@ Overall the add-on parts for downstream task fine-tuning are very minimal - one 
 - [SciTail](http://data.allenai.org/scitail/): An entailment dataset created from multiple-choice science exams and web sentences.
 
 
+<a name='ner' />
 **Named Entity Recognition (NER)**: labels sequences of words in a text which are the names of things, such as person and company names, or gene and protein names
 - [CoNLL 2003 NER task](https://www.clips.uantwerpen.be/conll2003/): consists of newswire from the Reuters, concentrating on four types of named entities: persons, locations, organizations and names of miscellaneous entities.
 - [OntoNotes 0.5](https://catalog.ldc.upenn.edu/LDC2013T19): This corpus contains text in English, Arabic and Chinese, tagged with four different entity types (PER, LOC, ORG, MISC).
@@ -442,6 +444,7 @@ Overall the add-on parts for downstream task fine-tuning are very minimal - one 
 - [IMDb](http://ai.stanford.edu/~amaas/data/sentiment/): A large dataset of movie reviews with binary sentiment classification labels.
 
 
+<a name='srl' />
 **Semantic Role Labeling (SRL)**: models the predicate-argument structure of a sentence, and is often described as answering "Who did what to whom".
 - [CoNLL-2004 & CoNLL-2005](http://www.lsi.upc.edu/~srlconll/)
 
@@ -460,6 +463,7 @@ STS Benchmark: Semantic Textual Similarity
 - [CoNLL-2000](https://www.clips.uantwerpen.be/conll2000/chunking/): 
 
 
+<a name='pos' />
 **Part-of-Speech (POS) Tagging**: tag parts of speech to each token, such as noun, verb, adjective, etc.
 the Wall Street Journal portion of the Penn Treebank (Marcus et al., 1993).
 

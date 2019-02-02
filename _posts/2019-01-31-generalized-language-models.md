@@ -240,9 +240,9 @@ In the machine translation task, the primary prediction module is replaced with 
 ## OpenAI GPT
 
 Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
-The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
-The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT finetunes the base model for all downstream tasks.
-Generative pre-trained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146). But in ULMFiT the fine-tuning happens in all layers gradually and ULMFiT focused on training techniques for stabilizing the fine-tuning process.
+1. The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
+2. The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT finetunes the base model for all downstream tasks.
+    * Generative pre-trained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146). But in ULMFiT the fine-tuning happens in all layers gradually and ULMFiT focused on training techniques for stabilizing the fine-tuning process.
 
 
 ### Transformer Decoder as Language Model
@@ -281,8 +281,8 @@ P(y\mid x_1, \dots, x_n) = \text{softmax}(\mathbf{h}_L^{(n)}\mathbf{W}_y)
 $$
 
 The loss is to minimize the negative log-likelihood for true labels. In addition, adding the LM loss as an auxiliary loss is found to be beneficial, because:
-(1) it helps accelerate convergence during training and 
-(2) it is expected to improve the generalization of the supervised model.
+- (1) it helps accelerate convergence during training and 
+- (2) it is expected to improve the generalization of the supervised model.
 
 $$
 \begin{aligned}
@@ -292,7 +292,7 @@ $$
 \end{aligned}
 $$
 
-With similar designs, no customized model structure is needed for other downstream tasks (see Fig. X TBA). If the task input contains multiple sentences, a special delimiter token (`$`) is added in between each pair of sentences. The embedding for this delimiter token is a new parameter(s) we need to learn, but it should be pretty minimal. For the sentence similarity task, because the ordering does not matter, both orderings are included. For the multiple choice task, the context is paired with every answer candidate.
+With similar designs, no customized model structure is needed for other downstream tasks (see Fig. 7). If the task input contains multiple sentences, a special delimiter token (`$`) is added in between each pair of sentences. The embedding for this delimiter token is a new parameter(s) we need to learn, but it should be pretty minimal. For the sentence similarity task, because the ordering does not matter, both orderings are included. For the multiple choice task, the context is paired with every answer candidate.
 
 
 ![GPT downstream tasks]({{ '/assets/images/GPT-downstream-tasks.png' | relative_url }})
@@ -327,19 +327,19 @@ To encourage the bi-directional prediction and sentence-level understanding, BER
 > From [Wikipedia](https://en.wikipedia.org/wiki/Cloze_test): "A cloze test (also cloze deletion test) is an exercise, test, or assessment consisting of a portion of language with certain items, words, or signs removed (cloze text), where the participant is asked to replace the missing language item. … The exercise was first described by W.L. Taylor in 1953."
 
 It is common to believe that a representation that learns the context around a word rather than just after the word is able to better capture its meaning, both syntactically and semantically. BERT encourages the model to do so by training on the *"mask language model" task*:
-Randomly mask 15% of tokens in each sequence. Because if we only replace masked tokens with a special placeholder `[MASK]`, the special token would never be encountered during fine-tuning. Hence, BERT employed several heuristic tricks:
-with 80% probability, replace the chosen words with `[MASK]`;
-with 10% probability, replace with a random word;
-with 10% probability, keep it the same.
-The model only predicts the missing words, but it has no information on which words have been replaced or which words should be predicted. The output size is only 15% of the input size. 
+1. Randomly mask 15% of tokens in each sequence. Because if we only replace masked tokens with a special placeholder `[MASK]`, the special token would never be encountered during fine-tuning. Hence, BERT employed several heuristic tricks:
+    - (a) with 80% probability, replace the chosen words with `[MASK]`;
+    - (b) with 10% probability, replace with a random word;
+    - (c) with 10% probability, keep it the same.
+2. The model only predicts the missing words, but it has no information on which words have been replaced or which words should be predicted. The output size is only 15% of the input size. 
 
 **Task 2: Next sentence prediction**
 
-Motivated by the fact that many downstream tasks involve the understanding of relationships between sentences (i.e., QA, NLI), BERT added another auxiliary task on training a *binary classifier* for telling whether one sentence is the next sentence of the other:
-Sample sentence pairs (A, B) so that:
-50% of the time, B follows A;
-50% of the time, B does not follow A.
-The model processes both sentences and output a binary label indicating whether B is the next sentence of A.
+Motivated by the fact that many downstream tasks involve the understanding of relationships between sentences (i.e., [QA](#qa), [NLI](#nli)), BERT added another auxiliary task on training a *binary classifier* for telling whether one sentence is the next sentence of the other:
+1. Sample sentence pairs (A, B) so that:
+    - (a) 50% of the time, B follows A;
+    - (b) 50% of the time, B does not follow A.
+2. The model processes both sentences and output a binary label indicating whether B is the next sentence of A.
 
 The training data for both auxiliary tasks above can be trivially generated from any monolingual corpus. Hence the scale of training is unbounded. The training loss is the sum of the mean masked LM likelihood and mean next sentence prediction likelihood.
 
@@ -352,9 +352,9 @@ The training data for both auxiliary tasks above can be trivially generated from
 ### Input Embedding
 
 The input embedding is the sum of three parts:
-WordPiece tokenization embeddings: The WordPiece [model](https://arxiv.org/pdf/1609.08144.pdf) was originally proposed for Japanese or Korean segmentation problem. Instead of using naturally split English word, they can be further divided into smaller sub-word units so that it is more effective to handle rare or unknown words. Please read [linked](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37842.pdf) papers for the optimal way to split words if interested.
-Segment embeddings: If the input contains two sentences, they have sentence A embeddings and sentence B embeddings respectively and they are separated by a special character `[SEP]`; Only sentence A embeddings are used if the input contains one sentence.
-Position embeddings: Positional embeddings are learned.
+1. WordPiece tokenization embeddings: The WordPiece [model](https://arxiv.org/pdf/1609.08144.pdf) was originally proposed for Japanese or Korean segmentation problem. Instead of using naturally split English word, they can be further divided into smaller sub-word units so that it is more effective to handle rare or unknown words. Please read [linked](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37842.pdf) papers for the optimal way to split words if interested.
+2. Segment embeddings: If the input contains two sentences, they have sentence A embeddings and sentence B embeddings respectively and they are separated by a special character `[SEP]`; Only sentence A embeddings are used if the input contains one sentence.
+3. Position embeddings: Positional embeddings are learned.
 
 
 ![BERT input embedding]({{ '/assets/images/BERT-input-embedding.png' | relative_url }})
@@ -363,7 +363,6 @@ Position embeddings: Positional embeddings are learned.
 
 
 Note that the first token is always forced to be `[CLS]`, a placeholder that will be used later for prediction in downstream tasks.
-
 
 
 
@@ -388,7 +387,7 @@ For classification tasks, we get the prediction by taking the final hidden state
 
 For QA tasks like SQuAD, we need to predict the text span in the given paragraph for an given question. BERT predicts two probability distributions of every token, being the start and the end of the text span. Only two new small matrices, $$\mathbf{W}_\text{s}$$ and $$\mathbf{W}_\text{e}$$, are newly learned during fine-tuning and $$\text{softmax}(\mathbf{h}^\text{(i)}_L \mathbf{W}_\text{s})$$ and $$\text{softmax}(\mathbf{h}^\text{(i)}_L \mathbf{W}_\text{s})$$ define the probability distributions.
 
-Overall the add-on parts for downstream task fine-tuning are very minimal - one or two weight matrices to convert the Transform hidden states to an interpretable format. Check the paper for implementation details for other cases.
+Overall the add-on parts for end task fine-tuning are very minimal - one or two weight matrices to convert the Transform hidden states to an interpretable format. Check the paper for implementation details for other cases.
 
 
 ![BERT downstream tasks]({{ '/assets/images/BERT-downstream-tasks.png' | relative_url }})

@@ -241,7 +241,7 @@ In the machine translation task, the primary prediction module is replaced with 
 
 Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
 1. The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
-2. The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT finetunes the base model for all downstream tasks.
+2. The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT fine-tunes the same base model for all end tasks.
     * Generative pre-trained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146). But in ULMFiT the fine-tuning happens in all layers gradually and ULMFiT focused on training techniques for stabilizing the fine-tuning process.
 
 
@@ -292,7 +292,9 @@ $$
 \end{aligned}
 $$
 
-With similar designs, no customized model structure is needed for other downstream tasks (see Fig. 7). If the task input contains multiple sentences, a special delimiter token (`$`) is added in between each pair of sentences. The embedding for this delimiter token is a new parameter(s) we need to learn, but it should be pretty minimal. For the sentence similarity task, because the ordering does not matter, both orderings are included. For the multiple choice task, the context is paired with every answer candidate.
+With similar designs, no customized model structure is needed for other end tasks (see Fig. 7). If the task input contains multiple sentences, a special delimiter token (`$`) is added between each pair of sentences. The embedding for this delimiter token is a new parameter we need to learn, but it should be pretty minimal. 
+
+For the sentence similarity task, because the ordering does not matter, both orderings are included. For the multiple choice task, the context is paired with every answer candidate.
 
 
 ![GPT downstream tasks]({{ '/assets/images/GPT-downstream-tasks.png' | relative_url }})
@@ -300,16 +302,18 @@ With similar designs, no customized model structure is needed for other downstre
 *Fig. 7. Training objects in slightly modified GPT transformer models for downstream tasks. (Image source: [original paper](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf))*
 
 
-**Summary**: It is super neat and encouraging to see that such a general framework is able to beat SOTA on most language tasks at that time (June 2018).At the first stage, generative pre-training of a language model can absorb as much free text as possible. Then at the second stage, the model is fine-tuned on specific tasks with a small labeled dataset and a minimal set of new parameters to learn. 
+**Summary**: It is super neat and encouraging to see that such a general framework is capable to beat SOTA on most language tasks at that time (June 2018). At the first stage, generative pre-training of a language model can absorb as much free text as possible. Then at the second stage, the model is fine-tuned on specific tasks with a small labeled dataset and a minimal set of new parameters to learn. 
 
-One limitation of GPT is its uni-directional nature - the model is only trained to predict the future left-to-right context.
+One limitation of GPT is its uni-directional nature --- the model is only trained to predict the future left-to-right context.
 
 
 ## BERT
 
-**BERT**, short for **Bidirectional Encoder Representations from Transformers** ([Devlin, et al., 2019](https://arxiv.org/abs/1810.04805)) is a direct descendant to [GPT](#gpt): train a large language model on free text and then finetune on specific tasks without customized network architectures.
+**BERT**, short for **Bidirectional Encoder Representations from Transformers** ([Devlin, et al., 2019](https://arxiv.org/abs/1810.04805)) is a direct descendant to [GPT](#gpt): train a large language model on free text and then fine-tune on specific tasks without customized network architectures.
 
-Compared to GPT, the largest difference and improvement of BERT is to make training **bi-directional**. The model learns to predict both context on the left and right. The paper also claimed that "bidirectional nature of our model is the single most important new contribution" according to the ablation study.
+Compared to GPT, the largest difference and improvement of BERT is to make training **bi-directional**. The model learns to predict both context on the left and right. The paper according to the ablation study claimed that:
+
+> "bidirectional nature of our model is the single most important new contribution"
 
 
 ### Auxiliary Tasks
@@ -322,7 +326,7 @@ The model architecture of BERT is a multi-layer bidirectional Transformer encode
 
 To encourage the bi-directional prediction and sentence-level understanding, BERT applied two auxiliary tasks in addition to the basic language task (that is, to predict the next token given context).
 
-**Task 1: Mask language model (ML)**
+**Task 1: Mask language model (MLM)**
 
 > From [Wikipedia](https://en.wikipedia.org/wiki/Cloze_test): "A cloze test (also cloze deletion test) is an exercise, test, or assessment consisting of a portion of language with certain items, words, or signs removed (cloze text), where the participant is asked to replace the missing language item. … The exercise was first described by W.L. Taylor in 1953."
 

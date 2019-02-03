@@ -33,11 +33,6 @@ In this post, we will discuss how various approaches were proposed to make embed
 {:toc}
 
 
-## Metric: Perplexity
-
-[Perplexity](https://en.wikipedia.org/wiki/Perplexity) is a simple metric widely used to gauge how well a language model can capture the real word distribution conditioned on the context. It is the negative log-likelihood predicted for the actual words. The smaller the better.
-
-
 ## CoVe
 
 **CoVe** ([McCann et al. 2017](https://arxiv.org/abs/1708.00107)), short for **Contextual Word Vectors**, is a type of word embeddings learned by an encoder in an [attentional seq-to-seq]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}#born-for-translation) machine translation model.
@@ -407,6 +402,12 @@ A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
 | ULMFiT | AWD-LSTM | unsupervised | model-based | task-agnostic | all layers; with various training tricks
 | OpenAI GPT | Transformer decoder | unsupervised | model-based | task-agnostic | only the top task layer(s) |
 | BERT | Transformer encoder | unsupervised | model-based | task-agnostic | only the top task layer(s) |
+
+
+
+## Metric: Perplexity
+
+[Perplexity](https://en.wikipedia.org/wiki/Perplexity) is a simple metric widely used to gauge how well a language model can capture the real word distribution conditioned on the context.
 
 
 ## Common Tasks and Datasets

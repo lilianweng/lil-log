@@ -14,7 +14,7 @@ image: "elmo-and-bert.png"
 <br />
 ![Elmo & Bert]({{ '/assets/images/elmo-and-bert.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 0. I guess they are Elmo & Bert? (Image source: [here](http://www.essentialkids.com.au/entertainment/tv/elmo-big-bird-lend-a-hand-20110825-1jcqt))*
+*Fig. 0. I guess they are Elmo & Bert? (Image source: [here](https://www.youtube.com/watch?v=l5einDQ-Ttc))*
 <br />
 
 We have seen amazing progress in NLP in 2018. Large-scale pre-trained language modes like [OpenAI GPT](https://blog.openai.com/language-unsupervised/) and [BERT](https://arxiv.org/abs/1810.04805) have achieved great performance on a variety of language tasks using generic model architectures. The idea is similar to how ImageNet classification pre-training helps many vision tasks (\*). Even better than vision classification pre-training, this simple and powerful approach in NLP does not require labeled data for pre-training, allowing us to experiment with increased training scale, up to our very limit.

@@ -242,7 +242,7 @@ In the machine translation task, the primary prediction module is replaced with 
 Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
 1. The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
 2. The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT fine-tunes the same base model for all end tasks.
-    * Generative pre-trained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146). But in ULMFiT the fine-tuning happens in all layers gradually and ULMFiT focused on training techniques for stabilizing the fine-tuning process.
+    * Generative pre-trained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146), where the fine-tuning happens in all layers gradually. ULMFiT focuses on training techniques for stabilizing the fine-tuning process.
 
 
 ### Transformer Decoder as Language Model
@@ -356,9 +356,9 @@ The training data for both auxiliary tasks above can be trivially generated from
 ### Input Embedding
 
 The input embedding is the sum of three parts:
-1. WordPiece tokenization embeddings: The WordPiece [model](https://arxiv.org/pdf/1609.08144.pdf) was originally proposed for Japanese or Korean segmentation problem. Instead of using naturally split English word, they can be further divided into smaller sub-word units so that it is more effective to handle rare or unknown words. Please read [linked](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37842.pdf) papers for the optimal way to split words if interested.
-2. Segment embeddings: If the input contains two sentences, they have sentence A embeddings and sentence B embeddings respectively and they are separated by a special character `[SEP]`; Only sentence A embeddings are used if the input contains one sentence.
-3. Position embeddings: Positional embeddings are learned.
+1. *WordPiece tokenization embeddings*: The [WordPiece](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37842.pdf) [model](https://arxiv.org/pdf/1609.08144.pdf) was originally proposed for Japanese or Korean segmentation problem. Instead of using naturally split English word, they can be further divided into smaller sub-word units so that it is more effective to handle rare or unknown words. Please read [linked](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37842.pdf) [papers](https://arxiv.org/pdf/1609.08144.pdf) for the optimal way to split words if interested.
+2. *Segment embeddings*: If the input contains two sentences, they have sentence A embeddings and sentence B embeddings respectively and they are separated by a special character `[SEP]`; Only sentence A embeddings are used if the input only contains one sentence.
+3. *Position embeddings*: Positional embeddings are learned rather than hard-coded.
 
 
 ![BERT input embedding]({{ '/assets/images/BERT-input-embedding.png' | relative_url }})
@@ -366,20 +366,7 @@ The input embedding is the sum of three parts:
 *Fig. 10. BERT input representation. (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
 
 
-Note that the first token is always forced to be `[CLS]`, a placeholder that will be used later for prediction in downstream tasks.
-
-
-
-### Comparison between OpenAI GPT and BERT
-
-A summary table compares differences between the training of OpenAI GPT and BERT.
-
-{: class="info"}
-|              | **OpenAI GPT** | **BERT** |
-| Special char | `[SEP]` and `[CLS]` are only introduced at fine-tuning stage. | `[SEP]` and `[CLS]` and sentence A/B embeddings are learned at the pre-training stage. |
-| Training process | 1M steps, batch size 32k words. | 1M steps, batch size 128k words. |
-| Fine-tuning  | lr = 5e-5 for all fine-tuning tasks. | Use task-specific lr for fine-tuning. |
-
+Note that the first token is always forced to be `[CLS]` --- a placeholder that will be used later for prediction in downstream tasks.
 
 
 ### Use BERT in Downstream Tasks
@@ -389,14 +376,23 @@ BERT fine-tuning requires only a few new parameters added, just like OpenAI GPT.
 For classification tasks, we get the prediction by taking the final hidden state of the special first token `[CLS]`, $$\mathbf{h}^\text{[CLS]}_L$$, and multiplying it with a small weight matrix, $$\text{softmax}(\mathbf{h}^\text{[CLS]}_L \mathbf{W}_\text{cls})$$. 
 
 
-For QA tasks like SQuAD, we need to predict the text span in the given paragraph for an given question. BERT predicts two probability distributions of every token, being the start and the end of the text span. Only two new small matrices, $$\mathbf{W}_\text{s}$$ and $$\mathbf{W}_\text{e}$$, are newly learned during fine-tuning and $$\text{softmax}(\mathbf{h}^\text{(i)}_L \mathbf{W}_\text{s})$$ and $$\text{softmax}(\mathbf{h}^\text{(i)}_L \mathbf{W}_\text{s})$$ define the probability distributions.
+For [QA](#qa) tasks like SQuAD, we need to predict the text span in the given paragraph for an given question. BERT predicts two probability distributions of every token, being the start and the end of the text span. Only two new small matrices, $$\mathbf{W}_\text{s}$$ and $$\mathbf{W}_\text{e}$$, are newly learned during fine-tuning and $$\text{softmax}(\mathbf{h}^\text{(i)}_L \mathbf{W}_\text{s})$$ and $$\text{softmax}(\mathbf{h}^\text{(i)}_L \mathbf{W}_\text{e})$$ define two probability distributions.
 
-Overall the add-on parts for end task fine-tuning are very minimal - one or two weight matrices to convert the Transform hidden states to an interpretable format. Check the paper for implementation details for other cases.
+Overall the add-on part for end task fine-tuning is very minimal --- one or two weight matrices to convert the Transform hidden states to an interpretable format. Check the paper for implementation details for other cases.
 
 
 ![BERT downstream tasks]({{ '/assets/images/BERT-downstream-tasks.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 11. Training objects in slightly modified BERT models for downstream tasks.  (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
+
+
+A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
+
+{: class="info"}
+|              | **OpenAI GPT** | **BERT** |
+| Special char | `[SEP]` and `[CLS]` are only introduced at fine-tuning stage. | `[SEP]` and `[CLS]` and sentence A/B embeddings are learned at the pre-training stage. |
+| Training process | 1M steps, batch size 32k words. | 1M steps, batch size 128k words. |
+| Fine-tuning  | lr = 5e-5 for all fine-tuning tasks. | Use task-specific lr for fine-tuning. |
 
 
 
@@ -417,7 +413,7 @@ Overall the add-on parts for end task fine-tuning are very minimal - one or two 
 
 <a name='qa' />
 **Question-Answering**
-- [SQuAD](https://rajpurkar.github.io/SQuAD-explorer/) (Stanford Question Answering Dataset): 
+- [SQuAD](https://rajpurkar.github.io/SQuAD-explorer/) (Stanford Question Answering Dataset): A reading comprehension dataset, consisting of questions posed on a set of Wikipedia articles, where the answer to every question is a span of text.
 - [RACE](http://www.qizhexie.com/data/RACE_leaderboard) (ReAding Comprehension from Examinations): A large-scale reading comprehension dataset with more than 28,000 passages and nearly 100,000 questions. The dataset is collected from English examinations in China, which are designed for middle school and high school students.
 
 
@@ -463,7 +459,7 @@ STS Benchmark: Semantic Textual Similarity
 
 
 **Text Chunking**: To divide a text in syntactically correlated parts of words.
-- [CoNLL-2000](https://www.clips.uantwerpen.be/conll2000/chunking/): 
+- [CoNLL-2000](https://www.clips.uantwerpen.be/conll2000/chunking/)
 
 
 <a name='pos' />
@@ -472,9 +468,9 @@ the Wall Street Journal portion of the Penn Treebank (Marcus et al., 1993).
 
 
 **Machine Translation**:  See [Standard NLP](https://nlp.stanford.edu/projects/nmt/) page.
-- WMT 2015 English-Czech data [Large]
-- WMT 2014 English-German data [Medium]
-- IWSLT 2015 English-Vietnamese data [Small]
+- WMT 2015 English-Czech data (Large)
+- WMT 2014 English-German data (Medium)
+- IWSLT 2015 English-Vietnamese data (Small)
 
 
 **Coreference Resolution**: cluster mentions in text that refer to the same underlying real world entities.

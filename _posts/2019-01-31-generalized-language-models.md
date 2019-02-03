@@ -407,7 +407,31 @@ A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
 
 ## Metric: Perplexity
 
-[Perplexity](https://en.wikipedia.org/wiki/Perplexity) is a simple metric widely used to gauge how well a language model can capture the real word distribution conditioned on the context.
+Perplexity is often used as an intrinsic evaluation metric for gauging how well a language model can capture the real word distribution conditioned on the context. 
+
+A [perplexity](https://en.wikipedia.org/wiki/Perplexity) of a discrete proability distribution $$p$$ is defined as the exponentiation of the entropy:
+
+$$
+2^{H(p)} = 2^{-\sum_x p(x) \log_2 p(x)}
+$$
+
+Given a sentence with $$N$$ words, $$s = (w_1, \dots, w_N)$$, the entropy looks as follows, simply assuming that each word has the same frequency, $$\frac{1}{N}$$:
+
+$$
+H(s) = -\sum_{i=1}^N P(w_i) \log_2  p(w_i)  = -\sum_{i=1}^N \frac{1}{N} \log_2  p(w_i)
+$$
+
+The perplexity for the sentence becomes:
+
+$$
+\begin{aligned}
+2^{H(s)} &= 2^{-\frac{1}{N} \sum_{i=1}^N \log_2  p(w_i)}
+= (2^{\sum_{i=1}^N \log_2  p(w_i)})^{-\frac{1}{N}}
+= (p(w_1) \dots p(w_N))^{-\frac{1}{N}}
+\end{aligned}
+$$
+
+A good language model should predict high word probabilities. Therefore, the smaller perplexity the better.
 
 
 ## Common Tasks and Datasets

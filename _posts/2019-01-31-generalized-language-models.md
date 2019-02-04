@@ -121,7 +121,7 @@ The final layer’s hidden state $$\mathbf{h}_{i,L} = [\overrightarrow{\mathbf{h
 
 ![ELMo biLSTM]({{ '/assets/images/ELMo-biLSTM.png' | relative_url }})
 {: style="width: 85%;" class="center"}
-*Fig. 3. The biLSTM base model of ELMo. (Image source: recreated based on [this](https://towardsdatascience.com/introduction-to-sequence-models-rnn-bidirectional-rnn-lstm-gru-73927ec9df15).)*
+*Fig. 3. The biLSTM base model of ELMo. (Image source: recreated based on the figure in ["Neural Networks, Types, and Functional Programming"](http://colah.github.io/posts/2015-09-NN-Types-FP/) by Christopher Olah.)*
 
 The model is trained to minimize the negative log likelihood (= maximize the log likelihood for true words) in both directions:
 

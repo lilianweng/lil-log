@@ -400,8 +400,8 @@ A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
 | ELMo | two-layer biLSTM | unsupervised | feature-based | task-specific | / |
 | CVT | two-layer biLSTM | semi-supervised | model-based | task-specific / task-agnostic | / |
 | ULMFiT | AWD-LSTM | unsupervised | model-based | task-agnostic | all layers; with various training tricks
-| OpenAI GPT | Transformer decoder | unsupervised | model-based | task-agnostic | only the top task layer(s) |
-| BERT | Transformer encoder | unsupervised | model-based | task-agnostic | only the top task layer(s) |
+| OpenAI GPT | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
+| BERT | Transformer encoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
 
 
 

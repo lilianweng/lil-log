@@ -259,7 +259,7 @@ $$
 Then an interpolation gate scalar $$g_t$$ is used to blend the newly generated content-based attention vector with the attention weights in the last time step:
 
 $$
-\mathbf{w}_t^g = g_t \mathbf{w}_t^c + (1 - g_t) \mathbf{w}_{t-1}^c 
+\mathbf{w}_t^g = g_t \mathbf{w}_t^c + (1 - g_t) \mathbf{w}_{t-1} 
 $$
 
 

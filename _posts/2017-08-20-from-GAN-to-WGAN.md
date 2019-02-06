@@ -319,7 +319,7 @@ P_1 = 3, P_2 = 2, P_3 = 1, P_4 = 4\\
 Q_1 = 1, Q_2 = 2, Q_3 = 4, Q_4 = 3
 $$
 
-In order to change $$P$$ to look like $$Q$$, as illustrated in Fig. x, we:
+In order to change $$P$$ to look like $$Q$$, as illustrated in Fig. 7, we:
 - First move 2 shovelfuls from $$P_1$$ to $$P_2$$ => $$(P_1, Q_1)$$ match up.
 - Then move 2 shovelfuls from $$P_2$$ to $$P_3$$ => $$(P_2, Q_2)$$ match up.
 - Finally move 1 shovelfuls from $$Q_3$$ to $$Q_4$$ => $$(P_3, Q_3)$$ and $$(P_4, Q_4)$$ match up. 

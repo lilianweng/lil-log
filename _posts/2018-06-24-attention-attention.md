@@ -128,7 +128,7 @@ With the help of the attention, the dependencies between source and target seque
 
 ### Summary
 
-Below is a summary table of several popular attention mechanisms (or broader categories of attention mechanisms).
+Below is a summary table of several popular attention mechanisms and corresponding alignment score functions:
 
 {: class="info"}
 | Name | Alignment score function | Citation |
@@ -139,12 +139,20 @@ Below is a summary table of several popular attention mechanisms (or broader cat
 | General | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{s}_t^\top\mathbf{W}_a\boldsymbol{h}_i$$<br/>where $$\mathbf{W}_a$$ is a trainable weight matrix in the attention layer. | [Luong2015](https://arxiv.org/pdf/1508.04025.pdf) |
 | Dot-Product | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \boldsymbol{s}_t^\top\boldsymbol{h}_i$$ | [Luong2015](https://arxiv.org/pdf/1508.4025.pdf) |
 | Scaled Dot-Product(^) | $$\text{score}(\boldsymbol{s}_t, \boldsymbol{h}_i) = \frac{\boldsymbol{s}_t^\top\boldsymbol{h}_i}{\sqrt{n}}$$<br/>Note: very similar to the dot-product attention except for a scaling factor; where n is the dimension of the source hidden state. | [Vaswani2017](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf) |
+
+(*) Referred to as "concat" in Luong, et al., 2015 and as "additive attention" in Vaswani, et al., 2017.<br/>
+(^) It adds a scaling factor $$1/\sqrt{n}$$, motivated by the concern when the input is large, the softmax function may have an extremely small gradient, hard for efficient learning.<br/>
+
+
+Here are a summary of broader categories of attention mechanisms:
+
+{: class="info"}
+| Name | Definition | Citation |
+| -------------------------- | ------------- | ------------- |
 | Self-Attention(&) | Relating different positions of the same input sequence. Theoretically the self-attention can adopt any score functions above, but just replace the target sequence with the same input sequence. | [Cheng2016](https://arxiv.org/pdf/1601.06733.pdf) |
 | Global/Soft | Attending to the entire input state space. | [Xu2015](http://proceedings.mlr.press/v37/xuc15.pdf) |
 | Local/Hard | Attending to the part of input state space; i.e. a patch of the input image. | [Xu2015](http://proceedings.mlr.press/v37/xuc15.pdf); [Luong2015](https://arxiv.org/pdf/1508.04025.pdf) |
 
-(*) Referred to as "concat" in Luong, et al., 2015 and as "additive attention" in Vaswani, et al., 2017.<br/>
-(^) It adds a scaling factor $$1/\sqrt{n}$$, motivated by the concern when the input is large, the softmax function may have an extremely small gradient, hard for efficient learning.<br/>
 (&) Also, referred to as "intra-attention" in Cheng et al., 2016 and some other papers.
 
 

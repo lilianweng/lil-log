@@ -51,14 +51,14 @@ $$
   \frac{\partial f}{\partial y}
 \end{bmatrix}
 = \begin{bmatrix}
-  f(x, y+1) - f(x, y-1)\\
-  f(x+1, y) - f(x-1, y)
+  f(x+1, y) - f(x-1, y)\\
+  f(x, y+1) - f(x, y-1)
 \end{bmatrix}
 \end{align*}
 $$
 
 
-The $$\frac{\partial f}{\partial x}$$ term is the partial derivative on the x-direction, which is computed as the color difference between the adjacent pixels on the left and right of the target, f(x, y+1) - f(x, y-1). Similarly, the $$\frac{\partial f}{\partial y}$$ term is the partial derivative on the y-direction, measured as f(x+1, y) - f(x-1, y), the color difference between the adjacent pixels above and below the target.
+The $$\frac{\partial f}{\partial x}$$ term is the partial derivative on the x-direction, which is computed as the color difference between the adjacent pixels on the left and right of the target, f(x+1, y) - f(x-1, y). Similarly, the $$\frac{\partial f}{\partial y}$$ term is the partial derivative on the y-direction, measured as f(x, y+1) - f(x, y-1), the color difference between the adjacent pixels above and below the target.
 
 
 There are two important attributes of an image gradient:
@@ -77,49 +77,47 @@ $$
 \begin{align*}
 \nabla f 
 = \begin{bmatrix}
-  f(x, y+1) - f(x, y-1)\\
-  f(x+1, y) - f(x-1, y)
+  f(x+1, y) - f(x-1, y)\\
+  f(x, y+1) - f(x, y-1)
 \end{bmatrix}
 = \begin{bmatrix}
-  90-40\\
-  55-105
+  55-105\\
+  90-40
 \end{bmatrix}
 = \begin{bmatrix}
-  50\\
-  -50
+  -50\\
+  50
 \end{bmatrix}
 \end{align*}
 $$
 
 Thus,
-- the magnitude is $$\sqrt{50^2 + (-50)^2} = 22.3607$$, and
+- the magnitude is $$\sqrt{50^2 + (-50)^2} = 70.7107$$, and
 - the direction is $$\arctan{(-50/50)} = -45^{\circ}$$.
 
 Repeating the gradient computation process for every pixel iteratively is too slow. Instead, it can be well translated into applying a convolution operator on the entire image matrix, labeled as $$\mathbf{A}$$ using one of the specially designed convolutional kernels.
 
-Let's start with the x-direction of the example in Fig 1. using the kernel $${[-1,0,1]}^{-1}$$ sliding over the x-axis; $$\ast$$ is the convolution operator:
+Let's start with the x-direction of the example in Fig 1. using the kernel $$[-1,0,1]$$ sliding over the x-axis; $$\ast$$ is the convolution operator:
 
 $$
 \begin{align*}
 \mathbf{G}_x &= 
-\begin{bmatrix}
-  -1\\
-  0\\
-  1
-\end{bmatrix} \ast [40,255,90] = -40 + 0 + 90 = 50
+[-1, 0, 1] \ast [105, 255, 55] = -105 + 0 + 55 = -50
 \end{align*}
 $$
 
-Similarly, on the y-direction, we adopt the kernel $$[-1,0,1]$$:
+Similarly, on the y-direction, we adopt the kernel $$[+1, 0, -1]^\top$$:
 
 $$
 \begin{align*}
 \mathbf{G}_y &= 
+[+1, 0, -1]^\top \ast
 \begin{bmatrix}
-  105\\
+  90\\
   255\\
-  55
-\end{bmatrix} \ast [-1,0,1] = -105 + 0 + 55 = -50
+  40
+\end{bmatrix} 
+= 90 + 0 - 40 = 50
 \end{align*}
 $$
 
@@ -128,12 +126,12 @@ Try this in python:
 ```python
 import numpy as np
 import scipy.signal as sig
-data = np.array([[0,105,0],[40,255,90],[0,55,0]])
-G_x = sig.convolve2d(data, np.array([[-1],[0],[1]]), mode='valid') 
-G_y = sig.convolve2d(data, np.array([[-1,0,1]]), mode='valid')
+data = np.array([[0, 105, 0], [40, 255, 90], [0, 55, 0]])
+G_x = sig.convolve2d(data, np.array([[-1, 0, 1]]), mode='valid') 
+G_y = sig.convolve2d(data, np.array([[-1], [0], [1]]), mode='valid')
 ```
 
-These two functions return `array([[0, 50, 0]])` and `array([[0], [-50], [0]])` respectively.
+These two functions return `array([[0], [-50], [0]])` and `array([[0, 50, 0]])` respectively. (Note that in the numpy array representation, 40 is shown in front of 90, so -1 is listed before 1 in the kernel correspondingly.)
 
 
 ### Common Image Processing Kernels

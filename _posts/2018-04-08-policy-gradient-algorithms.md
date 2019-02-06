@@ -302,7 +302,7 @@ Here is the algorithm outline:
     6. For $$i = t-1, \dots, t_\text{start}$$:
         1. $$R \leftarrow \gamma R + R_i$$; here R is a MC measure of $$G_i$$.
         2. Accumulate gradients w.r.t. θ’: $$d\theta \leftarrow d\theta + \nabla_{\theta’} \log \pi_{\theta’}(a_i \vert s_i)(R - V_{w'}(s_i))$$;<br/>Accumulate gradients w.r.t. w’: $$dw \leftarrow dw + 2 (R - V_{w’}(s_i)) \nabla_{w’} (R - V_{w’}(s_i))$$.
-    7. Update synchronously θ using dθ, and w using dw.
+    7. Update asynchronously θ using dθ, and w using dw.
 
 A3C enables the parallelism in multiple agent training. The gradient accumulation step (6.2) can be considered as a parallelized reformation of minibatch-based stochastic gradient update: the values of w or θ get corrected by a little bit in the direction of each training thread independently.
 

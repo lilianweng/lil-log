@@ -164,7 +164,8 @@
 }
 
 .page-heading {
-  @include relative-font-size(1.25);
+  @include relative-font-size(1.5);
+  font-weight: 600;
 }
 
 .post-list {
@@ -211,7 +212,11 @@
  * FAQ
  */
 
- div.qa {
+.other-pages {
+    margin-top: $spacing-unit * 2;
+}
+
+div.qa {
     margin: 10px;
     padding: 10px;
     .question {

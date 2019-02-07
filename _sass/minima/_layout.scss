@@ -2,18 +2,26 @@
  * Site header
  */
 .site-header {
-  border-top: 5px solid $crimson-color;
-  border-bottom: 1px solid $crimson-color-very-light;
-  min-height: $spacing-unit * 1.865;
+  // border-top: 5px solid $crimson-color;
+  // border-bottom: 1px solid $crimson-color-very-light;
+  min-height: $spacing-unit * 1.75;
+
+  background: #333333;
 
   // Positioning context for the mobile navigation icon
-  position: relative;
+  // position: relative;
+
+  position: fixed;
+  top: 0;
+  width: 100%;
+  display: block;
+  transition: top 0.3s;
 }
 
 .site-title {
   @include relative-font-size(1.625);
   font-weight: 600;
-  color: $crimson-color;
+  color: #ffffff; // $crimson-color;
   line-height: $base-line-height * $base-font-size * 2.25;
   letter-spacing: -1px;
   margin-bottom: 0;
@@ -21,7 +29,7 @@
 
   &,
   &:visited {
-    color: $crimson-color-dark;
+    color: #ffffff; // $crimson-color-dark;
   }
 
   &:hover {
@@ -46,7 +54,7 @@
   }
 
   .page-link {
-    color: $text-color;
+    color: #ffffff; // $text-color;
     line-height: $base-line-height;
 
     // Gaps between nav items, but not on the last one
@@ -55,7 +63,7 @@
     }
 
     &:hover {
-      color: $crimson-color;
+      color: $crimson-color-light;
       text-decoration: none;
       cursor: pointer;
     }
@@ -173,7 +181,7 @@
   color: $grey-color;
 
   a.post-tag {
-    border-radius: 20px;
+    border-radius: 5px;
     border: 1px solid $grey-color;
     color: $grey-color;
     padding: 1px 5px;
@@ -190,6 +198,7 @@
 .post-link {
   display: block;
   @include relative-font-size(1.5);
+  font-weight: 600;
 
   &:hover {
     color: $crimson-color-light;
@@ -205,14 +214,19 @@
  div.qa {
     margin: 10px;
     padding: 10px;
-    border-radius: 10px;
-    background: #f7f7f7;
+    .question {
+        border-radius: 5px;
+        background: #eeeeee;
+        padding: 5px;
+        padding-left: 20px;
+    }
  }
 
 /**
  * Posts
  */
 .post-header {
+  margin-top: $spacing-unit * 2;
   margin-bottom: $spacing-unit;
 }
 

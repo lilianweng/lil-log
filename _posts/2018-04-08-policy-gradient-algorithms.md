@@ -12,7 +12,7 @@ image: "A3C_vs_A2C.png"
 
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2018-06-30: Two new policy gradient methods, [Soft AC](#soft-actor-critic) and [D4PG](#d4pg).]</span>
+<span style="color: #286ee0;">[Updated on 2018-06-30: Two new policy gradient methods, [SAC](#sac) and [D4PG](#d4pg).]</span>
 <br/>
 <span style="color: #286ee0;">[Updated on 2018-09-30: an new policy gradient method, [TD3](#td3).]</span>
 
@@ -649,7 +649,7 @@ Here is a high level summary from the K-FAC [paper](https://arxiv.org/pdf/1503.0
 
 
 
-### Soft Actor-Critic
+### SAC
 
 [[paper](https://arxiv.org/abs/1801.01290)\|[code](https://github.com/haarnoja/sac)]
 
@@ -666,7 +666,7 @@ $$
 J(\theta) = \sum_{t=1}^T \mathbb{E}_{(s_t, a_t) \sim \rho_{\pi_\theta}} [r(s_t, a_t) + \alpha \mathcal{H}(\pi_\theta(.\vert s_t))]
 $$
 
-where $$\mathcal{H}(.)$$ is the entropy measure and $$\alpha$$ controls how important the entropy term is, known as **temperature parameter**. The entropy maximization leads to policies that can (1) explore more and (2) capture multiple modes of near-optimal strategies (i.e., if there exist multiple options that seem to be equally good, the policy should assign each with an equal probability to be chosen).
+where $$\mathcal{H}(.)$$ is the entropy measure and $$\alpha$$ controls how important the entropy term is, known as *temperature* parameter. The entropy maximization leads to policies that can (1) explore more and (2) capture multiple modes of near-optimal strategies (i.e., if there exist multiple options that seem to be equally good, the policy should assign each with an equal probability to be chosen).
 
 Precisely, SAC aims to learn three functions:
 - The policy with parameter $$\theta$$, $$\pi_\theta$$.
@@ -674,12 +674,14 @@ Precisely, SAC aims to learn three functions:
 - Soft state value function parameterized by $$\psi$$, $$V_\psi$$; theoretically we can infer $$V$$ by knowing $$Q$$ and $$\pi$$, but in practice, it helps stabilize the training.
 
 
+**Soft State Value Update**
+
 Soft Q-value and soft state value are defined as:
 
 $$
 \begin{aligned}
-Q(s_t, a_t) &= r(s_t, a_t) + \gamma \mathbb{E}_{s_{t+1} \sim \rho_{\pi}(s)} [V(s_{t+1})] & \scriptstyle{\text{; according to Bellman equation.}}\\
-V(s_t) &= \mathbb{E}_{a_t \sim \pi} [Q(s_t, a_t) - \log \pi(s_t, a_t)] &
+Q(s_t, a_t) &= r(s_t, a_t) + \gamma \mathbb{E}_{s_{t+1} \sim \rho_{\pi}(s)} [V(s_{t+1})] & \text{; according to Bellman equation.}\\
+\text{where }V(s_t) &= \mathbb{E}_{a_t \sim \pi} [Q(s_t, a_t) - \log \pi(s_t, a_t)] & \text{; soft state value function.}
 \end{aligned}
 $$
 
@@ -707,18 +709,27 @@ $$
 
 where $$\bar{\psi}$$ is the target value function which is the exponential moving average (or only gets updated periodically in a “hard” way), just like how the parameter of the target Q network is treated in [DQN]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning%}#deep-q-network) to stabilize the training.
 
+
+**Soft Policy Update**
+
 SAC updates the policy to minimize the [KL-divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence):
 
 $$
 \begin{aligned}
-\pi_\text{new} &= \arg\min_{\pi' \in \Pi} \pi_\text{old} D_\text{KL} \big( \pi'(.\vert s_t) \| \exp(Q^{\pi_\text{old}}(s_t, .) - \log Z^{\pi_\text{old}}(s_t)) \big) \\
-\text{objective for update: } J_\pi(\theta) &= D_\text{KL} \big( \pi_\theta(. \vert s_t) \| \exp(Q_w(s_t, .) - \log Z_w(s_t)) \big)
+\pi_\text{new} 
+&= \arg\min_{\pi' \in \Pi} D_\text{KL} \Big( \pi'(.\vert s_t) \| \frac{\exp(Q^{\pi_\text{old}}(s_t, .))}{Z^{\pi_\text{old}}(s_t)} \Big) \\[6pt]
+&= \arg\min_{\pi' \in \Pi} D_\text{KL} \big( \pi'(.\vert s_t) \| \exp(Q^{\pi_\text{old}}(s_t, .) - \log Z^{\pi_\text{old}}(s_t)) \big) \\[6pt]
+\text{objective for update: } J_\pi(\theta) &= \nabla_\theta D_\text{KL} \big( \pi_\theta(. \vert s_t) \| \exp(Q_w(s_t, .) - \log Z_w(s_t)) \big) \\[6pt]
+&= \mathbb{E}_{a_t\sim\pi} \Big[ - \log \big( \frac{\exp(Q_w(s_t, a_t) - \log Z_w(s_t))}{\pi_\theta(a_t \vert s_t)} \big) \Big] \\[6pt]
+&= \mathbb{E}_{a_t\sim\pi} [ \log \pi_\theta(a_t \vert s_t) - Q_w(s_t, a_t) + \log Z_w(s_t) ]
 \end{aligned}
 $$
 
-where $$\Pi$$ is the set of potential policies that we can model our policy as to keep them tractable; for example, $$\Pi$$ can be the family of Gaussian mixture distributions, expensive to model but highly expressive and still tractable. $$Z^{\pi_\text{old}}(s_t)$$ is the partition function. How to minimize $$J_\pi(\theta)$$ depends our choice of $$\Pi$$.
+where $$\Pi$$ is the set of potential policies that we can model our policy as to keep them tractable; for example, $$\Pi$$ can be the family of Gaussian mixture distributions, expensive to model but highly expressive and still tractable. $$Z^{\pi_\text{old}}(s_t)$$ is the partition function to normalize the distribution. It is usually intractable but does not contribute to the gradient. How to minimize $$J_\pi(\theta)$$ depends our choice of $$\Pi$$.
 
 This update guarantees that $$Q^{\pi_\text{new}}(s_t, a_t) \geq Q^{\pi_\text{old}}(s_t, a_t)$$, please check the proof on this lemma in the Appendix B.2 in the original [paper](https://arxiv.org/abs/1801.01290).
+
+**SAC Algorithm**
 
 Once we have defined the objective functions and gradients for soft action-state value, soft state value and the policy network, the soft actor-critic algorithm is straightforward:
 
@@ -726,6 +737,7 @@ Once we have defined the objective functions and gradients for soft action-state
 ![SAC]({{ '/assets/images/SAC_algo.png' | relative_url }})
 {: class="center" style="width: 90%;"}
 *Fig. 6. The soft actor-critic algorithm.*
+
 
 
 ### TD3

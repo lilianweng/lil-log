@@ -319,7 +319,7 @@ The model architecture of BERT is a multi-layer bidirectional Transformer encode
 {: style="width: 25%;" class="center"}
 *Fig. 8. Recap of Transformer Encoder model architecture. (Image source: [Transformer paper](https://arxiv.org/abs/1706.03762))*
 
-To encourage the bi-directional prediction and sentence-level understanding, BERT applied two auxiliary tasks in addition to the basic language task (that is, to predict the next token given context).
+To encourage the bi-directional prediction and sentence-level understanding, BERT is trained with two auxiliary tasks instead of the basic language task (that is, to predict the next token given context).
 
 **Task 1: Mask language model (MLM)**
 

@@ -12,9 +12,11 @@ image: "A3C_vs_A2C.png"
 
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2018-06-30: Two new policy gradient methods, [SAC](#sac) and [D4PG](#d4pg).]</span>
+<span style="color: #286ee0;">[Updated on 2018-06-30: add two new policy gradient methods, [SAC](#sac) and [D4PG](#d4pg).]</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2018-09-30: an new policy gradient method, [TD3](#td3).]</span>
+<span style="color: #286ee0;">[Updated on 2018-09-30: add an new policy gradient method, [TD3](#td3).]</span>
+<br/>
+<span style="color: #286ee0;">[Updated on 2019-02-09: add [SAC with automatically adjusted temperature](#sac-with-automatically-adjusted-temperature)].</span>
 
 {: class="table-of-content"}
 * TOC
@@ -674,15 +676,17 @@ Precisely, SAC aims to learn three functions:
 - Soft state value function parameterized by $$\psi$$, $$V_\psi$$; theoretically we can infer $$V$$ by knowing $$Q$$ and $$\pi$$, but in practice, it helps stabilize the training.
 
 
-**Soft State Value Update**
-
 Soft Q-value and soft state value are defined as:
 
 $$
 \begin{aligned}
 Q(s_t, a_t) &= r(s_t, a_t) + \gamma \mathbb{E}_{s_{t+1} \sim \rho_{\pi}(s)} [V(s_{t+1})] & \text{; according to Bellman equation.}\\
-\text{where }V(s_t) &= \mathbb{E}_{a_t \sim \pi} [Q(s_t, a_t) - \log \pi(s_t, a_t)] & \text{; soft state value function.}
+\text{where }V(s_t) &= \mathbb{E}_{a_t \sim \pi} [Q(s_t, a_t) - \alpha \log \pi(a_t \vert s_t)] & \text{; soft state value function.}
 \end{aligned}
+$$
+
+$$
+\text{Thus, } Q(s_t, a_t) = r(s_t, a_t) + \gamma \mathbb{E}_{(s_{t+1}, a_{t+1}) \sim \rho_{\pi}} [Q(s_{t+1}, a_{t+1}) - \alpha \log \pi(a_{t+1} \vert s_{t+1})]
 $$
 
 $$\rho_\pi(s)$$ and $$\rho_\pi(s, a)$$ denote the state and the state-action marginals of the state distribution induced by the policy $$\pi(a \vert s)$$; see the similar definitions in [DPG](#dpg) section.
@@ -710,8 +714,6 @@ $$
 where $$\bar{\psi}$$ is the target value function which is the exponential moving average (or only gets updated periodically in a “hard” way), just like how the parameter of the target Q network is treated in [DQN]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning%}#deep-q-network) to stabilize the training.
 
 
-**Soft Policy Update**
-
 SAC updates the policy to minimize the [KL-divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence):
 
 $$
@@ -729,14 +731,161 @@ where $$\Pi$$ is the set of potential policies that we can model our policy as t
 
 This update guarantees that $$Q^{\pi_\text{new}}(s_t, a_t) \geq Q^{\pi_\text{old}}(s_t, a_t)$$, please check the proof on this lemma in the Appendix B.2 in the original [paper](https://arxiv.org/abs/1801.01290).
 
-**SAC Algorithm**
 
 Once we have defined the objective functions and gradients for soft action-state value, soft state value and the policy network, the soft actor-critic algorithm is straightforward:
 
 
 ![SAC]({{ '/assets/images/SAC_algo.png' | relative_url }})
 {: class="center" style="width: 90%;"}
-*Fig. 6. The soft actor-critic algorithm.*
+*Fig. 6. The soft actor-critic algorithm. (Image source: [original paper](https://arxiv.org/abs/1801.01290))*
+
+
+### SAC with Automatically Adjusted Temperature
+
+
+[[paper](https://arxiv.org/abs/1812.05905)\|[code](https://github.com/rail-berkeley/softlearning)]
+
+SAC is brittle with respect to the temperature parameter. Unfortunately it is difficult to adjust temperature, because the entropy can vary unpredictably both across tasks and during training as the policy becomes better. An improvement on SAC formulates a constrained optimization problem: while maximizing the expected return, the policy should satisfy a minimum entropy constraint:
+
+$$
+\max_{\pi_0, \dots, \pi_T} \mathbb{E} \Big[ \sum_{t=0}^T r(s_t, a_t)\Big] \text{s.t. } \forall t\text{, } \mathcal{H}(\pi_t) \geq \mathcal{H}_0
+$$
+
+where $$\mathcal{H}_0$$ is a predefined minimum policy entropy threshold.
+
+The expected return $$\mathbb{E} \Big[ \sum_{t=0}^T r(s_t, a_t)\Big]$$ can be decomposed into a sum of rewards at all the time steps. Because the policy $$\pi_t$$ at time t has no effect on the policy at the earlier time step, $$\pi_{t-1}$$, we can maximize the return at different steps backward in time --- this is essentially **DP**.
+
+
+$$
+\underbrace{\max_{\pi_0} \Big( \mathbb{E}[r(s_0, a_0)]+ \underbrace{\max_{\pi_1} \Big(\mathbb{E}[...] + \underbrace{\max_{\pi_T} \mathbb{E}[r(s_T, a_T)]}_\text{1st maximization} \Big)}_\text{second but last maximization} \Big)}_\text{last maximization}
+$$
+
+where we consider $$\gamma=1$$.
+
+So we start the optimization from the last timestep $$T$$:
+
+$$
+\text{maximize } \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [ r(s_T, a_T) ] \text{ s.t. } \mathcal{H}(\pi_T) - \mathcal{H}_0 \geq 0
+$$
+
+First, let us define the following functions:
+
+$$
+\begin{aligned}
+h(\pi_T) &= \mathcal{H}(\pi_T) - \mathcal{H}_0 = \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [-\log \pi_T(a_T\vert s_T)] - \mathcal{H}_0\\
+f(\pi_T) &= \begin{cases}
+\mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [ r(s_T, a_T) ], & \text{if }h(\pi_T) \geq 0 \\
+-\infty, & \text{otherwise}
+\end{cases}
+\end{aligned}
+$$
+
+And the optimization becomes:
+
+$$
+\text{maximize } f(\pi_T) \text{ s.t. } h(\pi_T) \geq 0
+$$
+
+To solve the maximization optimization with inequality constraint, we can construct a [Lagrangian expression](https://cs.stanford.edu/people/davidknowles/lagrangian_duality.pdf) with a Lagrange multiplier (also known as "dual variable"), $$\alpha_T$$:
+
+$$
+L(\pi_T, \alpha_T) = f(\pi_T) + \alpha_T h(\pi_T)
+$$
+
+Considering the case when we try to *minimize $$L(\pi_T, \alpha_T)$$ with respect to $$\alpha_T$$* - given a particular value $$\pi_T$$, 
+- If the constraint is satisfied, $$h(\pi_T) \geq 0$$, at best we can set $$\alpha_T=0$$ since we have no control over the value of $$f(\pi_T)$$. Thus, $$L(\pi_T, 0) = f(\pi_T)$$.
+- If the constraint is invalidated, $$h(\pi_T) < 0$$, we can achieve $$L(\pi_T, \alpha_T) \to -\infty$$ by taking  $$\alpha_T \to \infty$$. Thus, $$L(\pi_T, \infty) = -\infty = f(\pi_T)$$.
+
+In either case, we can recover the following equation,
+
+$$
+f(\pi_T) = \min_{\alpha_T \geq 0} L(\pi_T, \alpha_T)
+$$
+
+At the same time, we want to maximize $$f(\pi_T)$$,
+
+$$
+\max_{\pi_T} f(\pi_T) = \min_{\alpha_T \geq 0} \max_{\pi_T} L(\pi_T, \alpha_T)
+$$
+
+Therefore, to maximize $$f(\pi_T)$$, the dual problem is listed as below. Note that to make sure $$\max_{\pi_T} f(\pi_T)$$ is properly maximized and would not become $$-\infty$$, the constraint has to be satisfied.
+
+
+$$
+\begin{aligned}
+\max_{\pi_T} \mathbb{E}[ r(s_T, a_T) ]
+&= \max_{\pi_T} f(\pi_T) \\
+&= \min_{\alpha_T \geq 0}  \max_{\pi_T} L(\pi_T, \alpha_T) \\
+&= \min_{\alpha_T \geq 0}  \max_{\pi_T} f(\pi_T) + \alpha_T h(\pi_T) \\ 
+&= \min_{\alpha_T \geq 0}  \max_{\pi_T} \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [ r(s_T, a_T) ] + \alpha_T ( \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [-\log \pi_T(a_T\vert s_T)] - \mathcal{H}_0) \\ 
+&= \min_{\alpha_T \geq 0}  \max_{\pi_T} \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [ r(s_T, a_T)  - \alpha_T \log \pi_T(a_T\vert s_T)] - \alpha_T \mathcal{H}_0 \\
+&= \min_{\alpha_T \geq 0}  \max_{\pi_T} \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [ r(s_T, a_T)  + \alpha_T \mathcal{H}(\pi_T) - \alpha_T \mathcal{H}_0 ]
+\end{aligned}
+$$
+
+We could compute the optimal $$\pi_T$$ and $$\alpha_T$$ iteratively. First given the current $$\alpha_T$$, get the best policy $$\pi_T^{*}$$ that maximizes $$L(\pi_T^{*}, \alpha_T)$$. Then plug in $$\pi_T^{*}$$ and compute $$\alpha_T^{*}$$ that minimizes $$L(\pi_T^{*}, \alpha_T)$$. Assuming we have one neural network for policy and one network for temperature parameter, the iterative update process is more aligned with how we update network parameters during training. 
+
+
+$$
+\begin{aligned}
+\pi^{*}_T
+&= \arg\max_{\pi_T} \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi}} [ r(s_T, a_T)  + \alpha_T \mathcal{H}(\pi_T) - \alpha_T \mathcal{H}_0 ] \\
+\color{blue}{\alpha^{*}_T}
+&\color{blue}{=} \color{blue}{\arg\min_{\alpha_T \geq 0} \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi^{*}}} [\alpha_T \mathcal{H}(\pi^{*}_T) - \alpha_T \mathcal{H}_0 ]}
+\end{aligned}
+$$
+
+$$
+\text{Thus, }\max_{\pi_T} \mathbb{E} [ r(s_T, a_T) ] 
+= \mathbb{E}_{(s_T, a_T) \sim \rho_{\pi^{*}}} [ r(s_T, a_T)  + \alpha^{*}_T \mathcal{H}(\pi^{*}_T) - \alpha^{*}_T \mathcal{H}_0 ]
+$$
+
+Now let’s go back to the soft Q value function:
+
+$$
+\begin{aligned}
+Q_{T-1}(s_{T-1}, a_{T-1}) 
+&= r(s_{T-1}, a_{T-1}) + \mathbb{E} [Q(s_T, a_T) - \alpha_T \log \pi(a_T \vert s_T)] \\
+&= r(s_{T-1}, a_{T-1}) + \mathbb{E} [r(s_T, a_T)] + \alpha_T \mathcal{H}(\pi_T) \\
+Q_{T-1}^{*}(s_{T-1}, a_{T-1}) 
+&= r(s_{T-1}, a_{T-1}) + \max_{\pi_T} \mathbb{E} [r(s_T, a_T)] +  \alpha_T \mathcal{H}(\pi^{*}_T) & \text{; plug in the optimal }\pi_T^{*}
+\end{aligned}
+$$
+
+Therefore the expected return is as follows, when we take one step further back to the time step $$T-1$$:
+
+$$
+\begin{aligned}
+&\max_{\pi_{T-1}}\Big(\mathbb{E}[r(s_{T-1}, a_{T-1})] + \max_{\pi_T} \mathbb{E}[r(s_T, a_T] \Big) \\
+&= \max_{\pi_{T-1}} \Big( Q^{*}_{T-1}(s_{T-1}, a_{T-1}) - \alpha^{*}_T \mathcal{H}(\pi^{*}_T) \Big) & \text{; should s.t. } \mathcal{H}(\pi_{T-1}) - \mathcal{H}_0 \geq 0 \\
+&= \min_{\alpha_{T-1} \geq 0}  \max_{\pi_{T-1}} \Big( Q^{*}_{T-1}(s_{T-1}, a_{T-1}) - \alpha^{*}_T \mathcal{H}(\pi^{*}_T) + \alpha_{T-1} \big( \mathcal{H}(\pi_{T-1}) - \mathcal{H}_0 \big) \Big) & \text{; dual problem w/ Lagrangian.} \\
+&= \min_{\alpha_{T-1} \geq 0}  \max_{\pi_{T-1}} \Big( Q^{*}_{T-1}(s_{T-1}, a_{T-1}) + \alpha_{T-1} \mathcal{H}(\pi_{T-1}) - \alpha_{T-1}\mathcal{H}_0 \Big) - \alpha^{*}_T \mathcal{H}(\pi^{*}_T)
+\end{aligned}
+$$
+
+Similar to the previous step,
+
+
+$$
+\begin{aligned}
+\pi^{*}_{T-1} &= \arg\max_{\pi_{T-1}} \mathbb{E}_{(s_{T-1}, a_{T-1}) \sim \rho_\pi} [Q^{*}_{T-1}(s_{T-1}, a_{T-1}) + \alpha_{T-1} \mathcal{H}(\pi_{T-1}) - \alpha_{T-1} \mathcal{H}_0 ] \\
+\color{green}{\alpha^{*}_{T-1}} &\color{green}{=} \color{green}{\arg\min_{\alpha_{T-1} \geq 0} \mathbb{E}_{(s_{T-1}, a_{T-1}) \sim \rho_{\pi^{*}}} [ \alpha_{T-1} \mathcal{H}(\pi^{*}_{T-1}) - \alpha_{T-1}\mathcal{H}_0 ]}
+\end{aligned}
+$$
+
+The equation for updating $$\alpha_{T-1}$$ in <span style="color: #32CD32;">green</span> has the same format as the equation for updating $$\alpha_{T-1}$$ in <span style="color: #1E90FF;">blue</span> above. By repeating this process, we can learn the optimal temperature parameter in every step by minimizing the same objective function:
+
+
+$$
+J(\alpha) = \mathbb{E}_{a_t \sim \pi_t} [-\alpha \log \pi_t(a_t\mid\pi_t) - \alpha \mathcal{H}_0]
+$$
+
+The final algorithm is same as SAC except for learning $$\alpha$$ explicitly with respect to the objective $$J(\alpha)$$ (see Fig. 7):
+
+
+![SAC2]({{ '/assets/images/SAC2_algo.png' | relative_url }})
+{: class="center" style="width: 90%;"}
+*Fig. 7. The soft actor-critic algorithm with automatically adjusted temperature. (Image source: [original paper](https://arxiv.org/abs/1812.05905))*
 
 
 
@@ -791,7 +940,7 @@ Here is the final algorithm:
 
 ![TD3]({{ '/assets/images/TD3.png' | relative_url }})
 {: class="center" style="width: 80%;"}
-*Fig 7. TD3 Algorithm. (Image source: [Fujimoto et al., 2018](https://arxiv.org/abs/1802.09477))*
+*Fig 8. TD3 Algorithm. (Image source: [Fujimoto et al., 2018](https://arxiv.org/abs/1802.09477))*
 
 
 
@@ -862,3 +1011,7 @@ See you in the next post :D
 [19] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. ["Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor."](https://arxiv.org/pdf/1801.01290.pdf) arXiv preprint arXiv:1801.01290 (2018).
 
 [20] Scott Fujimoto, Herke van Hoof, and Dave Meger. ["Addressing Function Approximation Error in Actor-Critic Methods."](https://arxiv.org/abs/1802.09477) arXiv preprint arXiv:1802.09477 (2018).
+
+[21] Tuomas Haarnoja, et al. ["Soft Actor-Critic Algorithms and Applications."](https://arxiv.org/abs/1812.05905) arXiv preprint arXiv:1812.05905 (2018).
+
+[22] David Knowles. ["Lagrangian Duality for Dummies"](https://cs.stanford.edu/people/davidknowles/lagrangian_duality.pdf) Nov 13, 2010.

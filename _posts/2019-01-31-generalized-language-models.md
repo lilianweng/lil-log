@@ -11,6 +11,8 @@ image: "elmo-and-bert.png"
 
 <!--more-->
 
+<span style="color: #286ee0;">[Updated on 2019-02-14: add [ULMFiT](#ulmfit) and [OpenAI GPT-2](#openai-gpt-2).]</span>
+
 <br />
 ![Elmo & Bert]({{ '/assets/images/elmo-and-bert.png' | relative_url }})
 {: style="width: 60%;" class="center"}
@@ -232,12 +234,42 @@ Note that if the primary prediction module has dropout, the dropout layer works 
 In the machine translation task, the primary prediction module is replaced with a standard unidirectional LSTM decoder with attention. There are two auxiliary tasks: (1) apply dropout on the attention weight vector by randomly zeroing out some values; (2) predict the future word in the target sequence. The primary prediction for auxiliary tasks to match is the best predicted target sequence produced by running the fixed primary decoder on the input sequence with [beam search](https://en.wikipedia.org/wiki/Beam_search).
 
 
+## ULMFiT
+
+The idea of using generative pretrained LM + task-specific fine-tuning was first explored in ULMFiT ([Howard & Ruder, 2018](https://arxiv.org/abs/1801.06146)), directly motivated by the success of using ImageNet pre-training for computer vision tasks. The base model is [AWD-LSTM](https://arxiv.org/abs/1708.02182).
+
+ULMFiT follows three steps to achieve good transfer learning results on downstream language classification tasks:
+
+1) *General LM pre-training*: on Wikipedia text.
+
+
+2) *Target task LM fine-tuning*: ULMFiT proposed two training techniques for stabilizing the fine-tuning process. See below.
+
+- **Discriminative fine-tuning** is motivated by the fact that different layers of LM capture different types of information (see [discussion](#elmo-representations) above). ULMFiT proposed to tune each layer with different learning rates, $$\{\eta^1, \dots, \eta^\ell, \dots, \eta^L\}$$, where $$\eta$$ is the base learning rate for the first layer, $$\eta^\ell$$ is for the $$\ell$$-th layer and there are $$L$$ layers in total.
+
+- **Slanted triangular learning rates (STLR)** refer to a special learning rate scheduling that first linearly increases the learning rate and then linearly decays it. The increase stage is short so that the model can converge to a parameter space suitable for the task fast, while the decay period is long allowing for better fine-tuning.
+
+
+3) *Target task classifier fine-tuning*: The pretrained LM is augmented with two standard feed-forward layers and a softmax normalization at the end to predict a target label distribution.
+
+- **Concat pooling** extracts max-polling and mean-pooling over the history of hidden states and concatenates them with the final hidden state.
+
+- **Gradual unfreezing** helps to avoid catastrophic forgetting by gradually unfreezing the model layers starting from the last one. First the last layer is unfrozen and fine-tuned for one epoch. Then the next lower layer is unfrozen. This process is repeated until all the layers are tuned.
+
+
+
+![ULMFiT]({{ '/assets/images/ULMFiT.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 6. Three training stages of ULMFiT. (Image source: [original paper](https://arxiv.org/abs/1801.06146))*
+
+
+
+
 ## OpenAI GPT
 
 Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
 1. The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
 2. The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT fine-tunes the same base model for all end tasks.
-    * Generative pre-trained LM + task-specific fine-tuning has been proved to work in [ULMFiT](https://arxiv.org/abs/1801.06146), where the fine-tuning happens in all layers gradually. ULMFiT focuses on training techniques for stabilizing the fine-tuning process.
 
 
 ### Transformer Decoder as Language Model
@@ -249,7 +281,7 @@ This model applies multiple transformer blocks over the embeddings of input sequ
 
 ![OpenAI GPT transformer decoder]({{ '/assets/images/OpenAI-GPT-transformer-decoder.png' | relative_url }})
 {: style="width: 85%;" class="center"}
-*Fig. 6. The transformer decoder model architecture in OpenAI GPT.*
+*Fig. 7. The transformer decoder model architecture in OpenAI GPT.*
 
 The loss is the negative log-likelihood, same as [ELMo](#elmo), but without backward computation. Let’s say, the context window of the size $$k$$ is located before the target word and the loss would look like:
 
@@ -257,6 +289,11 @@ The loss is the negative log-likelihood, same as [ELMo](#elmo), but without back
 $$
 \mathcal{L}_\text{LM} = -\sum_{i} \log p(x_i\mid x_{i-k}, \dots, x_{i-1})
 $$
+
+
+### BPE
+
+**Byte Pair Encoding** ([**BPE**](https://arxiv.org/abs/1508.07909)) is used to encode the input sequences. BPE was originally proposed as a data compression algorithm in 1990s and then was adopted to solve the open-vocabulary issue in machine translation, as we can easily run into rare and unknown words when translating into a new language. Motivated by the intuition that rare and unknown words can often be decomposed into multiple subwords, BPE finds the best word segmentation by iteratively and greedily merging frequent pairs of characters.
 
 
 ### Supervised Fine-Tuning
@@ -294,7 +331,7 @@ For the sentence similarity task, because the ordering does not matter, both ord
 
 ![GPT downstream tasks]({{ '/assets/images/GPT-downstream-tasks.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 7. Training objects in slightly modified GPT transformer models for downstream tasks. (Image source: [original paper](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf))*
+*Fig. 8. Training objects in slightly modified GPT transformer models for downstream tasks. (Image source: [original paper](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf))*
 
 
 **Summary**: It is super neat and encouraging to see that such a general framework is capable to beat SOTA on most language tasks at that time (June 2018). At the first stage, generative pre-training of a language model can absorb as much free text as possible. Then at the second stage, the model is fine-tuned on specific tasks with a small labeled dataset and a minimal set of new parameters to learn. 
@@ -311,13 +348,13 @@ Compared to GPT, the largest difference and improvement of BERT is to make train
 > "bidirectional nature of our model is the single most important new contribution"
 
 
-### Auxiliary Tasks
+### Pre-training Tasks
 
 The model architecture of BERT is a multi-layer bidirectional Transformer encoder.
 
 ![transformer encoder]({{ '/assets/images/transformer-encoder-2.png' | relative_url }})
 {: style="width: 25%;" class="center"}
-*Fig. 8. Recap of Transformer Encoder model architecture. (Image source: [Transformer paper](https://arxiv.org/abs/1706.03762))*
+*Fig. 9. Recap of Transformer Encoder model architecture. (Image source: [Transformer paper](https://arxiv.org/abs/1706.03762))*
 
 To encourage the bi-directional prediction and sentence-level understanding, BERT is trained with two auxiliary tasks instead of the basic language task (that is, to predict the next token given context).
 
@@ -345,7 +382,7 @@ The training data for both auxiliary tasks above can be trivially generated from
 
 ![Language model comparison]({{ '/assets/images/language-model-comparison.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 9. Comparison of BERT, OpenAI GPT and ELMo model architectures. (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
+*Fig. 10. Comparison of BERT, OpenAI GPT and ELMo model architectures. (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
 
 
 ### Input Embedding
@@ -358,7 +395,7 @@ The input embedding is the sum of three parts:
 
 ![BERT input embedding]({{ '/assets/images/BERT-input-embedding.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 10. BERT input representation. (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
+*Fig. 11. BERT input representation. (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
 
 
 Note that the first token is always forced to be `[CLS]` --- a placeholder that will be used later for prediction in downstream tasks.
@@ -378,7 +415,7 @@ Overall the add-on part for end task fine-tuning is very minimal --- one or two 
 
 ![BERT downstream tasks]({{ '/assets/images/BERT-downstream-tasks.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 11. Training objects in slightly modified BERT models for downstream tasks.  (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
+*Fig. 12. Training objects in slightly modified BERT models for downstream tasks.  (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
 
 
 A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
@@ -391,6 +428,42 @@ A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
 
 
 
+## OpenAI GPT-2
+
+The [OpenAI](https://blog.openai.com/better-language-models/) [GPT-2](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) language model is a direct successor to [GPT](#openai-gpt). GPT-2 has 1.5B parameters, 10x more than the original GPT, and it achieves SOTA results on 7 out of 8 tested language modeling datasets in a *zero-shot transfer setting* without any task-specific fine-tuning. The pre-training dataset contains 8 million Web pages collected by crawling qualified outbound links from [Reddit](https://www.reddit.com/). Large improvements by OpenAI GPT-2 are specially noticeable on small datasets and datasets used for measuring *long-term dependency*.
+
+
+### Zero-Shot Transfer
+
+The pre-training task for GPT-2 is solely language modeling. All the downstream language tasks are framed as predicting conditional probabilities and there is no task-specific fine-tuning.
+
+- Text generation is straightforward using LM. 
+- Machine translation task, for example, English to Chinese, is induced by conditioning LM on pairs of "English sentence = Chinese sentence" and "the target English sentence =" at the end.
+    - For example, the conditional probability to predict might look like: `P(? | I like green apples. = 我喜欢绿苹果。 A cat meows at him. = 一只猫对他喵。It is raining cats and dogs. =")`
+- QA task is formatted similar to translation with pairs of questions and answers in the context.
+- Summarization task is induced by adding `TL;DR:` after the articles in the context.
+
+
+### BPE on Byte Sequences
+
+Same as the original GPT, GPT-2 uses [BPE](#bpe) but on [UTF-8](https://en.wikipedia.org/wiki/UTF-8) byte sequences. Each byte can represent 256 different values in 8 bits, while UTF-8 can use up to 4 bytes for one character, supporting up to $$2^{31}$$ characters in total. Therefore, with byte sequence representation we only need a vocabulary of size 256 and do not need to worry about pre-processing, tokenization, etc. Despite of the benefit, current byte-level LMs still have non-negligible performance gap with the SOTA word-level LMs.
+
+BPE merges frequently co-occurred byte pairs in a greedy manner. To prevent it from generating multiple versions of common words (i.e. `dog.`, `dog!` and `dog?` for the word `dog`), GPT-2 prevents BPE from merging characters across categories (thus `dog` would not be merged with punctuations like `.`, `!` and `?`). This tricks help increase the quality of the final byte segmentation.
+
+Using the byte sequence representation, GPT-2 is able to assign a probability to any Unicode string, regardless of any pre-processing steps.
+
+
+### Model Modifications
+
+Compared to GPT, other than having many more transformer layers and parameters, GPT-2 incorporates only a few architecture modifications:
+
+- [Layer normalization](https://arxiv.org/abs/1607.06450) was moved to the input of each sub-block, similar to a residual unit of type ["building block"](https://arxiv.org/abs/1603.05027) (differently from the original type ["bottleneck"](https://arxiv.org/abs/1512.03385), it has batch normalization applied before weight layers).
+- An additional layer normalization was added after the final self-attention block.
+- A modified initialization was constructed as a function of the model depth.
+- The weights of residual layers were initially scaled by a factor of $$1/ \sqrt{N}$$ where N is the number of residual layers.
+- Use larger vocabulary size and context size.
+
+
 ## Summary
 
 {: class="info"}
@@ -400,8 +473,9 @@ A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
 | ELMo | two-layer biLSTM | unsupervised | feature-based | task-specific | / |
 | CVT | two-layer biLSTM | semi-supervised | model-based | task-specific / task-agnostic | / |
 | ULMFiT | AWD-LSTM | unsupervised | model-based | task-agnostic | all layers; with various training tricks
-| OpenAI GPT | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
+| GPT | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
 | BERT | Transformer encoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
+| GPT-2 | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
 
 
 
@@ -502,13 +576,19 @@ the Wall Street Journal portion of the Penn Treebank (Marcus et al., 1993).
 - [CoNLL-2012](http://conll.cemantix.org/2012/data.html)
 
 
-**GLUE** multi-task benchmark: [https://gluebenchmark.com](https://gluebenchmark.com/) 
+**Long-range Dependency**
+- [LAMBADA](http://clic.cimec.unitn.it/lambada/) (LAnguage Modeling Broadened to Account for Discourse Aspects): A collection of narrative passages extracted from the BookCorpus and the task is to predict the last word, which require at least 50 tokens of context for a human to successfully predict.
+- [Children’s Book Test](https://research.fb.com/downloads/babi/): is built from books that are freely available in [Project Gutenberg](https://www.gutenberg.org/). The task is to predict the missing word among 10 candidates.
 
+**Multi-task benchmark**
+- GLUE multi-task benchmark: [https://gluebenchmark.com](https://gluebenchmark.com/) 
+- decaNLP benmark: [https://decanlp.com](https://decanlp.com/)
 
-**Unsupervised pre-training dataset**
+**Unsupervised pretraining dataset**
 - [Books corpus](https://googlebooks.byu.edu/): The corpus contains "over 7,000 unique unpublished books from a variety of genres including Adventure, Fantasy, and Romance."
 - [1B Word Language Model Benchmark](http://www.statmt.org/lm-benchmark/)
 - [English Wikipedia](https://en.wikipedia.org/wiki/Wikipedia:Database_download#English-language_Wikipedia): ~2500M words
+
 
 
 ## Reference
@@ -521,18 +601,25 @@ the Wall Street Journal portion of the Penn Treebank (Marcus et al., 1993).
 
 [4] OpenAI Blog ["Improving Language Understanding with Unsupervised Learning"](https://blog.openai.com/language-unsupervised/), June 11, 2018.
 
-[5] Jeremy Howard and Sebastian Ruder. ["Universal language model fine-tuning for text classification."](https://arxiv.org/abs/1801.06146) ACL 2018.
+[5] OpenAI Blog ["Better Language Models and Their Implications."](https://blog.openai.com/better-language-models/) Feb 14, 2019.
 
-[6] Alec Radford et al. ["Improving Language Understanding by Generative Pre-Training"](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf). OpenAI Blog, June 11, 2018.
+[6] Jeremy Howard and Sebastian Ruder. ["Universal language model fine-tuning for text classification."](https://arxiv.org/abs/1801.06146) ACL 2018.
 
-[7] Jacob Devlin, et al. ["BERT: Pre-training of deep bidirectional transformers for language understanding."](https://arxiv.org/abs/1810.04805) arXiv:1810.04805 (2018).
+[7] Alec Radford et al. ["Improving Language Understanding by Generative Pre-Training"](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf). OpenAI Blog, June 11, 2018.
 
-[8] Mike Schuster, and Kaisuke Nakajima. ["Japanese and Korean voice search."](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37842.pdf) ICASSP. 2012.
+[8] Jacob Devlin, et al. ["BERT: Pre-training of deep bidirectional transformers for language understanding."](https://arxiv.org/abs/1810.04805) arXiv:1810.04805 (2018).
 
-[9] Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation
+[9] Mike Schuster, and Kaisuke Nakajima. ["Japanese and Korean voice search."](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/37842.pdf) ICASSP. 2012.
 
-[10] Ashish Vaswani, et al. ["Attention is all you need."](https://arxiv.org/abs/1706.03762) NIPS 2017.
+[10] Google’s Neural Machine Translation System: Bridging the Gap between Human and Machine Translation
 
-[11] Peter J. Liu, et al. ["Generating wikipedia by summarizing long sequences."](https://arxiv.org/abs/1801.10198) ICLR 2018.
+[11] Ashish Vaswani, et al. ["Attention is all you need."](https://arxiv.org/abs/1706.03762) NIPS 2017.
 
-[12] Sebastian Ruder. ["10 Exciting Ideas of 2018 in NLP"](http://ruder.io/10-exciting-ideas-of-2018-in-nlp/) Dec 2018.
+[12] Peter J. Liu, et al. ["Generating wikipedia by summarizing long sequences."](https://arxiv.org/abs/1801.10198) ICLR 2018.
+
+[13] Sebastian Ruder. ["10 Exciting Ideas of 2018 in NLP"](http://ruder.io/10-exciting-ideas-of-2018-in-nlp/) Dec 2018.
+
+[14] Alec Radford, et al. ["Language Models are Unsupervised Multitask Learners."](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf). 2019.
+
+[15] Rico Sennrich, et al. ["Neural machine translation of rare words with subword units."](https://arxiv.org/abs/1508.07909) arXiv preprint arXiv:1508.07909. 2015.
+

@@ -461,7 +461,7 @@ IAF intends to estimate the probability density function of $$\tilde{\mathbf{x}}
 
 ![MAF and IAF]({{ '/assets/images/MAF-vs-IAF.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 10. Comparison of MAF and IAF.  The variable with unknown density is in green while the known one is in red.*
+*Fig. 10. Comparison of MAF and IAF.  The variable with known density is in green while the unknown one is in red.*
 
 Computations of the individual elements $$\tilde{x}_i$$ do not depend on each other, so they are easily parallelizable (only one pass using MADE). The density estimation for a known $$\tilde{\mathbf{x}}$$ is not efficient, because we have to recover the value of $$\tilde{z}_i$$ in a sequential order, $$\tilde{z}_i = (\tilde{x}_i - \tilde{\mu}_i(\tilde{\mathbf{z}}_{1:i-1})) / \tilde{\sigma}_i(\tilde{\mathbf{z}}_{1:i-1})$$, thus D times in total.
 

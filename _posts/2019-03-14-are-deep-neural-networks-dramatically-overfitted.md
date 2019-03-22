@@ -340,7 +340,7 @@ The x-axis is the number of model parameters: (28 * 28 + 1) * num. units + num. 
 
 This one is fairly easy to reproduce. See my implementation [here](https://github.com/lilianweng/generalization-experiment/blob/master/layer_equality.py).
 
-In the first experiment, I used a three-layer fc networks with 256 units in each layer. Layer 0 is the input layer while layer 3 is the output. The network is trained on 10% MNIST for 100 epochs.
+In the first experiment, I used a three-layer fc networks with 256 units in each layer. Layer 0 is the input layer while layer 3 is the output. The network is trained on MNIST for 100 epochs.
 
 ![Layer equality experiment 1]({{ '/assets/images/layer_equality_256x3.png' | relative_url }})
 {: style="width: 100%;" class="center"}

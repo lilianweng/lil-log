@@ -310,20 +310,18 @@ After seeing all the interesting findings above, it should be pretty fun to repr
 **New Risk Curve for DL Models**
 
 This is the trickiest one to reproduce. The authors did give me a lot of good advice. Here are a couple of noticeable settings in their experiments:
-- There is no regularization terms like weight decay, dropout or early stopping.
+- There is no regularization terms like weight decay, dropout.
 - In Fig 3, the training set contains 4k samples. It is only sampled once and fixed for all the models. The evaluation uses the full MNIST test set.
 - Each network is trained for a long time to achieve near-zero training risk. The learning rate is adjusted differently for models of different sizes.
-- To make the model less sensitive to the initialization in the under-parameterization region), they adopted a “*weight reuse*” scheme: the parameters obtained from training a smaller neural network are used as initialization for training larger networks. In the over-parameterization region, model parameters are initialized as normal.
+- To make the model less sensitive to the initialization in the under-parameterization region), they adopted a “*weight reuse*” scheme: the parameters obtained from training a smaller neural network are used as initialization for training larger networks.
 
-I did not train or tune each model long enough to get perfect training performance, but there indeed is a special trend on evaluation error different from training error around the interpolation threshold (i.e. for MNIST the threshold is number of training samples x the number of classes, 10).
+I did not train or tune each model long enough to get perfect training performance, but there indeed is a special trend on evaluation error different from training error around the interpolation threshold (i.e. for MNIST the threshold is number of training samples x the number of classes, 10 = 40000).
+ 
+The x-axis is the number of model parameters: (28 * 28 + 1) * num. units + num. units * 10, in logarithm.
 
-
-<span style="color: #286ee0;">[TODO: add figure]</span>
-
-<!-- 
-![risk curve experiment 1]({{ '/assets/images/xxx.png' | relative_url }})
+![risk curve experiment 1]({{ '/assets/images/risk_curve_loss-mse_sample-4000_epoch-500.png' | relative_url }})
 {: style="width: 100%;" class="center"}
--->
+
 
 <p />
 
@@ -353,8 +351,8 @@ My implementation follows a naive approach by sampling a large matrix with indep
 
 Here is a two-layer fc network with 64 units in each layer, trained on 10% of MNIST. For every $$d$$, the model is trained for 100 epochs. See the [code](https://github.com/lilianweng/generalization-experiment/blob/master/intrinsic_dimensions.py) [here](https://github.com/lilianweng/generalization-experiment/blob/master/intrinsic_dimensions_measurement.py).
 
-![intrinsic dimension experiment 1]({{ '/assets/images/intrinsic-dimension-net-64-64.png' | relative_url }})
-{: style="width: 80%;" class="center"}
+![intrinsic dimension experiment 1]({{ '/assets/images/intrinsic-dimension-net-64-64-and-128.png' | relative_url }})
+{: style="width: 100%;" class="center"}
 
 
 

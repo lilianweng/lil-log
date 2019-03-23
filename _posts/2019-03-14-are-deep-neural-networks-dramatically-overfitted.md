@@ -287,10 +287,10 @@ The paper proposed two types of operations that can be applied to parameters of 
 
 Layers can be categorized into two categories with the help of these two operations:
 
-- **Robust Layers**: The network has no negligible performance degradation after re-initializing or re-randomizing the layer.
+- **Robust Layers**: The network has no or only negligible performance degradation after re-initializing or re-randomizing the layer.
 - **Critical Layers**: Otherwise.
 
-Similar patterns are observed on fully-connected and convolutional networks. Re-randomizing any of the layers *completely destroys* the model performance, as the prediction drops to random guessing immediately. More interestingly and surprisingly, when applying re-initialization, only the first or the first few layers (those closest to the input layer) are critical, while re-initializing higher levels causes *no negligible decrease* in performance.
+Similar patterns are observed on fully-connected and convolutional networks. Re-randomizing any of the layers *completely destroys* the model performance, as the prediction drops to random guessing immediately. More interestingly and surprisingly, when applying re-initialization, only the first or the first few layers (those closest to the input layer) are critical, while re-initializing higher levels causes *only negligible decrease* in performance.
 
 
 ![Re-initialization robustness]({{ '/assets/images/layer-robustness-results.png' | relative_url }})

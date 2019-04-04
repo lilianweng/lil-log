@@ -102,7 +102,7 @@ where $$\det \frac{\partial f}{\partial\mathbf{z}}$$ is the Jacobian determinant
 
 ## What is Normalizing Flows?
 
-Being able to do good density estimation has direct applications in many machine learning problems, but it is very hard. For example, since we need to run backward propagation in deep learning models, the embedded probability distribution (i.e. posterior $$p(\mathbf{z})\vert\mathbf{x})$$) is expected to be simple enough to calculate the derivative easily and efficiently. That is why Gaussian distribution is often used in latent variable generative models, even through most of real world distributions are much more complicated than Gaussian. 
+Being able to do good density estimation has direct applications in many machine learning problems, but it is very hard. For example, since we need to run backward propagation in deep learning models, the embedded probability distribution (i.e. posterior $$p(\mathbf{z}\vert\mathbf{x})$$) is expected to be simple enough to calculate the derivative easily and efficiently. That is why Gaussian distribution is often used in latent variable generative models, even through most of real world distributions are much more complicated than Gaussian. 
 
 Here comes a **Normalizing Flow** (NF) model for better and more powerful distribution approximation. A normalizing flow transforms a simple distribution into a complex one by applying a sequence of invertible transformation functions. Flowing through a chain of transformations, we repeatedly substitute the variable for the new one according to the change of variables theorem and eventually obtain a probability distribution of the final target variable.
 

@@ -583,7 +583,7 @@ _\tau[\mathcal{L}_{\tau}], \theta, k)$$ diverge from $$\mathbb{E}_\tau [\text{SG
 
 #### The Optimization Assumption
 
-Assuming that a task $$\tau \sim p(\tau)$$ has a manifold of optimal network configuration, $$\mathcal{W}_{\tau}^*$$. The model $$f_\theta$$ achieves the best performance for task $$\tau_i$$ when $$\theta$$ lays on the surface of $$\mathcal{W}_{\tau}^*$$. To find a solution that is good across tasks, we would like to find a parameter close to all the optimal manifolds of all tasks:
+Assuming that a task $$\tau \sim p(\tau)$$ has a manifold of optimal network configuration, $$\mathcal{W}_{\tau}^*$$. The model $$f_\theta$$ achieves the best performance for task $$\tau$$ when $$\theta$$ lays on the surface of $$\mathcal{W}_{\tau}^*$$. To find a solution that is good across tasks, we would like to find a parameter close to all the optimal manifolds of all tasks:
 
 $$
 \theta^* = \arg\min_\theta \mathbb{E}_{\tau \sim p(\tau)} [\frac{1}{2} \text{dist}(\theta, \mathcal{W}_\tau^*)^2]

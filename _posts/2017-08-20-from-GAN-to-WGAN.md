@@ -480,18 +480,18 @@ See you in the next post :D
 
 [1] Goodfellow, Ian, et al. ["Generative adversarial nets."](https://arxiv.org/pdf/1406.2661.pdf) NIPS, 2014.
 
-[2] Tim Salimans, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford, and Xi Chen. ["Improved techniques for training gans."](http://papers.nips.cc/paper/6125-improved-techniques-for-training-gans.pdf) In Advances in Neural Information Processing Systems.
+[2] Tim Salimans, et al. ["Improved techniques for training gans."](http://papers.nips.cc/paper/6125-improved-techniques-for-training-gans.pdf) NIPS 2016.
 
 [3] Martin Arjovsky and Léon Bottou. ["Towards principled methods for training generative adversarial networks."](https://arxiv.org/pdf/1701.04862.pdf) arXiv preprint arXiv:1701.04862 (2017). 
 
 [4] Martin Arjovsky, Soumith Chintala, and Léon Bottou. ["Wasserstein GAN."](https://arxiv.org/pdf/1701.07875.pdf) arXiv preprint arXiv:1701.07875 (2017).
 
-[4] Ishaan Gulrajani, Faruk Ahmed, Martin Arjovsky, Vincent Dumoulin, Aaron Courville. [Improved training of wasserstein gans.](https://arxiv.org/pdf/1704.00028.pdf) arXiv preprint arXiv:1704.00028 (2017).
+[5] Ishaan Gulrajani, Faruk Ahmed, Martin Arjovsky, Vincent Dumoulin, Aaron Courville. [Improved training of wasserstein gans.](https://arxiv.org/pdf/1704.00028.pdf) arXiv preprint arXiv:1704.00028 (2017).
 
-[5] [Computing the Earth Mover's Distance under Transformations](http://robotics.stanford.edu/~scohen/research/emdg/emdg.html)
+[6] [Computing the Earth Mover's Distance under Transformations](http://robotics.stanford.edu/~scohen/research/emdg/emdg.html)
 
-[6] [Wasserstein GAN and the Kantorovich-Rubinstein Duality](https://vincentherrmann.github.io/blog/wasserstein/)
+[7] [Wasserstein GAN and the Kantorovich-Rubinstein Duality](https://vincentherrmann.github.io/blog/wasserstein/)
 
-[7] [zhuanlan.zhihu.com/p/25071913](https://zhuanlan.zhihu.com/p/25071913)
+[8] [zhuanlan.zhihu.com/p/25071913](https://zhuanlan.zhihu.com/p/25071913)
 
-[8] Ferenc Huszár. ["How (not) to Train your Generative Model: Scheduled Sampling, Likelihood, Adversary?."](https://arxiv.org/pdf/1511.05101.pdf) arXiv preprint arXiv:1511.05101 (2015).
+[9] Ferenc Huszár. ["How (not) to Train your Generative Model: Scheduled Sampling, Likelihood, Adversary?."](https://arxiv.org/pdf/1511.05101.pdf) arXiv preprint arXiv:1511.05101 (2015).

@@ -199,8 +199,10 @@
 
 .post-link {
   display: block;
-  @include relative-font-size(1.5);
+  @include relative-font-size(1.75);
   font-weight: 600;
+
+  font-color: #000000;
 
   &:hover {
     color: $crimson-color-light;
@@ -254,7 +256,7 @@ div.qa {
   margin-bottom: $spacing-unit;
 
   h2 {
-    @include relative-font-size(1.7);
+    @include relative-font-size(1.8);
 
     @include media-query($on-laptop) {
       @include relative-font-size(1.75);
@@ -262,6 +264,10 @@ div.qa {
 
     font-weight: $base-font-weight * 1.5;
     margin-top: $spacing-unit * 1.55;
+
+    blockquote: {
+        line-height: 1.5;
+    }
   }
 
   h3 {

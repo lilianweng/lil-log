@@ -10,3 +10,9 @@ _site
 .ipynb_checkpoints
 .ipynb_checkpoints/*
 *.ipynb
+*.aux
+*.log
+*.out
+*.synctex.gz
+_latex/
+

@@ -17,6 +17,8 @@ image: "A3C_vs_A2C.png"
 <span style="color: #286ee0;">[Updated on 2018-09-30: add an new policy gradient method, [TD3](#td3).]</span>
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-02-09: add [SAC with automatically adjusted temperature](#sac-with-automatically-adjusted-temperature)].</span>
+<br/>
+<span style="color: #286ee0;">[Updated on 2019-05-01: Thanks to Wenhao, we have a version of this post in [Chinese](https://tomaxent.com/2019/04/14/%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E6%96%B9%E6%B3%95/)].</span>
 
 {: class="table-of-content"}
 * TOC

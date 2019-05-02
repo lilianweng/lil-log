@@ -201,7 +201,11 @@ $$
 Similarly for Q-value,
 
 $$
-Q(s, a) = \mathbb{E} [R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) \vert S_t = s, A_t = a]
+\begin{aligned}
+Q(s, a) 
+&= \mathbb{E} [R_{t+1} + \gamma V(S_{t+1}) \mid S_t = s, A_t = a] \\
+&= \mathbb{E} [R_{t+1} + \gamma \mathbb{E}_{a\sim\pi} Q(S_{t+1}, a) \mid S_t = s, A_t = a]
+\end{aligned}
 $$
 
 
@@ -260,7 +264,7 @@ Policy Evaluation is to compute the state-value $$V_\pi$$ for a given policy $$\
 
 $$
 V_{t+1}(s) 
-= \mathbb{E}_\pi [r + \gamma V_t(s) | S_t = s]
+= \mathbb{E}_\pi [r + \gamma V_t(s') | S_t = s]
 = \sum_a \pi(a \vert s) \sum_{s', r} P(s', r \vert s, a) (r + \gamma V_k(s'))
 $$
 

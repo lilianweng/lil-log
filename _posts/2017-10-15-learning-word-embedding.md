@@ -357,7 +357,7 @@ $$
 
 ## Examples: word2vec on "Game of Thrones"
 
-After reviewing all the theoretical knowledge above, let's try a little experiment in word embedding extracted from [the Games of Thrones corpus]({{ '/assets/data/a_song_of_ice_and_fire.zip' | relative_url }}). The process is super straightforward using [gensim](https://radimrehurek.com/gensim/models/word2vec.html).
+After reviewing all the theoretical knowledge above, let's try a little experiment in word embedding extracted from "the Games of Thrones corpus". The process is super straightforward using [gensim](https://radimrehurek.com/gensim/models/word2vec.html).
 
 **Step 1: Extract words**
 ```python

@@ -17,7 +17,7 @@ To close the sim2real gap, we need to improve the simulator and make it closer t
 
 - **System identification**
     - *System identification* is to build a mathematical model for a physical system; in the context of RL, the mathematical model is the simulator. To make the simulator more realistic, careful calibration is necessary.
-    - Unfortunately, calibration is expensive. Furthermore, many physical parameters of the same machine might vary significantly due to temperature, humanity, positioning or its wear-and-tear in time.
+    - Unfortunately, calibration is expensive. Furthermore, many physical parameters of the same machine might vary significantly due to temperature, humidity, positioning or its wear-and-tear in time.
 - **Domain adaptation**
     - *Domain adaptation (DA)* refers to a set of transfer learning techniques developed to update the data distribution in sim to match the real one through a mapping or regularization enforced by the task model. 
     - Many DA models, especially for image classification or end-to-end image-based RL task, are built on adversarial loss or [GAN]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}). 

@@ -10,6 +10,8 @@ tags: information-theory foundation
 
 <!--more-->
 
+<span style="color: #286ee0;">[Updated on 2019-05-27: add the [section](#the-lottery-ticket-hypothesis) on Lottery Ticket Hypothesis.]</span>
+
 If you are like me, entering into the field of deep learning with experience in traditional machine learning, you may often ponder over this question: Since a typical deep neural network has so many parameters and training error can easily be perfect, it should surely suffer from substantial overfitting. How could it be ever generalized to out-of-sample data points?
 
 The effort in understanding why deep neural networks can generalize somehow reminds me of this interesting paper on System Biology --- ["Can a biologist fix a radio?"](https://bml.bioe.uic.edu/BML/Stuff/Stuff_files/biologist%20fix%20radio.pdf) (Lazebnik, 2002). If a biologist intends to fix a radio machine like how she works on a biological system, life could be hard. Because the full mechanism of the radio system is not revealed, poking small local functionalities might give some hints but it can hardly present all the interactions within the system, let alone the entire working flow. No matter whether you think it is relevant to DL, it is a very fun read.
@@ -312,6 +314,23 @@ Based on the fact that many top layers in deep neural networks are not critical 
 We can consider re-initialization as a way to reduce the effective number of parameters, and thus the observation is aligned with what intrinsic dimension has demonstrated.
 
 
+### The Lottery Ticket Hypothesis
+
+The lottery ticket hypothesis ([Frankle & Carbin, 2019](https://arxiv.org/abs/1803.03635)) is another intriguing and inspiring discovery, supporting that only a subset of network parameters have impact on the model performance and thus the network is not overfitted. The lottery ticket hypothesis states that a randomly initialized, dense, feed-forward network contains a pool of subnetworks and among them only a subset are *"winning tickets"* which can achieve the optimal performance when *trained in isolation*.
+
+The idea is motivated by network pruning techniques --- removing unnecessary weights (i.e. tiny weights that are almost negligible) without harming the model performance. Although the final network size can be reduced dramatically, it is hard to train such a pruned network architecture successfully from scratch. It feels like in order to successfully train a neural network, we need a large number of parameters, but we don't need that many parameters to keep the accuracy high once the model is trained. Why is that?
+
+The lottery ticket hypothesis did the following experiments:
+1. Randomly initialize a dense feed-forward network with initialization values $$\theta_0$$;
+2. Train the network for multiple iterations to achieve a good performance with parameter config $$\theta$$;
+3. Run pruning on $$\theta$$ and creating a mask $$m$$.
+4. The "winning ticket" initialization config is $$m \odot \theta_0$$. 
+
+Only training the small "winning ticket" subset of parameters with the initial values as found in step 1, the model is able to achieve the same level of accuracy as in step 2. It turns out a large parameter space is not needed in the final solution representation, but needed for training as it provides a big pool of initialization configs of many much smaller subnetworks.
+
+The lottery ticket hypothesis opens a new perspective about interpreting and dissecting deep neural network results. Many interesting following-up works are on the way.
+
+
 ## Experiments
 
 After seeing all the interesting findings above, it should be pretty fun to reproduce them. Some results are easily to reproduce than others. Details are described below. My code is available on github [lilianweng/generalization-experiment](https://github.com/lilianweng/generalization-experiment).
@@ -387,8 +406,7 @@ Here are experiment runs on two networks: (left) a two-layer fc network with 64 
 
 [9] Chunyuan Li, et al. ["Measuring the intrinsic dimension of objective landscapes."](https://arxiv.org/abs/1804.08838) ICLR 2018.
 
-
-
+[10]  Jonathan Frankle and Michael Carbin. ["The lottery ticket hypothesis: Finding sparse, trainable neural networks."](https://arxiv.org/abs/1803.03635) ICLR 2019.
 
 
 

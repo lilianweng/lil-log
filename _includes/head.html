@@ -23,7 +23,7 @@
         <meta content="website" property="og:type">
     {% endif %}
     {% if page.excerpt %}
-        <meta content="{{ page.excerpt }}" property="og:description">
+        <meta content="{{ page.excerpt | newline_to_br | strip_newlines | replace: '<br />', ' ' | strip_html | strip |  truncatewords: 50 }}" property="og:description">
     {% else %}
         <meta content="{{ site.description }}" property="og:description">
     {% endif %}

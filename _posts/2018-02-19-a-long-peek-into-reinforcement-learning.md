@@ -170,7 +170,7 @@ Or in other words, the future and the past are **conditionally independent** giv
 *Fig. 3. The agent-environment interaction in a Markov decision process. (Image source: Sec. 3.1 Sutton & Barto (2017).)*
 
 
-A Markov deicison process consists of five elements $$\mathcal{M} = <\mathcal{S}, \mathcal{A}, P, R, \gamma>$$, where the symbols carry the same meanings as key conceps in the [previous](#key-concepts) section, well aligned with RL problem settings:
+A Markov deicison process consists of five elements $$\mathcal{M} = \langle \mathcal{S}, \mathcal{A}, P, R, \gamma \rangle$$, where the symbols carry the same meanings as key concepts in the [previous](#key-concepts) section, well aligned with RL problem settings:
 - $$\mathcal{S}$$ - a set of states;
 - $$\mathcal{A}$$ - a set of actions;
 - $$P$$ - transition probability function;

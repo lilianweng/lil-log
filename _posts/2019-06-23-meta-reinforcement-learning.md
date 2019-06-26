@@ -11,7 +11,7 @@ tags: meta-learning reinforcement-learning
 
 <!--more-->
 
-In my earlier post on [meta-learning]({{ site.baseurl }}{% post_url 2018-11-29-meta-learning %}), the problem is mainly defined in the context of few-shot classification. Here I would like to explore more into cases when we try to "meta-learn" [Reinforcement Learning (RL)]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}) tasks by developing an agent that can solve unseen tasks fast and efficiently. 
+In my earlier post on [meta-learning]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}), the problem is mainly defined in the context of few-shot classification. Here I would like to explore more into cases when we try to "meta-learn" [Reinforcement Learning (RL)]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}) tasks by developing an agent that can solve unseen tasks fast and efficiently. 
 
 To recap, a good meta-learning model is expected to generalize to new tasks or new environments that have never been encountered during training. The adaptation process, essentially a *mini learning session*, happens at test with limited exposure to the new configurations. Even without any explicit fine-tuning (no gradient backpropagation on trainable variables), the meta-learning model autonomously adjusts internal hidden states to learn. 
 
@@ -25,7 +25,7 @@ Training RL algorithms can be notoriously difficult sometimes. If the meta-learn
 
 ## On the Origin of Meta-RL
 
-*Meta Reinforcement Learning (Meta-RL)*, in short, is to do [meta-learning]({{ site.baseurl }}{% post_url 2018-11-29-meta-learning %}) in the field of [reinforcement learning]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}). Usually the train and test tasks are different but drawn from the same family of problems. 
+*Meta Reinforcement Learning (Meta-RL)*, in short, is to do [meta-learning]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}) in the field of [reinforcement learning]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}). Usually the train and test tasks are different but drawn from the same family of problems. 
 
 ### Back in 2001
 
@@ -99,7 +99,7 @@ The training procedure works as follows:
 *Fig. 3. In the meta-RL paper, different actor-critic architectures all use a recurrent model. Last reward and last action are additional inputs. The observation is fed into the LSTM either as a one-hot vector or as an embedding vector after passed through an encoder model. (Image source: [Wang et al., 2016](https://arxiv.org/abs/1611.05763))*
 
 
-![RL^2]({{ '/assets/images/RL^2.png' | relative_url }})
+![RL^2]({{ '/assets/images/RL_2.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 4. As described in the RL^2 paper, illustration of the procedure of the model interacting with a series of MDPs in training time . (Image source: [Duan et al., 2017](https://arxiv.org/abs/1611.02779))*
 
@@ -135,13 +135,13 @@ The topic of designing good recurrent network architectures is a bit too broad t
 
 ## Meta-Learning Algorithms for Meta-RL
 
-My previous [post]({{ site.baseurl }}{% post_url 2018-11-29-meta-learning %}) on meta-learning has covered several classic meta-learning algorithms. Here I'm gonna include more related to RL.
+My previous [post]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}) on meta-learning has covered several classic meta-learning algorithms. Here I'm gonna include more related to RL.
 
 
 
 ### Optimizing Model Weights for Meta-learning
 
-Both MAML ([Finn, et al. 2017](https://arxiv.org/abs/1703.03400)) and Reptile ([Nichol et al., 2018](https://arxiv.org/abs/1803.02999)) are methods on updating model parameters in order to achieve good generalization performance on new tasks. See an earlier post [section]({{ site.baseurl }}{% post_url 2018-11-29-meta-learning %}#optimization-based) on MAML and Reptile.
+Both MAML ([Finn, et al. 2017](https://arxiv.org/abs/1703.03400)) and Reptile ([Nichol et al., 2018](https://arxiv.org/abs/1803.02999)) are methods on updating model parameters in order to achieve good generalization performance on new tasks. See an earlier post [section]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}#optimization-based) on MAML and Reptile.
 
 
 ### Meta-learning Hyperparameters
@@ -259,7 +259,7 @@ A major criticism of RL is on its sample inefficiency. A large number of samples
 
 **Episodic control** ([Lengyel & Dayan, 2008](http://papers.nips.cc/paper/3311-hippocampal-contributions-to-control-the-third-way.pdf)) is proposed as a solution to avoid forgetting and improve generalization while training at a faster speed. It is partially inspired by hypotheses on instance-based [hippocampal](https://en.wikipedia.org/wiki/Hippocampus) learning.
 
-An *episodic memory* keeps explicit records of past events and uses these records directly as point of reference for making new decisions (i.e. just like [metric-based]({{ site.baseurl }}{% post_url 2018-11-29-meta-learning %}#metric-based) meta-learning). In **MFEC** (Model-Free Episodic Control; [Blundell et al., 2016](https://arxiv.org/abs/1606.04460)), the memory is modeled as a big table, storing the state-action pair $$(s, a)$$ as key and the corresponding Q-value $$Q_\text{EC}(s, a)$$ as value. When receiving a new observation $$s$$, the Q value is estimated in an non-parametric way as the average Q-value of top $$k$$ most similar samples:
+An *episodic memory* keeps explicit records of past events and uses these records directly as point of reference for making new decisions (i.e. just like [metric-based]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}#metric-based) meta-learning). In **MFEC** (Model-Free Episodic Control; [Blundell et al., 2016](https://arxiv.org/abs/1606.04460)), the memory is modeled as a big table, storing the state-action pair $$(s, a)$$ as key and the corresponding Q-value $$Q_\text{EC}(s, a)$$ as value. When receiving a new observation $$s$$, the Q value is estimated in an non-parametric way as the average Q-value of top $$k$$ most similar samples:
 
 $$
 \hat{Q}_\text{EC}(s, a) = 
@@ -279,7 +279,7 @@ G_t                                 & \text{otherwise}
 \end{cases}
 $$
 
-As a tabular RL method, MFEC suffers from large memory consumption and a lack of ways to generalize among similar states. The first one can be fixed with an LRU cache. Inspired by [metric-based]({{ site.baseurl }}{% post_url 2018-11-29-meta-learning %}#metric-based) meta-learning, especially Matching Networks ([Vinyals et al., 2016](http://papers.nips.cc/paper/6385-matching-networks-for-one-shot-learning.pdf)), the generalization problem is improved in a follow-up algorithm, **NEC** (Neural Episodic Control; [Pritzel et al., 2016](https://arxiv.org/abs/1703.01988)). 
+As a tabular RL method, MFEC suffers from large memory consumption and a lack of ways to generalize among similar states. The first one can be fixed with an LRU cache. Inspired by [metric-based]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}#metric-based) meta-learning, especially Matching Networks ([Vinyals et al., 2016](http://papers.nips.cc/paper/6385-matching-networks-for-one-shot-learning.pdf)), the generalization problem is improved in a follow-up algorithm, **NEC** (Neural Episodic Control; [Pritzel et al., 2016](https://arxiv.org/abs/1703.01988)). 
 
 The episodic memory in NEC is a Differentiable Neural Dictionary (**DND**), where the key is a convolutional embedding vector of input image pixels and the value stores estimated Q value. Given an inquiry key, the output is a weighted sum of values of top similar keys, where the weight is a normalized kernel measure between the query key and the selected key in the dictionary. This sounds like a hard [attention]({{ }}{% post_url 2018-06-24-attention-attention %}) machanism.
 
@@ -322,7 +322,7 @@ Among three key components, how to design a proper distribution of tasks is the 
 
 ### Task Generation by Domain Randomization
 
-Randomizing parameters in a simulator is an easy way to obtain tasks with modified transition functions. If interested in learning further, check my last [post]({{ site.baseurl }}{% post_url 2019-05-04-domain-randomization %}) on **domain randomization**.
+Randomizing parameters in a simulator is an easy way to obtain tasks with modified transition functions. If interested in learning further, check my last [post]({{ site.baseurl }}{% post_url 2019-05-05-domain-randomization %}) on **domain randomization**.
 
 
 ### Evolutionary Algorithm on Environment Generation
@@ -342,7 +342,7 @@ The 2D bipedal walking environment is evolving: from a simple flat surface to a 
 2. *Optimization*: Train paired agents within their respective environments.
 3. *Selection*: Periodically attempt to transfer current agents from one environment to another. Copy and update the best performing agent for every environment. The intuition is that skills learned in one environment might be helpful for a different environment.
 
-The procedure above is quite similar to [PBT](https://arxiv.org/abs/1711.09846), but PBT mutates and evolves hyperparameters instead. To some extent, POET is doing [domain randomization]({{ site.baseurl }}{% post_url 2019-05-04-domain-randomization %}), as all the gaps, stumps and terrain roughness are controlled by some randomization probability parameters. Different from DR, the agents are not exposed to a fully randomized difficult environment all at once, but instead they are learning gradually with a curriculum configured by the evolutionary algorithm.
+The procedure above is quite similar to [PBT](https://arxiv.org/abs/1711.09846), but PBT mutates and evolves hyperparameters instead. To some extent, POET is doing [domain randomization]({{ site.baseurl }}{% post_url 2019-05-05-domain-randomization %}), as all the gaps, stumps and terrain roughness are controlled by some randomization probability parameters. Different from DR, the agents are not exposed to a fully randomized difficult environment all at once, but instead they are learning gradually with a curriculum configured by the evolutionary algorithm.
 
 
 ### Learning with Random Rewards

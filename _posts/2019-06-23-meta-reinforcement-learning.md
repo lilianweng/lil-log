@@ -7,7 +7,7 @@ tags: meta-learning reinforcement-learning
 ---
 
 
-> Meta-RL is meta-learning on reinforcement learning tasks. After training over a distribution of tasks, the model is able to solve a new task by developing a new RL algorithm with its internal activity dynamics. This post starts with the origin of meta-RL and then dives into three key components of meta-RL.
+> Meta-RL is meta-learning on reinforcement learning tasks. After trained over a distribution of tasks, the agant is able to solve a new task by developing a new RL algorithm with its internal activity dynamics. This post starts with the origin of meta-RL and then dives into three key components of meta-RL.
 
 <!--more-->
 

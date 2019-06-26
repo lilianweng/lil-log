@@ -25,8 +25,6 @@ Training RL algorithms can be notoriously difficult sometimes. If the meta-learn
 
 ## On the Origin of Meta-RL
 
-*Meta Reinforcement Learning (Meta-RL)*, in short, is to do [meta-learning]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}) in the field of [reinforcement learning]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}). Usually the train and test tasks are different but drawn from the same family of problems. 
-
 ### Back in 2001
 
 I encountered a paper  written in 2001 by [Hochreiter et al.](http://snowedin.net/tmp/Hochreiter2001.pdf) when reading [Wang et al., 2016](https://arxiv.org/pdf/1611.05763.pdf). Although the idea was proposed for supervised learning, there are so many resemblances to the current approach to meta-RL.
@@ -55,6 +53,9 @@ In the modern days of DL, [Wang et al.](https://arxiv.org/abs/1611.05763) (2016)
 
 
 ## Define Meta-RL
+
+
+*Meta Reinforcement Learning*, in short, is to do [meta-learning]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}) in the field of [reinforcement learning]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}). Usually the train and test tasks are different but drawn from the same family of problems; i.e., experiments in the papers included multi-armed bandit with different reward probabilities, mazes with different layouts, same robots but with different physical parameters in simulator, and many others.
 
 ### Formulation
 

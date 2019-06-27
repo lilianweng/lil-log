@@ -53,7 +53,7 @@ The agent's **policy** $$\pi(s)$$ provides the guideline on what is the optimal 
 The interaction between the agent and the environment involves a sequence of actions and observed rewards in time, $$t=1, 2, \dots, T$$. During the process, the agent accumulates the knowledge about the environment, learns the optimal policy, and makes decisions on which action to take next so as to efficiently learn the best policy. Let's label the state, action, and reward at time step t as $$S_t$$, $$A_t$$, and $$R_t$$, respectively. Thus the interaction sequence is fully described by one **episode** (also known as "trial" or "trajectory") and the sequence ends at the terminal state $$S_T$$:
 
 $$
-S_1, A_1, R_2, S_2, A_2, \dots, S_T
+S_1, A_1, R_1, S_2, A_2, \dots, S_T
 $$
 
 

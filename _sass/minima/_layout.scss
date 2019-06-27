@@ -1,22 +1,23 @@
 /**
  * Site header
  */
-.site-header {
-  // border-top: 5px solid $crimson-color;
-  // border-bottom: 1px solid $crimson-color-very-light;
-  min-height: $spacing-unit * 1.75;
 
+.site-header {
   background: #222;
   opacity: 0.8;
+  min-height: $spacing-unit * 1.865;
+  position: relative;
 
-  // Positioning context for the mobile navigation icon
-  // position: relative;
-
+  /*
+  min-height: $spacing-unit * 1.75;
+  background: #222;
+  opacity: 0.8;
   position: fixed;
   top: 0;
   width: 100%;
   display: block;
   transition: top 0.3s;
+  */
 }
 
 .site-title {

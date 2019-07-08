@@ -7,7 +7,7 @@ tags: meta-learning reinforcement-learning
 ---
 
 
-> Meta-RL is meta-learning on reinforcement learning tasks. After trained over a distribution of tasks, the agant is able to solve a new task by developing a new RL algorithm with its internal activity dynamics. This post starts with the origin of meta-RL and then dives into three key components of meta-RL.
+> Meta-RL is meta-learning on reinforcement learning tasks. After trained over a distribution of tasks, the agent is able to solve a new task by developing a new RL algorithm with its internal activity dynamics. This post starts with the origin of meta-RL and then dives into three key components of meta-RL.
 
 <!--more-->
 
@@ -77,7 +77,7 @@ Note that common state $$\mathcal{S}$$ and action space $$\mathcal{A}$$ are used
 
 ![Illustration of meta-RL]({{ '/assets/images/meta-RL-illustration.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 2. Illustration of meta-RL, containing two optimization loops. The outer loop samples a new environment in every iteration and adjusts parameters that determine the agent's behavior. In the inner loop, the agent interacts with the environment and optimizes for the maximal reward. (Image source: [Botvinick, et al. 20190](https://www.cell.com/action/showPdf?pii=S1364-6613%2819%2930061-0)*
+*Fig. 2. Illustration of meta-RL, containing two optimization loops. The outer loop samples a new environment in every iteration and adjusts parameters that determine the agent's behavior. In the inner loop, the agent interacts with the environment and optimizes for the maximal reward. (Image source: [Botvinick, et al. 2019](https://www.cell.com/action/showPdf?pii=S1364-6613%2819%2930061-0)*
 
 
 ### Main Differences from RL

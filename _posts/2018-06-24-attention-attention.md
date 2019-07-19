@@ -13,7 +13,8 @@ image: "transformer.png"
 
 <span style="color: #286ee0;">[Updated on 2018-10-28: Add [Pointer Network](#pointer-network) and the [link](https://github.com/lilianweng/transformer-tensorflow) to my implementation of Transformer.]</span><br/>
 <span style="color: #286ee0;">[Updated on 2018-11-06: Add a [link](https://github.com/lilianweng/transformer-tensorflow) to the implementation of Transformer model.]</span><br/>
-<span style="color: #286ee0;">[Updated on 2018-11-18: Add [Neural Turing Machines](#neural-turing-machines).]</span>
+<span style="color: #286ee0;">[Updated on 2018-11-18: Add [Neural Turing Machines](#neural-turing-machines).]</span><br/>
+<span style="color: #286ee0;">[Updated on 2019-07-18: Correct the mistake on using the term "self-attention" when introducing the [show-attention-tell](https://arxiv.org/abs/1502.03044) paper; moved it to [Self-Attention](#self-attention) section.]</span>
 
 {: class="table-of-content"}
 * TOC
@@ -166,24 +167,27 @@ The [long short-term memory network](https://arxiv.org/pdf/1601.06733.pdf) paper
 {: style="width: 70%;" class="center"}
 *Fig. 6. The current word is in red and the size of the blue shade indicates the activation level. (Image source: [Cheng et al., 2016](https://arxiv.org/pdf/1601.06733.pdf))*
 
-In the [show, attend and tell](http://proceedings.mlr.press/v37/xuc15.pdf) paper, self-attention is applied to the image to generate proper descriptions. The image is first encoded by a convolutional neural network and a recurrent network with self-attention consumes the convolution feature maps to generate the descriptive words one by one. The visualization of the attention weights clearly demonstrates which regions of the image the model pays attention to so as to output a certain word.
+
+### Soft vs Hard Attention
+
+In the [show, attend and tell](http://proceedings.mlr.press/v37/xuc15.pdf) paper, attention mechanism is applied to images to generate captions. The image is first encoded by a CNN to extract features. Then a LSTM decoder consumes the convolution features to produce descriptive words one by one, where the weights are learned through attention. The visualization of the attention weights clearly demonstrates which regions of the image the model is paying attention to so as to output a certain word.
 
 ![show-attend-and-tell]({{ '/assets/images/xu2015-fig6b.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 7. "A woman is throwing a frisbee in a park." (Image source: Fig. 6(b) in [Xu et al. 2015](http://proceedings.mlr.press/v37/xuc15.pdf))*
 
+This paper first proposed the distinction between "soft" vs "hard" attention, based on whether the attention has access to the entire image or only a patch:
 
-### Soft vs Hard Attention
-
-The "soft" vs "hard" attention is another way to categorize how attention is defined. The original idea was proposed in 
-the [show, attend and tell](http://proceedings.mlr.press/v37/xuc15.pdf) paper. Based on whether the attention has access to the entire image or only a patch:
-
-- **Soft** Attention: the alignment weights are learned and placed "softly" over all patches in the source image; essentially the same idea as in [Bahdanau et al., 2015](https://arxiv.org/pdf/1409.0473.pdf).
-    - Pro: the model is smooth and differentiable.
-    - Con: expensive when the source input is large.
+- **Soft** Attention: the alignment weights are learned and placed "softly" over all patches in the source image; essentially the same type of attention as in [Bahdanau et al., 2015](https://arxiv.org/abs/1409.0473).
+    - *Pro*: the model is smooth and differentiable.
+    - *Con*: expensive when the source input is large.
 - **Hard** Attention: only selects one patch of the image to attend to at a time. 
-    - Pro: less calculation at the inference time.
-    - Con: the model is non-differentiable and requires more complicated techniques such as variance reduction or reinforcement learning to train. ([Luong, et al., 2015](https://arxiv.org/pdf/1508.04025.pdf))
+    - *Pro*: less calculation at the inference time.
+    - *Con*: the model is non-differentiable and requires more complicated techniques such as variance reduction or reinforcement learning to train. ([Luong, et al., 2015](https://arxiv.org/abs/1508.04025))
+
+
+
+
 
 
 ### Global vs Local Attention
@@ -406,11 +410,11 @@ SNAIL was born in the field of meta-learning, which is another big topic worthy 
 
 ## Self-Attention GAN
 
-Finally I would like to mention a type of [Generative Adversarial Network (GAN)]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}) published recently, **Self-Attention GAN** (**SAGAN**; [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf)), and see how attention helps improve the quality of generative images. 
+*Self-Attention GAN* (**SAGAN**; [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf)) adds self-attention layers into [GAN]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}) to enable both the generator and the discriminator to better model relationships between spatial regions.
 
 The classic [DCGAN](https://arxiv.org/abs/1511.06434) (Deep Convolutional GAN) represents both discriminator and generator as multi-layer convolutional networks. However, the representation capacity of the network is restrained by the filter size, as the feature of one pixel is limited to a small local region. In order to connect regions far apart, the features have to be dilute through layers of convolutional operations and the dependencies are not guaranteed to be maintained.
 
-As the (soft) self-attention in the vision context is designed to explicitly learn the relationship between one pixel and all other positions, even regions far apart, it can easily capture global dependencies. Hence GAN equipped with self-attention is expected to **handle details better**, hooray!
+As the (soft) self-attention in the vision context is designed to explicitly learn the relationship between one pixel and all other positions, even regions far apart, it can easily capture global dependencies. Hence GAN equipped with self-attention is expected to *handle details better*, hooray!
 
 
 ![Conv vs self-attention on images]({{ '/assets/images/conv-vs-self-attention.png' | relative_url }})

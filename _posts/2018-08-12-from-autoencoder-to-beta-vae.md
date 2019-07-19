@@ -12,6 +12,8 @@ image: "vae-gaussian.png"
 
 <!--more-->
 
+<span style="color: #286ee0;">[Updated on 2019-07-18: add a section on [VQ-VAE & VQ-VAE-2](#vq-vae-and-vq-vae-2).]</span>
+<br/>
 
 Autocoder is invented to reconstruct high-dimensional data using a neural network model with a narrow bottleneck layer in the middle (oops, this is probably not true for [Variational Autoencoder](#vae-variational-autoencoder), and we will investigate it in details in later sections). A nice byproduct is dimension reduction: the bottleneck layer captures a compressed latent encoding. Such a low-dimensional representation can be used as en embedding vector in various applications (i.e. search), help data compression, or reveal the underlying data generative factors. 
 
@@ -68,7 +70,7 @@ $$
 
 ## Denoising Autoencoder
 
-Since the autoencoder learns the identity function, we are facing the risk of “overfitting” when there are more network parameters than the number of data points. 
+Since the autoencoder learns the identity function, we are facing the risk of "overfitting" when there are more network parameters than the number of data points. 
 
 To avoid overfitting and improve the robustness, **Denoising Autoencoder** (Vincent et al. 2008) proposed a modification to the basic autoencoder. The input is partially corrupted by adding noises to or masking some values of the input vector in a stochastic manner, $$\tilde{\mathbf{x}} \sim \mathcal{M}_\mathcal{D}(\tilde{\mathbf{x}} \vert \mathbf{x})$$. Then the model is trained to recover the original input (**Note: Not the corrupt one!**).
 
@@ -89,7 +91,7 @@ where $$\mathcal{M}_\mathcal{D}$$ defines the mapping from the true data samples
 *Fig. 2. Illustration of denoising autoencoder model architecture.*
 
 
-This design is motivated by the fact that humans can easily recognize an object or a scene even the view is partially occluded or corrupted. To “repair” the partially destroyed input, the denoising autoencoder has to discover and capture relationship between dimensions of input in order to infer missing pieces. 
+This design is motivated by the fact that humans can easily recognize an object or a scene even the view is partially occluded or corrupted. To "repair" the partially destroyed input, the denoising autoencoder has to discover and capture relationship between dimensions of input in order to infer missing pieces. 
 
 For high dimensional input with high redundancy, like images, the model is likely to depend on evidence gathered from a combination of many input dimensions to recover the denoised version (sounds like the [attention]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}) mechanism, right?) rather than to overfit one dimension. This builds up a good foundation for learning *robust* latent representation.
 
@@ -277,7 +279,7 @@ L_\text{VAE}(\theta, \phi)
 \end{aligned}
 $$
 
-In Variational Bayesian methods, this loss function is known as the *variational lower bound*, or *evidence lower bound*. The “lower bound” part in the name comes from the fact that KL divergence is always non-negative and thus $$-L_\text{VAE}$$ is the lower bound of $$\log p_\theta (\mathbf{x})$$. 
+In Variational Bayesian methods, this loss function is known as the *variational lower bound*, or *evidence lower bound*. The "lower bound" part in the name comes from the fact that KL divergence is always non-negative and thus $$-L_\text{VAE}$$ is the lower bound of $$\log p_\theta (\mathbf{x})$$. 
 
 $$
 -L_\text{VAE} = \log p_\theta(\mathbf{x}) - D_\text{KL}( q_\phi(\mathbf{z}\vert\mathbf{x}) \| p_\theta(\mathbf{z}\vert\mathbf{x}) ) \leq \log p_\theta(\mathbf{x})
@@ -323,7 +325,7 @@ If each variable in the inferred latent representation $$\mathbf{z}$$ is only se
 
 For example, a model trained on photos of human faces might capture the gentle, skin color, hair color, hair length, emotion, whether wearing a pair of glasses and many other relatively independent factors in separate dimensions. Such a disentangled representation is very beneficial to facial image generation.
 
-$$\beta$$-VAE ([Higgins et al., 2017](https://openreview.net/forum?id=Sy2fzU9gl)) is a modification of Variational Autoencoder with a special emphasis to discover disentangled latent factors. Following the same incentive in VAE, we want to maximize the probability of generating real data, while keeping the distance between the real and estimated posterior distributions small (say, under a small constant $$\delta$$):
+β-VAE ([Higgins et al., 2017](https://openreview.net/forum?id=Sy2fzU9gl)) is a modification of Variational Autoencoder with a special emphasis to discover disentangled latent factors. Following the same incentive in VAE, we want to maximize the probability of generating real data, while keeping the distance between the real and estimated posterior distributions small (say, under a small constant $$\delta$$):
 
 
 $$
@@ -347,7 +349,6 @@ $$
 
 The loss function of $$\beta$$-VAE is defined as:
 
-
 $$
 L_\text{BETA}(\phi, \beta) = - \mathbb{E}_{\mathbf{z} \sim q_\phi(\mathbf{z}\vert\mathbf{x})} \log p_\theta(\mathbf{x}\vert\mathbf{z}) + \beta D_\text{KL}(q_\phi(\mathbf{z}\vert\mathbf{x})\|p_\theta(\mathbf{z}))
 $$
@@ -361,24 +362,64 @@ When $$\beta=1$$, it is same as VAE. When $$\beta > 1$$, it applies a stronger c
 [Burgess, et al. (2017)](https://arxiv.org/pdf/1804.03599.pdf) discussed the distentangling in $$\beta$$-VAE in depth with an inspiration by the [information bottleneck theory]({{ site.baseurl }}{% post_url 2017-09-28-anatomize-deep-learning-with-information-theory %}) and further proposed a modification to $$\beta$$-VAE to better control the encoding representation capacity.
 
 
-## VQ-VAE
+## VQ-VAE and VQ-VAE-2
 
-Discrete VAE.
+The **VQ-VAE** (“Vector Quantised-Variational AutoEncoder”; [van den Oord, et al. 2017](http://papers.nips.cc/paper/7210-neural-discrete-representation-learning.pdf)) model learns a discrete latent variable by the encoder, since discrete representations may be a more natural fit for problems like language, speech, reasoning, etc.
 
-TBA.
+Vector quantisation (VQ) is a method to map $K$-dimensional vectors into a finite set of “code” vectors. The process is very much similar to [KNN](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) algorithm. The optimal centroid code vector that a sample should be mapped to is the one with minimum euclidean distance.
 
-## DRAW
+Let $$\mathbf{e}_i \in \mathbb{R}^{K \times D}, i=1, \dots, K$$ be the latent embedding space (also known as "codebook") in VQ-VAE, where $$K$$ is the number of latent variable categories and $$D$$ is the embedding size. The encoder output $$E(\mathbf{x}) = \mathbf{z}_e$$ goes through a nearest-neighbor lookup to match to one of $$K$$ embedding vectors and then this matched code vector becomes the input for the decoder $$D(.)$$:
 
-Recurrent VAE.
+$$
+\mathbf{z}_q(\mathbf{x}) = \text{Quantize}(E(\mathbf{x})) = \mathbf{e}_k \text{ where } k = \arg\min_i \|E(\mathbf{x}) - \mathbf{e}_i \|_2
+$$
 
-TBA.
+![VQ-VAE]({{ '/assets/images/VQ-VAE.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 10. The architecture of VQ-VAE (Image source: [van den Oord, et al. 2017](http://papers.nips.cc/paper/7210-neural-discrete-representation-learning.pdf))*
 
 
----
+Because argmin() is non-differentiable on a discrete space, the gradients $$\nabla_z L$$ from decoder input $$\mathbf{z}_q$$ is copied to the encoder output $$\mathbf{z}_e$$. Other than reconstruction loss, VQ-VAE also optimizes:
+- *VQ loss*: The L2 error between the embedding space and the encoder outputs.
+- *Commitment loss*: A measure to encourage the encoder output to stay close to the embedding space and to prevent it from fluctuating too frequently from one code vector to another.
 
-*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be very happy to correct them right away!*
 
-See you in the next post :D
+$$
+L = \underbrace{\|\mathbf{x} - D(\mathbf{e}_k)\|_2^2}_{\textrm{reconstruction loss}} + 
+\underbrace{\|\text{sg}[E(\mathbf{x})] - \mathbf{e}_k\|_2^2}_{\textrm{VQ loss}} + 
+\underbrace{\beta \|E(\mathbf{x}) - \text{sg}[\mathbf{e}_k]\|_2^2}_{\textrm{commitment loss}}
+$$
+
+where $$\text{sq}[.]$$ is the `stop_gradient` operator.
+
+The embedding vectors in the codebook is updated through EMA (exponential moving average). Given a code vector $$\mathbf{e}_i$$, say we have $$n_i$$ encoder output vectors, $$\{\mathbf{z}_{i,j}\}_{j=1}^{n_i}$$, that are quantized to $$\mathbf{e}_i$$:
+
+
+$$
+N_i^{(t)} = \gamma N_i^{(t-1)} + (1-\gamma)n_i^{(t)}\;\;\;
+\mathbf{m}_i^{(t)} = \gamma \mathbf{m}_i^{(t-1)} + (1-\gamma)\sum_{j=1}^{n_i^{(t)}}\mathbf{z}_{i,j}^{(t)}\;\;\;
+\mathbf{e}_i^{(t)} = \mathbf{m}_i^{(t)} / N_i^{(t)}
+$$
+where $$(t)$$ refers to batch sequence in time. $$N_i$$ and $$\mathbf{m}_i$$ are accumulated vector count and volume, respectively.
+
+VQ-VAE-2 ([Ali Razavi, et al. 2019](https://arxiv.org/abs/1906.00446)) is a two-level hierarchical VQ-VAE combined with self-attention autoregressive model. 
+1. Stage 1 is to **train a hierarchical VQ-VAE**: The design of hierarchical latent variables intends to separate local patterns (i.e., texture) from global information (i.e., object shapes). The training of the larger bottom level codebook is conditioned on the smaller top level code too, so that it does not have to learn everything from scratch. 
+2. Stage 2 is to **learn a prior over the latent discrete codebook** so that we sample from it and generate images. In this way, the decoder can receive input vectors sampled from a similar distribution as the one in training. A powerful autoregressive model enhanced with multi-headed self-attention layers is used to capture the prior distribution (like [PixelSNAIL; Chen et al 2017](https://arxiv.org/abs/1712.09763)).
+
+Considering that VQ-VAE-2 depends on discrete latent variables configured in a simple hierarchical setting, the quality of its generated images are pretty amazing.
+
+![VQ-VAE-2]({{ '/assets/images/VQ-VAE-2.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 11. Architecture of hierarchical VQ-VAE and multi-stage image generation. (Image source: [Ali Razavi, et al. 2019](https://arxiv.org/abs/1906.00446))*
+
+
+![VQ-VAE-2-algo]({{ '/assets/images/VQ-VAE-2-algo.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 12. The VQ-VAE-2 algorithm. (Image source: [Ali Razavi, et al. 2019](https://arxiv.org/abs/1906.00446))*
+
+
+
+
 
 
 
@@ -398,7 +439,7 @@ See you in the next post :D
 
 [7] Salah Rifai, et al. ["Contractive auto-encoders: Explicit invariance during feature extraction."](http://www.icml-2011.org/papers/455_icmlpaper.pdf) ICML, 2011.
 
-[8] Diederik P. Kingma, and Max Welling. ["Auto-encoding variational bayes.”](https://arxiv.org/abs/1312.6114) ICLR 2014.
+[8] Diederik P. Kingma, and Max Welling. ["Auto-encoding variational bayes."](https://arxiv.org/abs/1312.6114) ICLR 2014.
 
 [9] [Tutorial - What is a variational autoencoder?](https://jaan.io/what-is-variational-autoencoder-vae-tutorial/) on jaan.io
 
@@ -412,6 +453,8 @@ See you in the next post :D
 
 [14] Christopher P. Burgess, et al. ["Understanding disentangling in beta-VAE."](https://arxiv.org/abs/1804.03599) NIPS 2017.
 
+[15] Aaron van den Oord, et al. ["Neural Discrete Representation Learning"](https://arxiv.org/abs/1711.00937) NIPS 2017.
 
+[16] Ali Razavi, et al. ["Generating Diverse High-Fidelity Images with VQ-VAE-2"](https://arxiv.org/abs/1906.00446). arXiv preprint arXiv:1906.00446 (2019).
 
-
+[17] Xi Chen, et al. ["PixelSNAIL: An Improved Autoregressive Generative Model."](https://arxiv.org/abs/1712.09763) arXiv preprint arXiv:1712.09763 (2017).

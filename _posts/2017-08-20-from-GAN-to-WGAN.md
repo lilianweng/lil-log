@@ -475,6 +475,27 @@ Unfortunately due to the tiny training data, the new pokemons only have rough sh
 If you are interested in a commented version of [carpedm20/DCGAN-tensorflow](https://github.com/carpedm20/DCGAN-tensorflow) and how to modify it to train WGAN and WGAN with gradient penalty, check [lilianweng/unified-gan-tensorflow](https://github.com/lilianweng/unified-gan-tensorflow).
 
 ---
+Cited as:
+```
+@article{weng2017gan,
+  title   = "From GAN to WGAN",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2017",
+  url     = "http://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html"
+}
+```
+OR
+```
+@misc{weng2019gan,
+    title={From GAN to WGAN},
+    author={Lilian Weng},
+    year={2019},
+    eprint={1904.08994},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG}
+}
+```
 
 *If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
 

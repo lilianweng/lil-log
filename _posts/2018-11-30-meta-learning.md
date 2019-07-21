@@ -742,6 +742,18 @@ It is not clear to me whether the ignored term $$O(\alpha^2)$$ might play a big 
 
 ---
 
+Cited as:
+
+```
+@article{weng2018metalearning,
+  title   = "Meta-Learning: Learning to Learn Fast",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2018",
+  url     = "http://lilianweng.github.io/lil-log/2018/11/29/meta-learning.html"
+}
+```
+
 *If you notice mistakes and errors in this post, don't hesitate to leave a comment or contact me at [lilian dot wengweng at gmail dot com] and I would be very happy to correct them asap.*
 
 See you in the next post!

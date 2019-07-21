@@ -386,6 +386,17 @@ Once the discriminator function is learned, sampling a new MDP for training is s
  So far, experiments of meta-RL are still limited to a collection of very similar tasks, originated from the same family; such as multi-armed bandit with different reward probabilities, mazes with different layouts, or same robots but with different physical parameters in simulator. I'm looking forward to more research demonstrating the power of meta-RL over a more diverse set of tasks. 
 -->
 
+---
+Cited as:
+```
+@article{weng2019metaRL,
+  title   = "Meta Reinforcement Learning",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2019",
+  url     = "http://lilianweng.github.io/lil-log/2019/06/23/meta-reinforcement-learning.html"
+}
+```
 
 ## References
 

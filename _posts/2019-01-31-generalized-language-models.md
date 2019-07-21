@@ -590,6 +590,18 @@ the Wall Street Journal portion of the Penn Treebank (Marcus et al., 1993).
 - [English Wikipedia](https://en.wikipedia.org/wiki/Wikipedia:Database_download#English-language_Wikipedia): ~2500M words
 
 
+---
+
+Cited as:
+```
+@article{weng2019LM,
+  title   = "Generalized Language Models",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2019",
+  url     = "http://lilianweng.github.io/lil-log/2019/01/31/generalized-language-models.html"
+}
+```
 
 ## Reference
 

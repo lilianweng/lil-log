@@ -385,6 +385,18 @@ Here are experiment runs on two networks: (left) a two-layer fc network with 64 
 {: style="width: 100%;" class="center"}
 
 
+---
+
+Cited as:
+```
+@article{weng2019overfit,
+  title   = "Are Deep Neural Networks Dramatically Overfitted?",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2019",
+  url     = "http://lilianweng.github.io/lil-log/2019/03/14/are-deep-neural-networks-dramatically-overfitted.html"
+}
+```
 
 ## References
 

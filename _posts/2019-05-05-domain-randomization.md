@@ -212,7 +212,19 @@ The idea of ADR is very appealing with two small concerns. The similarity betwee
 
 ---
 
+Cited as:
+```
+@article{weng2019DR,
+  title   = "Domain Randomization for Sim2Real Transfer",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2019",
+  url     = "http://lilianweng.github.io/lil-log/2019/05/04/domain-randomization.html"
+}
+```
+
 Overall, after reading this post, I hope you like domain randomization as much as I do :).
+
 
 
 ## References

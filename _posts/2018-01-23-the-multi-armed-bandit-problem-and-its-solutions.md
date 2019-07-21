@@ -247,14 +247,22 @@ I implemented the above algorithms in [lilianweng/multi-armed-bandit](https://gi
 
 We need exploration because information is valuable. In terms of the exploration strategies, we can do no exploration at all, focusing on the short-term returns. Or we occasionally explore at random. Or even further, we explore and we are picky about which options to explore --- actions with higher uncertainty are favored because they can provide higher information gain.
 
-
 ![bernoulli UCB]({{ '/assets/images/bandit_solution_summary.png' | relative_url }})
 {: style="width: 90%;" class="center"}
 
 
+---
 
-I plan to write more on Reinforcement Learning in the future. This is just a start. See you in the next post :)
-
+Cited as:
+```
+@article{weng2018bandit,
+  title   = "The Multi-Armed Bandit Problem and Its Solutions",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2018",
+  url     = "http://lilianweng.github.io/lil-log/2018/01/23/the-multi-armed-bandit-problem-and-its-solutions.html"
+}
+```
 
 # References
 
@@ -265,12 +273,3 @@ I plan to write more on Reinforcement Learning in the future. This is just a sta
 [3] Olivier Chapelle and Lihong Li. ["An empirical evaluation of thompson sampling."](http://papers.nips.cc/paper/4321-an-empirical-evaluation-of-thompson-sampling.pdf) NIPS. 2011.
 
 [4] Russo, Daniel, et al. ["A Tutorial on Thompson Sampling."](https://arxiv.org/pdf/1707.02038.pdf) arXiv:1707.02038 (2017).
-
-
-
----
-
-*If you notice mistakes and errors in this post, please don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
-
-
-

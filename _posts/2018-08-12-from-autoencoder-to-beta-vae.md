@@ -418,8 +418,18 @@ Considering that VQ-VAE-2 depends on discrete latent variables configured in a s
 *Fig. 12. The VQ-VAE-2 algorithm. (Image source: [Ali Razavi, et al. 2019](https://arxiv.org/abs/1906.00446))*
 
 
+---
 
-
+Cited as:
+```
+@article{weng2018VAE,
+  title   = "From Autoencoder to Beta-VAE",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2018",
+  url     = "http://lilianweng.github.io/lil-log/2018/08/12/from-autoencoder-to-beta-vae.html"
+}
+```
 
 
 

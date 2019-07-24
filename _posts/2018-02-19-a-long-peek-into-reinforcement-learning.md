@@ -672,10 +672,10 @@ During self-play, MCTS further improves the action probability distribution $$\p
 The network is trained with the samples in the replay memory to minimize the loss:
 
 $$
-\mathcal{L} = (z - v)^2 + \pi^\top \log p + c \| \theta \|^2
+\mathcal{L} = (z - v)^2 - \pi^\top \log p + c \| \theta \|^2
 $$
 
-where c is a hyperparameter controlling the intensity of L2 penalty to avoid overfitting.
+where $$c$$ is a hyperparameter controlling the intensity of L2 penalty to avoid overfitting.
 
 AlphaGo Zero simplified AlphaGo by removing supervised learning and merging separated policy and value networks into one. It turns out that AlphaGo Zero achieved largely improved performance with a much shorter training time! I strongly recommend reading these [two](https://pdfs.semanticscholar.org/1740/eb993cc8ca81f1e46ddaadce1f917e8000b5.pdf) [papers](https://www.dropbox.com/s/yva172qos2u15hf/2017-silver.pdf?dl=0) side by side and compare the difference, super fun.
 

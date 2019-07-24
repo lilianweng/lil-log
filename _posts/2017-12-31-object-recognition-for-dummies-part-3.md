@@ -321,6 +321,18 @@ Here I illustrate model designs of R-CNN, Fast R-CNN, Faster R-CNN and Mask R-CN
 {: style="width: 100%;" class="center"}
 
 
+---
+Cited as:
+```
+@article{weng2017detection3,
+  title   = "Object Detection for Dummies Part 3: R-CNN Family",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2017",
+  url     = "http://lilianweng.github.io/lil-log/2017/12/31/object-recognition-for-dummies-part-3.html"
+}
+```
+
 ## Reference
 
 [1] Ross Girshick, Jeff Donahue, Trevor Darrell, and Jitendra Malik. ["Rich feature hierarchies for accurate object detection and semantic segmentation."](https://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Girshick_Rich_Feature_Hierarchies_2014_CVPR_paper.pdf) In Proc. IEEE Conf. on computer vision and pattern recognition (CVPR), pp. 580-587. 2014.
@@ -336,10 +348,3 @@ Here I illustrate model designs of R-CNN, Fast R-CNN, Faster R-CNN and Mask R-CN
 [6] ["A Brief History of CNNs in Image Segmentation: From R-CNN to Mask R-CNN"](https://blog.athelas.com/a-brief-history-of-cnns-in-image-segmentation-from-r-cnn-to-mask-r-cnn-34ea83205de4) by Athelas.
 
 [7] Smooth L1 Loss: [https://github.com/rbgirshick/py-faster-rcnn/files/764206/SmoothL1Loss.1.pdf](https://github.com/rbgirshick/py-faster-rcnn/files/764206/SmoothL1Loss.1.pdf)
-
-
----
-
-*If you notice mistakes and errors in this post, please don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
-
-See you in the next post :D

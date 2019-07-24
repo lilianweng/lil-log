@@ -388,6 +388,17 @@ Overall YOLOv3 performs better and faster than SSD, and worse than RetinaNet but
 {: style="width:80%;" class="center"}
 *Fig. 13. The comparison of various fast object detection models on speed and mAP performance. (Image source: [focal loss](https://arxiv.org/abs/1708.02002) paper with additional labels from the [YOLOv3](https://pjreddie.com/media/files/papers/YOLOv3.pdf) paper.)*
 
+---
+Cited as:
+```
+@article{weng2018detection4,
+  title   = "Object Detection Part 4: Fast Detection Models",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2018",
+  url     = "http://lilianweng.github.io/lil-log/2018/12/27/object-detection-part-4.html"
+}
+```
 
 ## Reference
 

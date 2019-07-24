@@ -151,6 +151,18 @@ At the detection time,
 3. Merge bounding boxes with sufficient overlap from localization and sufficient confidence of being the same object from the classifier.
 
 
+---
+Cited as:
+```
+@article{weng2017detection2,
+  title   = "Object Detection for Dummies Part 2: CNN, DPM and Overfeat",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2017",
+  url     = "http://lilianweng.github.io/lil-log/2017/12/15/object-recognition-for-dummies-part-2.html"
+}
+```
+
 ## Reference
 
 [1] Vincent Dumoulin and Francesco Visin. ["A guide to convolution arithmetic for deep learning."](https://arxiv.org/pdf/1603.07285.pdf) arXiv preprint arXiv:1603.07285 (2016).
@@ -163,10 +175,3 @@ At the detection time,
 ) In Proc. IEEE Conf. on Computer Vision and Pattern Recognition (CVPR), pp. 437-446. 2015.
 
 [5] Sermanet, Pierre, David Eigen, Xiang Zhang, Michaël Mathieu, Rob Fergus, and Yann LeCun. ["OverFeat: Integrated Recognition, Localization and Detection using Convolutional Networks"](https://pdfs.semanticscholar.org/f2c2/fbc35d0541571f54790851de9fcd1adde085.pdf) arXiv preprint arXiv:1312.6229 (2013).
-
-
----
-
-*If you notice mistakes and errors in this post, please don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
-
-See you in the next post :D

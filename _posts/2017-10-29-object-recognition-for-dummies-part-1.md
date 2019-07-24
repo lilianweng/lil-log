@@ -452,11 +452,16 @@ By (i) tuning the threshold $$k$$ in Felzenszwalb and Huttenlocher's algorithm, 
 
 
 ---
-
-*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
-
-See you in the next post :D
-
+Cited as:
+```
+@article{weng2017detection1,
+  title   = "Object Detection for Dummies Part 1: Gradient Vector, HOG, and SS",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2017",
+  url     = "http://lilianweng.github.io/lil-log/2017/10/29/object-recognition-for-dummies-part-1.html"
+}
+```
 
 
 ## References

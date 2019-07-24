@@ -200,7 +200,7 @@
 
 .post-link {
   display: block;
-  @include relative-font-size(1.75);
+  @include relative-font-size(1.6);
   font-weight: 600;
 
   font-color: #000000;
@@ -217,7 +217,7 @@
  */
 
 .other-pages {
-    margin-top: $spacing-unit * 2;
+    margin-top: $spacing-unit * 0.5;
 }
 
 div.qa {

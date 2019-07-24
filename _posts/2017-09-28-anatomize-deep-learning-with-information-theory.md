@@ -6,7 +6,7 @@ date: 2017-09-28 23:42:00
 tags: information-theory foundation
 ---
 
-> This post is a summary of Prof Naftali Tishby's recent talk on ["Information Theory in Deep Learning"](https://youtu.be/bLqJHjXihK8). It presented how to apply the information theory to study the growth and transformation of deep neural networks during training.
+> This post is a summary of Prof Naftali Tishby's recent talk on "Information Theory in Deep Learning". It presented how to apply the information theory to study the growth and transformation of deep neural networks during training.
 
 <!--more-->
 
@@ -122,7 +122,7 @@ Tracking the normalized mean and standard deviation of each layer's weights in t
 
 ![mean and std]({{ '/assets/images/ib-mean-variation.png' | relative_url }})
 {: style="width: 480px;" class="center"}
-*Fig. 4. The normalized mean and standard deviation of each layer's weights as a function of training epochs. Different layers are color-coded. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
+*Fig. 4. The norm of mean and standard deviation of each layer's weight gradients for each layer as a function of training epochs. Different layers are color-coded. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
 
 
 Among early epochs, the mean values are three magnitudes larger than the standard deviations. After a sufficient number of epochs, the error saturates and the standard deviations become much noisier afterward. The further a layer is away from the output, the noisier it gets, because the noises can get amplified and accumulated through the back-prop process (not due to the width of the layer).
@@ -201,11 +201,18 @@ Fitting more training data requires more information captured by the hidden laye
 {: style="width: 420px;" class="center"}
 *Fig. 7. The training data of different sizes is color-coded. The information plane of multiple converged networks are plotted. More training data leads to better generalization. (Image source: [Shwartz-Ziv and Tishby, 2017](https://arxiv.org/pdf/1703.00810.pdf))*
 
+
 ---
-
-*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
-
-See you in the next post :D
+Cited as:
+```
+@article{weng2017infotheory,
+  title   = "Anatomize Deep Learning with Information Theory",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2017",
+  url     = "http://lilianweng.github.io/lil-log/2017/09/28/anatomize-deep-learning-with-information-theory.html"
+}
+```
 
 
 ## References

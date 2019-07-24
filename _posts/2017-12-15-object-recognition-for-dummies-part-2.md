@@ -17,6 +17,12 @@ image: "residual-block.png"
 In Part 2, we are about to find out more on the classic convolution neural network architectures for image classification. They lay the ___foundation___ for further progress on the deep learning models for object detection. Go check [Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %}) if you want to learn more on R-CNN and related models.
 
 
+Links to all the posts in the series: 
+[[Part 1]({{ site.baseurl }}{% post_url 2017-10-29-object-recognition-for-dummies-part-1 %})]
+[[Part 2]({{ site.baseurl }}{% post_url 2017-12-15-object-recognition-for-dummies-part-2 %})]
+[[Part 3]({{ site.baseurl }}{% post_url 2017-12-31-object-recognition-for-dummies-part-3 %})]
+[[Part 4]({{ site.baseurl }}{% post_url 2018-12-27-object-detection-part-4 %})].
+
 {: class="table-of-content"}
 * TOC
 {:toc}

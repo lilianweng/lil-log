@@ -440,7 +440,7 @@ $$
 {: style="width: 100%;" class="center"}
 *Fig. 20. The self-attention mechanism in SAGAN. (Image source: Fig. 2 in [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf))*
 
-Note that $$\alpha_{i,j}$$ is one entry in the attention map, indicating how much attention the model should pay to the i-th position when synthesizing the j-th location. $$\mathbf{W}_f$$, $$\mathbf{W}_g$$, and $$\mathbf{W}_h$$ are all 1x1 convolution filters. If you feel that 1x1 conv sounds like a weird concept (i.e., isn't it just to multiply the whole feature map with one number?), watch this short [tutorial](https://www.youtube.com/watch?v=9EZVpLTPGz8) by Andrew Ng. The output $$\mathbf{o}_j$$ is a column vector of the final output $$\mathbf{o}= (\mathbf{o}_1, \mathbf{o}_2, \dots, \mathbf{o}_j, \dots, \mathbf{o}_N)$$.
+Note that $$\alpha_{i,j}$$ is one entry in the attention map, indicating how much attention the model should pay to the i-th position when synthesizing the j-th location. $$\mathbf{W}_f$$, $$\mathbf{W}_g$$, and $$\mathbf{W}_h$$ are all 1x1 convolution filters. If you feel that 1x1 conv sounds like a weird concept (i.e., isn't it just to multiply the whole feature map with one number?), watch this short [tutorial](https://www.coursera.org/lecture/convolutional-neural-networks/networks-in-networks-and-1x1-convolutions-ZTb8x) by Andrew Ng. The output $$\mathbf{o}_j$$ is a column vector of the final output $$\mathbf{o}= (\mathbf{o}_1, \mathbf{o}_2, \dots, \mathbf{o}_j, \dots, \mathbf{o}_N)$$.
 
 
 Furthermore, the output of the attention layer is multiplied by a scale parameter and added back to the original input feature map:

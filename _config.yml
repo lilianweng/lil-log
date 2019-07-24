@@ -12,6 +12,7 @@ highlighter: rouge
 excerpt_separator: <!--more-->
 plugins:
   - jekyll-feed
+  - jekyll-archives
 exclude:
   - Gemfile
   - Gemfile.lock

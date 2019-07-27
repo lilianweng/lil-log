@@ -14,6 +14,8 @@ image: "vae-gaussian.png"
 
 <span style="color: #286ee0;">[Updated on 2019-07-18: add a section on [VQ-VAE & VQ-VAE-2](#vq-vae-and-vq-vae-2).]</span>
 <br/>
+<span style="color: #286ee0;">[Updated on 2019-07-26: add a section on [TD-VAE](#td-vae).]</span>
+<br/>
 
 Autocoder is invented to reconstruct high-dimensional data using a neural network model with a narrow bottleneck layer in the middle (oops, this is probably not true for [Variational Autoencoder](#vae-variational-autoencoder), and we will investigate it in details in later sections). A nice byproduct is dimension reduction: the bottleneck layer captures a compressed latent encoding. Such a low-dimensional representation can be used as en embedding vector in various applications (i.e. search), help data compression, or reveal the underlying data generative factors. 
 
@@ -220,7 +222,7 @@ Now the structure looks a lot like an autoencoder:
 
 
 
-### Loss Function
+### Loss Function: ELBO
 
 The estimated posterior $$q_\phi(\mathbf{z}\vert\mathbf{x})$$ should be very close to the real one $$p_\theta(\mathbf{z}\vert\mathbf{x})$$. We can use [Kullback-Leibler divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence) to quantify the distance between these two distributions. KL divergence $$D_\text{KL}(X\|Y)$$ measures how much information is lost if the distribution Y is used to represent X.
 
@@ -418,6 +420,97 @@ Considering that VQ-VAE-2 depends on discrete latent variables configured in a s
 *Fig. 12. The VQ-VAE-2 algorithm. (Image source: [Ali Razavi, et al. 2019](https://arxiv.org/abs/1906.00446))*
 
 
+## TD-VAE
+
+**TD-VAE** (“Temporal Difference VAE”; [Gregor et al., 2019](https://arxiv.org/abs/1806.03107)) works with sequential data. It relies on three main ideas, described below.
+
+![TD-VAE-state-space]({{ '/assets/images/TD-VAE-state-space.png' | relative_url }})
+{: style="width: 80%;" class="center"}
+*Fig. 13. State-space model as a Markov Chain model.*
+
+**1. State-Space Models**
+<br/>
+In (latent) state-space models, a sequence of unobserved hidden states $$\mathbf{z} = (z_1, \dots, z_T)$$ determine the observation states $$\mathbf{x} = (x_1, \dots, x_T)$$. Each time step in the Markov chain model in Fig. 13 can be trained in a similar manner as in Fig. 6, where the intractable posterior $$p(z \vert x)$$ is approximated by a function $$q(z \vert x)$$.
+
+
+**2. Belief State**
+<br/>
+An agent should learn to encode all the past states to reason about the future, named as *belief state*, $$b_t = belief(x_1, \dots, x_t) = belief(b_{t-1}, x_t)$$. Given this, the distribution of future states conditioned on the past can be written as $$p(x_{t+1}, \dots, x_T \vert x_1, \dots, x_t) \approx p(x_{t+1}, \dots, x_T \vert b_t)$$. The hidden states in a recurrent policy are used as the agent's belief state in TD-VAE. Thus we have $$b_t = \text{RNN}(b_{t-1}, x_t)$$.	 	 	 		
+
+
+**3. Jumpy Prediction**
+<br/>
+Further, an agent is expected to imagine distant futures based on all the information gathered so far, suggesting the capability of making jumpy predictions, that is, predicting states several steps further into the future.
+
+Recall what we have learned from the variance lower bound [above](#loss-function-elbo):
+
+$$
+\begin{aligned}
+\log p(x) 
+&\geq \log p(x) - D_\text{KL}(q(z|x)\|p(z|x)) \\
+&= \mathbb{E}_{z\sim q} \log p(x|z) - D_\text{KL}(q(z|x)\|p(z)) \\
+&= \mathbb{E}_{z \sim q} \log p(x|z) - \mathbb{E}_{z \sim q} \log \frac{q(z|x)}{p(z)} \\
+&= \mathbb{E}_{z \sim q}[\log p(x|z) -\log q(z|x) + \log p(z)] \\
+&= \mathbb{E}_{z \sim q}[\log p(x, z) -\log q(z|x)] \\
+\log p(x) 
+&\geq \mathbb{E}_{z \sim q}[\log p(x, z) -\log q(z|x)]
+\end{aligned}
+$$
+
+Now let's model the distribution of the state $$x_t$$ as a probability function conditioned on all the past states $$x_{<t}$$ and two latent variables, $$z_t$$ and $$z_{t-1}$$, at current time step and one step back:
+
+$$
+\log p(x_t|x_{<t}) \geq \mathbb{E}_{(z_{t-1}, z_t) \sim q}[\log p(x_t, z_{t-1}, z_{t}|x_{<t}) -\log q(z_{t-1}, z_t|x_{\leq t})]
+$$
+
+Continue expanding the equation:
+
+$$
+\begin{aligned}
+& \log p(x_t|x_{<t}) \\
+&\geq \mathbb{E}_{(z_{t-1}, z_t) \sim q}[\log p(x_t, z_{t-1}, z_{t}|x_{<t}) -\log q(z_{t-1}, z_t|x_{\leq t})] \\
+&\geq \mathbb{E}_{(z_{t-1}, z_t) \sim q}[\log p(x_t|\color{red}{z_{t-1}}, z_{t}, \color{red}{x_{<t}}) + \color{blue}{\log p(z_{t-1}, z_{t}|x_{<t})} -\log q(z_{t-1}, z_t|x_{\leq t})] \\
+&\geq \mathbb{E}_{(z_{t-1}, z_t) \sim q}[\log p(x_t|z_{t}) + \color{blue}{\log p(z_{t-1}|x_{<t})} + \color{blue}{\log p(z_{t}|z_{t-1})} - \color{green}{\log q(z_{t-1}, z_t|x_{\leq t})}] \\
+&\geq \mathbb{E}_{(z_{t-1}, z_t) \sim q}[\log p(x_t|z_{t}) + \log p(z_{t-1}|x_{<t}) + \log p(z_{t}|z_{t-1}) - \color{green}{\log q(z_t|x_{\leq t})} - \color{green}{\log q(z_{t-1}|z_t, x_{\leq t})}]
+\end{aligned}
+$$
+
+Notice two things: 
+- The <span style='color: red;'>red</span> terms can be ignored according to Markov assumptions. 
+- The <span style='color: blue;'>blue</span> term is expanded according to Markov assumptions. 
+- The <span style='color: green;'>green</span> term is expanded to include an one-step prediction back to the past as a smoothing distribution.
+
+Precisely, there are four types of distributions to learn:
+1. $$p_D(.)$$ is the **decoder** distribution: 
+  - $$p(x_t \mid z_t)$$ is the encoder by the common definition;
+  - $$p(x_t \mid z_t) \to p_D(x_t \mid z_t)$$;
+2. $$p_T(.)$$ is the **transition** distribution: 
+  - $$p(z_t \mid z_{t-1})$$ captures the sequential dependency between latent variables;
+  - $$p(z_t \mid z_{t-1}) \to p_T(z_t \mid z_{t-1})$$;
+3. $$p_B(.)$$ is the **belief** distribution:
+  - Both $$p(z_{t-1} \mid x_{<t})$$ and $$q(z_t \mid x_{\leq t})$$ can use the belief states to predict the latent variables;
+  - $$p(z_{t-1} \mid x_{<t}) \to p_B(z_{t-1} \mid b_{t-1})$$;
+  - $$q(z_{t} \mid x_{\leq t}) \to p_B(z_t \mid b_t)$$;
+4. $$p_S(.)$$ is the **smoothing** distribution: 
+  - The back-to-past smoothing term $$q(z_{t-1} \mid z_t, x_{\leq t})$$ can be rewritten to be dependent of belief states too;
+  - $$q(z_{t-1} \mid z_t, x_{\leq t}) \to  p_S(z_{t-1} \mid z_t, b_{t-1}, b_t)$$;
+
+To incorporate the idea of jumpy prediction, the sequential ELBO has to not only work on $$t, t+1$$, but also two distant timestamp $$t_1 < t_2$$. Here is the final TD-VAE objective function to maximize:
+
+$$
+J_{t_1, t_2} = \mathbb{E}[
+  \log p_D(x_{t_2}|z_{t_2}) 
+  + \log p_B(z_{t_1}|b_{t_1}) 
+  + \log p_T(z_{t_2}|z_{t_1}) 
+  - \log p_B(z_{t_2}|b_{t_2}) 
+  - \log p_S(z_{t_1}|z_{t_2}, b_{t_1}, b_{t_2})]
+$$
+
+![TD-VAE]({{ '/assets/images/TD-VAE.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 14. A detailed overview of TD-VAE architecture, very nicely done. (Image source: [TD-VAE paper](https://arxiv.org/abs/1806.03107))*
+
+
 ---
 
 Cited as:
@@ -468,3 +561,5 @@ Cited as:
 [16] Ali Razavi, et al. ["Generating Diverse High-Fidelity Images with VQ-VAE-2"](https://arxiv.org/abs/1906.00446). arXiv preprint arXiv:1906.00446 (2019).
 
 [17] Xi Chen, et al. ["PixelSNAIL: An Improved Autoregressive Generative Model."](https://arxiv.org/abs/1712.09763) arXiv preprint arXiv:1712.09763 (2017).
+
+[18] Karol Gregor, et al. ["Temporal Difference Variational Auto-Encoder."](https://arxiv.org/abs/1806.03107) ICLR 2019.

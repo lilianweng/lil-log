@@ -358,7 +358,98 @@ $$
 $$
 
 where $$d_\text{N}^*$$ only extracts the direction of the optimal moving step on $$\theta$$, ignoring the scalar $$\beta^{-1}$$.
-AA) is only extracted from the cumulative return $$F(\theta)$$. Without explicit exploration, the agent might get trapped in a local optimum.
+
+
+![Plain vs natural coordinates]({{ '/assets/images/CMA-ES-coordinates.png' | relative_url }})
+{: style="width: 90%;" class="center"}
+*Fig. 4. The natural gradient samples (black solid arrows) in the right are the plain gradient samples (black solid arrows)  in the left multiplied by the inverse of their covariance. In this way, a gradient direction with high uncertainty (indicated by high covariance with other samples) are penalized with a small weight. The aggregated natural gradient (red dash arrow) is therefore more trustworthy than the natural gradient (green solid arrow). (Image source: additional annotations on Fig 2 in [NES](https://arxiv.org/abs/1106.4487) paper)*
+
+
+
+### NES Algorithm
+
+The fitness associated with one sample is labeled as $$f(x)$$ and the search distribution over $$x$$ is parameterized by $$\theta$$. NES is expected to optimize the parameter $$\theta$$ to achieve maximum expected fitness: 
+
+$$
+\mathcal{J}(\theta) = \mathbb{E}_{x\sim p_\theta(x)} [f(x)] = \int_x f(x) p_\theta(x) dx
+$$
+
+Using the same log-likelihood [trick](http://blog.shakirm.com/2015/11/machine-learning-trick-of-the-day-5-log-derivative-trick/) in [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce):
+
+$$
+\begin{aligned}
+\nabla_\theta\mathcal{J}(\theta) 
+&= \nabla_\theta \int_x f(x) p_\theta(x) dx \\
+&= \int_x f(x) \frac{p_\theta(x)}{p_\theta(x)}\nabla_\theta p_\theta(x) dx \\
+& = \int_x f(x) p_\theta(x) \nabla_\theta \log p_\theta(x) dx \\
+& = \mathbb{E}_{x \sim p_\theta} [f(x) \nabla_\theta \log p_\theta(x)]
+\end{aligned}
+$$      
+
+
+![NES]({{ '/assets/images/NES-algorithm.png' | relative_url }})
+{: style="width: 80%;" class="center"}
+
+
+Besides natural gradients, NES adopts a couple of important heuristics to make the algorithm performance more robust.
+- <a name="fitness-shaping"></a>NES applies **rank-based fitness shaping**, that is to use the *rank* under monotonically increasing fitness values instead of using $$f(x)$$ directly. Or it can be a function of the rank (“utility function”), which is considered as a free parameter of NES.
+- NES adopts **adaptation sampling** to adjust hyperparameters at run time. When changing $$\theta \to \theta’$$, samples drawn from $$p_\theta$$ are compared with samples from $$p_{\theta’}$$ using [Mann-Whitney U-test(https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test)]; if there shows a positive or negative sign, the target hyperparameter decreases or increases by a multiplication constant. Note the score of a sample $$x’_i \sim p_{\theta’}(x)$$ has importance sampling weights applied $$w_i’ = p_\theta(x) / p_{\theta’}(x)$$.
+
+
+
+
+
+## Applications: ES in Deep Reinforcement Learning
+
+
+### OpenAI ES for RL
+
+The concept of using evolutionary algorithms in reinforcement learning can be traced back [long ago](https://arxiv.org/abs/1106.0221), but only constrained to tabular RL due to computational limitations.
+
+Inspired by [NES](#natural-evolution-strategies), researchers at OpenAI ([Salimans, et al. 2017](https://arxiv.org/abs/1703.03864)) proposed to use NES as a gradient-free black-box optimizer to find optimal policy parameters $$\theta$$ that maximizes the return function $$F(\theta)$$. The key is to add Gaussian noise $\epsilon$ on the model parameter $\theta$ and then use the log-likelihood trick to write it as the gradient of the Gaussian pdf. Eventually only the noise term is left as a weighting scalar for measured performance. 
+
+Let’s say the current parameter value is $$\hat{\theta}$$ (the added hat is to distinguish the value from the random variable $$\theta$$). The search distribution of $$\theta$$ is designed to be an isotropic multivariate Gaussian with a mean $$\hat{\theta}$$ and a fixed covariance matrix $$\sigma^2 I$$,
+
+
+$$
+\theta \sim \mathcal{N}(\hat{\theta}, \sigma^2 I) \text{ equivalent to } \theta = \hat{\theta} + \sigma\epsilon, \epsilon \sim \mathcal{N}(0, I)
+$$
+
+The gradient for $$\theta$$ update is:
+
+$$
+\begin{aligned}
+& \nabla_\theta \mathbb{E}_{\theta\sim\mathcal{N}(\hat{\theta}, \sigma^2 I)} F(\theta) \\
+&= \nabla_\theta \mathbb{E}_{\epsilon\sim\mathcal{N}(0, I)} F(\hat{\theta} + \sigma\epsilon) \\
+&= \nabla_\theta \int_{\epsilon} p(\epsilon) F(\hat{\theta} + \sigma\epsilon) d\epsilon & \scriptstyle{\text{; Gaussian }p(\epsilon)=(2\pi)^{-\frac{n}{2}} \exp(-\frac{1}{2}\epsilon^\top\epsilon)} \\
+&= \int_{\epsilon} p(\epsilon) \nabla_\epsilon \log p(\epsilon) \nabla_\theta \epsilon\;F(\hat{\theta} + \sigma\epsilon) d\epsilon & \scriptstyle{\text{; log-likelihood trick}}\\
+&= \mathbb{E}_{\epsilon\sim\mathcal{N}(0, I)} [ \nabla_\epsilon \big(-\frac{1}{2}\epsilon^\top\epsilon\big) \nabla_\theta \big(\frac{\theta - \hat{\theta}}{\sigma}\big) F(\hat{\theta} + \sigma\epsilon) ] & \\
+&= \mathbb{E}_{\epsilon\sim\mathcal{N}(0, I)} [ (-\epsilon) (\frac{1}{\sigma}) F(\hat{\theta} + \sigma\epsilon) ] & \\
+&= \frac{1}{\sigma}\mathbb{E}_{\epsilon\sim\mathcal{N}(0, I)} [ \epsilon F(\hat{\theta} + \sigma\epsilon) ] & \scriptstyle{\text{; negative sign can be absorbed.}}
+\end{aligned}
+$$
+
+In one generation, we can sample many $$epsilon_i, i=1,\dots,n$$ and evaluate the fitness *in parallel*. One beautiful design is that no large model parameter needs to be shared. By only communicating the random seeds between workers, it is enough for the master node to do parameter update. This approach is later extended to adaptively learn a loss function; see my previous post on [Evolved Policy Gradient]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %}#meta-learning-the-loss-function). 
+
+
+![ES for RL]({{ '/assets/images/OpenAI-ES-algorithm.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 5. The algorithm for training a RL policy using evolution strategies. (Image source: [ES-for-RL](https://arxiv.org/abs/1703.03864) paper)*
+
+To make the performance more robust, OpenAI ES adopts virtual batch normalization (BN with mini-batch used for calculating statistics fixed), mirror sampling (sampling a pair of $$(-\epsilon, \epsilon)$$ for evaluation), and [fitness shaping](#fitness-shaping).
+
+
+
+
+
+
+
+### Exploration with ES 
+
+Exploration ([vs exploitation]({{ site.baseurl }}{% post_url 2018-01-23-the-multi-armed-bandit-problem-and-its-solutions %}#exploitation-vs-exploration)) is an important topic in RL. The optimization direction in the ES algorithm [above](TBA) is only extracted from the cumulative return $$F(\theta)$$. Without explicit exploration, the agent might get trapped in a local optimum.
+
+
+
 
 Novelty-Search ES (**NS-ES**; [Conti et al, 2018](https://arxiv.org/abs/1712.06560)) encourages exploration by updating the parameter in the direction to maximize the *novelty* score. The novelty score depends on a domain-specific behavior characterization function $$b(\pi_\theta)$$. The choice of $$b(\pi_\theta)$$ is specific to the task and seems to be a bit arbitrary; for example, in the Humanoid locomotion task in the paper, $$b(\pi_\theta)$$ is the final $$(x,y)$$ location of the agent.
 1. Every policy's $$b(\pi_\theta)$$ is pushed to an archive set $$\mathcal{A}$$.
@@ -431,7 +522,7 @@ Workflow:
 
 
 
-## Extension: Evolutionary Algorithms in Deep Learning
+## Extension: EA in Deep Learning
 
 (This section is not on evolution strategies, but still an interesting and relevant reading.)
 

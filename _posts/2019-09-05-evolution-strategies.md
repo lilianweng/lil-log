@@ -52,7 +52,7 @@ In **Genetic Algorithms (GA)**, another popular subcategory of EA, $$x$$ is a se
 
 ## Simple Gaussian Evolution Strategies
 
-This is the most basic and canonical version of evolution strategies. It models $$p_\theta(x)$$ as a $$n$$-dimensional isotropic Gaussian distribution, in which $$\theta$$ only tracks the mean $$\mu$$ and standard deviation $$\sigma$$.
+[This](http://blog.otoro.net/2017/10/29/visual-evolution-strategies/) is the most basic and canonical version of evolution strategies. It models $$p_\theta(x)$$ as a $$n$$-dimensional isotropic Gaussian distribution, in which $$\theta$$ only tracks the mean $$\mu$$ and standard deviation $$\sigma$$.
 
 $$
 \theta = (\mu, \sigma),\;p_\theta(x) \sim \mathcal{N}(\mathbf{\mu}, \sigma^2 I \sim \mu + \sigma \mathcal{N}(0, I)
@@ -578,13 +578,25 @@ At the "evaluation" stage, all the network weights are set to be the same. In th
 As shown in Fig. 11, WANN results are evaluated with both random weights and shared weights (single weight). It is interesting that even when enforcing weight-sharing on all weights and tuning this single parameter, WANN can discover topologies that achieve non-trivial good performance.
 
 
+---
+Cited as:
+```
+@article{weng2019ES,
+  title   = "Evolution Strategies",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2019",
+  url     = "https://lilianweng.github.io/lil-log/2019/09/05/evolution-strategies.html"
+}
+```
+
 ## References
 
 [1] Nikolaus Hansen. ["The CMA Evolution Strategy: A Tutorial"](https://arxiv.org/abs/1604.00772) arXiv preprint arXiv:1604.00772 (2016).
 
 [2] Marc Toussaint. [Slides: "Introduction to Optimization"](https://ipvs.informatik.uni-stuttgart.de/mlr/marc/teaching/13-Optimization/06-blackBoxOpt.pdf)
 
-[3] David Ha. ["A Visual Guide to Evolution Strategies"]("http://blog.otoro.net/2017/10/29/visual-evolution-strategies/") blog.otoro.net. Oct 2017.
+[3] David Ha. ["A Visual Guide to Evolution Strategies"](http://blog.otoro.net/2017/10/29/visual-evolution-strategies/) blog.otoro.net. Oct 2017.
 
 [4] Daan Wierstra, et al. ["Natural evolution strategies."](https://arxiv.org/abs/1106.4487) IEEE World Congress on Computational Intelligence, 2008.
 

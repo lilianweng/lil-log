@@ -336,7 +336,7 @@ Finally we have,
 
 $$
 \text{KL}[p_\theta \| p_{\theta+d}] = - \frac{1}{2}d^\top \mathbf{F}_\theta d 
-\text{, where }\mathbf{F}_\theta = \mathbb{E}_x [(\nabla_\theta \log p_{\theta})^\top (\nabla_\theta \log p_{\theta})]
+\text{, where }\mathbf{F}_\theta = \mathbb{E}_x [(\nabla_\theta \log p_{\theta}) (\nabla_\theta \log p_{\theta})^\top]
 $$
 
 where $$\mathbf{F}_\theta$$ is called the **[Fisher Information Matrix](http://mathworld.wolfram.com/FisherInformationMatrix.html)** and [it is](https://wiseodd.github.io/techblog/2018/03/11/fisher-information/) the covariance matrix of $$\nabla_\theta \log p_\theta$$ since $$\mathbb{E}[\nabla_\theta \log p_\theta] = 0$$. 

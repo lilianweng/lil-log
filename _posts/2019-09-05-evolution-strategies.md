@@ -469,7 +469,7 @@ $$
 = \frac{1}{\sigma}\mathbb{E}_{\epsilon\sim\mathcal{N}(0, I)} [ \epsilon N(\hat{\theta} + \sigma\epsilon, \mathcal{A}) ]
 $$
 
-NS-ES maintains a group of $$M$$ independently trained agents ("meta-population"), $$\mathcal{M} = \{\theta_1, \dots, \theta_M \}$$ and picks one to advance proportional to the novelty score. Eventually we select the best policy. This process is equivalent to ensembling; also see the same idea in [SVPG](https://arxiv.org/abs/1704.02399).
+NS-ES maintains a group of $$M$$ independently trained agents ("meta-population"), $$\mathcal{M} = \{\theta_1, \dots, \theta_M \}$$ and picks one to advance proportional to the novelty score. Eventually we select the best policy. This process is equivalent to ensembling; also see the same idea in [SVPG]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#svpg).
 
 $$
 \begin{aligned}

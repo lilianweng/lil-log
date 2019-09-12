@@ -368,13 +368,18 @@ When $$\beta=1$$, it is same as VAE. When $$\beta > 1$$, it applies a stronger c
 
 The **VQ-VAE** (“Vector Quantised-Variational AutoEncoder”; [van den Oord, et al. 2017](http://papers.nips.cc/paper/7210-neural-discrete-representation-learning.pdf)) model learns a discrete latent variable by the encoder, since discrete representations may be a more natural fit for problems like language, speech, reasoning, etc.
 
-Vector quantisation (VQ) is a method to map $K$-dimensional vectors into a finite set of “code” vectors. The process is very much similar to [KNN](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) algorithm. The optimal centroid code vector that a sample should be mapped to is the one with minimum euclidean distance.
+Vector quantisation (VQ) is a method to map $$K$$-dimensional vectors into a finite set of “code” vectors. The process is very much similar to [KNN](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) algorithm. The optimal centroid code vector that a sample should be mapped to is the one with minimum euclidean distance.
 
-Let $$\mathbf{e}_i \in \mathbb{R}^{K \times D}, i=1, \dots, K$$ be the latent embedding space (also known as "codebook") in VQ-VAE, where $$K$$ is the number of latent variable categories and $$D$$ is the embedding size. The encoder output $$E(\mathbf{x}) = \mathbf{z}_e$$ goes through a nearest-neighbor lookup to match to one of $$K$$ embedding vectors and then this matched code vector becomes the input for the decoder $$D(.)$$:
+Let $$\mathbf{e} \in \mathbb{R}^{K \times D}, i=1, \dots, K$$ be the latent embedding space (also known as "codebook") in VQ-VAE, where $$K$$ is the number of latent variable categories and $$D$$ is the embedding size. An individual embedding vector is $$\mathbf{e}_i \in \mathbb{R}^{D}, i=1, \dots, K$$. 
+
+The encoder output $$E(\mathbf{x}) = \mathbf{z}_e$$ goes through a nearest-neighbor lookup to match to one of $$K$$ embedding vectors and then this matched code vector becomes the input for the decoder $$D(.)$$:
 
 $$
 \mathbf{z}_q(\mathbf{x}) = \text{Quantize}(E(\mathbf{x})) = \mathbf{e}_k \text{ where } k = \arg\min_i \|E(\mathbf{x}) - \mathbf{e}_i \|_2
 $$
+
+Note that the discrete latent variables can have different shapes in differnet applications; for example, 1D for speech, 2D for image and 3D for video.
+
 
 ![VQ-VAE]({{ '/assets/images/VQ-VAE.png' | relative_url }})
 {: style="width: 100%;" class="center"}

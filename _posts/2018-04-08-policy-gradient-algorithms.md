@@ -7,20 +7,23 @@ tags: reinforcement-learning long-read
 image: "A3C_vs_A2C.png"
 ---
 
-> Abstract: In this post, we are going to look deep into policy gradient, why it works, and many new policy gradient algorithms proposed in recent years: vanilla policy gradient, actor-critic, off-policy actor-critic, A3C, A2C, DPG, DDPG, D4PG, MADDPG, TRPO, PPO, ACER, ACTKR, SAC and TD3.
+> Abstract: In this post, we are going to look deep into policy gradient, why it works, and many new policy gradient algorithms proposed in recent years: vanilla policy gradient, actor-critic, off-policy actor-critic, A3C, A2C, DPG, DDPG, D4PG, MADDPG, TRPO, PPO, ACER, ACTKR, SAC, TD3 & SVPG.
 
 
 <!--more-->
 
 <span style="color: #286ee0;">[Updated on 2018-06-30: add two new policy gradient methods, [SAC](#sac) and [D4PG](#d4pg).]</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2018-09-30: add an new policy gradient method, [TD3](#td3).]</span>
+<span style="color: #286ee0;">[Updated on 2018-09-30: add a new policy gradient method, [TD3](#td3).]</span>
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-02-09: add [SAC with automatically adjusted temperature](#sac-with-automatically-adjusted-temperature)].</span>
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-05-01: Thanks to Wenhao, we have a version of this post in [Chinese](https://tomaxent.com/2019/04/14/%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E6%96%B9%E6%B3%95/)].</span>
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-06-26: Thanks to Chanseok, we have a version of this post in [Korean](https://talkingaboutme.tistory.com/entry/RL-Policy-Gradient-Algorithms)].</span>
+<br/>
+<span style="color: #286ee0;">[Updated on 2019-09-12: add a new policy gradient method [SVPG](#SVPG).].</span>
+
 
 {: class="table-of-content"}
 * TOC
@@ -947,6 +950,95 @@ Here is the final algorithm:
 *Fig 8. TD3 Algorithm. (Image source: [Fujimoto et al., 2018](https://arxiv.org/abs/1802.09477))*
 
 
+### SVPG
+
+[[paper](https://arxiv.org/abs/1704.02399)\|[code](https://github.com/dilinwang820/Stein-Variational-Gradient-Descent) for SVPG]
+
+
+Stein Variational Policy Gradient (**SVPG**; [Liu et al, 2017](https://arxiv.org/abs/1704.02399)) applies the [Stein](https://www.cs.dartmouth.edu/~qliu/stein.html) variational gradient descent (**SVGD**; [Liu and Wang, 2016](https://arxiv.org/abs/1608.04471)) algorithm to update the policy parameter $$\theta$$.
+
+In the setup of maximum entropy policy optimization, $$\theta$$ is considered as a random variable $$\theta \sim q(\theta)$$ and the model is expected to learn this distribution $$q(\theta)$$. Assuming we know a prior on how $$q$$ might look like, $$q_0$$, and we would like to guide the learning process to not make $$\theta$$ too far away from $$q_0$$ by optimizing the following objective function:
+
+$$
+\hat{J}(\theta) = \mathbb{E}_{\theta \sim q} [J(\theta)] - \alpha D_\text{KL}(q\|q_0)
+$$
+
+where $$\mathbb{E}_{\theta \sim q} [R(\theta)]$$ is the expected reward when $$\theta \sim q(\theta)$$ and $$D_\text{KL}$$ is the KL divergence. 
+
+If we don’t have any prior information, we might set $$q_0$$ as a uniform distribution and set $$q_0(\theta)$$ to a constant. Then the above objective function becomes [SAC](#SAC), where the entropy term encourages exploration:
+
+$$
+\begin{aligned}
+\hat{J}(\theta) 
+&= \mathbb{E}_{\theta \sim q} [J(\theta)] - \alpha D_\text{KL}(q\|q_0) \\
+&= \mathbb{E}_{\theta \sim q} [J(\theta)] - \alpha \mathbb{E}_{\theta \sim q} [\log q(\theta) - \log q_0(\theta)] \\
+&= \mathbb{E}_{\theta \sim q} [J(\theta)] + \alpha H(q(\theta))
+\end{aligned}
+$$
+
+Let’s take the derivative of $$\hat{J}(\theta) = \mathbb{E}_{\theta \sim q} [J(\theta)] - \alpha D_\text{KL}(q\|q_0)$$ w.r.t. $$q$$:
+
+$$
+\begin{aligned}
+\nabla_q \hat{J}(\theta) 
+&= \nabla_q \big( \mathbb{E}_{\theta \sim q} [J(\theta)] - \alpha D_\text{KL}(q\|q_0) \big) \\
+&= \nabla_q \int_\theta \big( q(\theta) J(\theta) - \alpha q(\theta)\log q(\theta) + \alpha q(\theta) \log q_0(\theta) \big) \\
+&= \int_\theta \big( J(\theta) - \alpha \log q(\theta) -\alpha + \alpha \log q_0(\theta) \big) \\
+&= 0
+\end{aligned}
+$$
+
+
+The optimal distribution is:
+
+$$
+\log q^{*}(\theta) = \frac{1}{\alpha} J(\theta) + \log q_0(\theta) - 1 \text{ thus } \underbrace{ q^{*}(\theta) }_\textrm{"posterior"} \propto \underbrace{\exp ( J(\theta) / \alpha )}_\textrm{"likelihood"} \underbrace{q_0(\theta)}_\textrm{prior}
+$$
+
+The temperature $$\alpha$$ decides a tradeoff between exploitation and exploration. When $$\alpha \rightarrow 0$$, $$\theta$$ is updated only according to the expected return $$J(\theta)$$. When $$\alpha \rightarrow \infty$$, $$\theta$$ always follows the prior belief.
+
+When using the SVGD method to estimate the target posterior distribution $$q(\theta)$$, it relies on a set of particle $$\{\theta_i\}_{i=1}^n$$ (independently trained policy agents) and each is updated:
+
+$$
+\theta_i \gets \theta_i + \epsilon \phi^{*}(\theta_i) \text{ where } \phi^{*} = \max_{\phi \in \mathcal{H}} \{ - \nabla_\epsilon D_\text{KL} (q'_{[\theta + \epsilon \phi(\theta)]} \| q) \text{ s.t. } \|\phi\|_{\mathcal{H}} \leq 1\} 
+$$
+
+where $$\epsilon$$ is a learning rate and $$\phi^{*}$$ is the unit ball of a [RKHS](http://mlss.tuebingen.mpg.de/2015/slides/gretton/part_1.pdf) (reproducing kernel Hilbert space) $$\mathcal{H}$$ of $$\theta$$-shaped value vectors that maximally decreases the KL divergence between the particles and the target distribution. $$q’(.)$$ is the distribution of $$\theta + \epsilon \phi(\theta)$$.
+
+Comparing different gradient-based update methods:
+
+{: class="info"}
+| Method | Update space |
+| ----------------------------- | ------------- |
+| Plain gradient | $$\Delta \theta$$ on the parameter space |
+| [Natural gradient]({{ site.baseurl }}{% post_url 2019-09-05-evolution-strategies %}#natural-gradients) | $$\Delta \theta$$ on the search distribution space |
+| SVGD | $$\Delta \theta$$ on the kernel function space (edited) |
+
+
+One [estimation](https://arxiv.org/abs/1608.04471) of $$\phi^{*}$$ has the following form. A positive definite kernel $$k(\vartheta, \theta)$$, i.e. a Gaussian [radial basis function](https://en.wikipedia.org/wiki/Radial_basis_function), measures the similarity between particles.
+
+
+$$
+\begin{aligned}
+\phi^{*}(\theta_i) 
+&= \mathbb{E}_{\vartheta \sim q'} [\nabla_\vartheta \log q(\vartheta) k(\vartheta, \theta_i) + \nabla_\vartheta k(\vartheta, \theta_i)]\\
+&= \frac{1}{n} \sum_{j=1}^n [\color{red}{\nabla_{\theta_j} \log q(\theta_j) k(\theta_j, \theta_i)} + \color{green}{\nabla_{\theta_j} k(\theta_j, \theta_i)}] & \scriptstyle{\text{;approximate }q'\text{ with current particle values}}
+\end{aligned}
+$$
+
+
+- The first term in <span style="color:#fc0303;">red</span> encourages $$\theta_i$$ learning towards the high probability regions of $$q$$ that is shared across similar particles. => to be similar to other particles
+- The second term in <span style="color:#00c925;">green</span> pushes particles away from each other and therefore diversifies the policy. => to be dissimilar to other particles
+
+
+
+![SVPG]({{ '/assets/images/SVPG.png' | relative_url }})
+{: class="center" style="width: 60%;"}
+
+Usually the temperature $$\alpha$$ follows an annealing scheme so that the training process does more exploration at the beginning but more exploitation at a later stage.
+
+
+
 
 ## Quick Summary
 
@@ -969,9 +1061,16 @@ After reading through all the algorithms above, I list a few building blocks or 
 
 ---
 
-*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be very happy to correct them right away!*
-
-See you in the next post :D
+Cited as:
+```
+@article{weng2018PG,
+  title   = "Policy Gradient Algorithms",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2018",
+  url     = "https://lilianweng.github.io/lil-log/2018/04/08/policy-gradient-algorithms.html"
+}
+```
 
 
 ## References
@@ -1019,3 +1118,7 @@ See you in the next post :D
 [21] Tuomas Haarnoja, et al. ["Soft Actor-Critic Algorithms and Applications."](https://arxiv.org/abs/1812.05905) arXiv preprint arXiv:1812.05905 (2018).
 
 [22] David Knowles. ["Lagrangian Duality for Dummies"](https://cs.stanford.edu/people/davidknowles/lagrangian_duality.pdf) Nov 13, 2010.
+
+[23] Yang Liu, et al. ["Stein variational policy gradient."](https://arxiv.org/abs/1704.02399) arXiv preprint arXiv:1704.02399 (2017).
+
+[24] Qiang Liu and Dilin Wang. ["Stein variational gradient descent: A general purpose bayesian inference algorithm."](https://papers.nips.cc/paper/6338-stein-variational-gradient-descent-a-general-purpose-bayesian-inference-algorithm.pdf) NIPS. 2016.

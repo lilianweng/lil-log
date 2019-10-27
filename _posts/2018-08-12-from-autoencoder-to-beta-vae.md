@@ -74,7 +74,7 @@ $$
 
 Since the autoencoder learns the identity function, we are facing the risk of "overfitting" when there are more network parameters than the number of data points. 
 
-To avoid overfitting and improve the robustness, **Denoising Autoencoder** (Vincent et al. 2008) proposed a modification to the basic autoencoder. The input is partially corrupted by adding noises to or masking some values of the input vector in a stochastic manner, $$\tilde{\mathbf{x}} \sim \mathcal{M}_\mathcal{D}(\tilde{\mathbf{x}} \vert \mathbf{x})$$. Then the model is trained to recover the original input (**Note: Not the corrupt one!**).
+To avoid overfitting and improve the robustness, **Denoising Autoencoder** (Vincent et al. 2008) proposed a modification to the basic autoencoder. The input is partially corrupted by adding noises to or masking some values of the input vector in a stochastic manner, $$\tilde{\mathbf{x}} \sim \mathcal{M}_\mathcal{D}(\tilde{\mathbf{x}} \vert \mathbf{x})$$. Then the model is trained to recover the original input (note: not the corrupt one).
 
 
 $$
@@ -95,7 +95,7 @@ where $$\mathcal{M}_\mathcal{D}$$ defines the mapping from the true data samples
 
 This design is motivated by the fact that humans can easily recognize an object or a scene even the view is partially occluded or corrupted. To "repair" the partially destroyed input, the denoising autoencoder has to discover and capture relationship between dimensions of input in order to infer missing pieces. 
 
-For high dimensional input with high redundancy, like images, the model is likely to depend on evidence gathered from a combination of many input dimensions to recover the denoised version (sounds like the [attention]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}) mechanism, right?) rather than to overfit one dimension. This builds up a good foundation for learning *robust* latent representation.
+For high dimensional input with high redundancy, like images, the model is likely to depend on evidence gathered from a combination of many input dimensions to recover the denoised version rather than to overfit one dimension. This builds up a good foundation for learning *robust* latent representation.
 
 The noise is controlled by a stochastic mapping $$\mathcal{M}_\mathcal{D}(\tilde{\mathbf{x}} \vert \mathbf{x})$$, and it is not specific to a particular type of corruption process (i.e. masking noise, Gaussian noise, salt-and-pepper noise, etc.). Naturally the corruption process can be equipped with prior knowledge
 

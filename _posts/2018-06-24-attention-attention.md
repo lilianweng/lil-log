@@ -309,7 +309,7 @@ The Ptr-Net outputs a sequence of integer indices, $$\boldsymbol{c} = (c_1, \dot
 $$
 \begin{aligned}
 y_i &= p(c_i \vert c_1, \dots, c_{i-1}, \boldsymbol{x}) \\
-    &= \sigma(\text{score}(\boldsymbol{s}_t; \boldsymbol{h}_i)) = \sigma(\mathbf{v}_a^\top \tanh(\mathbf{W}_a[\boldsymbol{s}_t; \boldsymbol{h}_i]))
+    &= \text{softmax}(\text{score}(\boldsymbol{s}_t; \boldsymbol{h}_i)) = \text{softmax}(\mathbf{v}_a^\top \tanh(\mathbf{W}_a[\boldsymbol{s}_t; \boldsymbol{h}_i]))
 \end{aligned}
 $$
 

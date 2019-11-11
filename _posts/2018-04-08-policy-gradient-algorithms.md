@@ -504,8 +504,8 @@ In summary, MADDPG added three additional ingredients on top of DDPG to make it 
 
 To improve training stability, we should avoid parameter updates that change the policy too much at one step. **Trust region policy optimization (TRPO)** ([Schulman, et al., 2015](https://arxiv.org/pdf/1502.05477.pdf)) carries out this idea by enforcing a [KL divergence]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}#kullbackleibler-and-jensenshannon-divergence) constraint on the size of policy update at each iteration. 
 
-If off policy, the objective function measures the total advantage over the state visitation distribution and actions, while the rollout is following a different behavior policy $$\beta(a \vert s)$$:
 
+Consider the case when we are doing off-policy RL, the policy $$\beta$$ used for collecting trajectories on rollout workers is different from the policy $$\pi$$ to optimize for. The objective function in an off-policy model measures the total advantage over the state visitation distribution and actions, while the mismatch between the training data distribution and the true policy state distribution is compensated by importance sampling estimator:
 
 $$
 \begin{aligned}
@@ -518,7 +518,8 @@ $$
 
 where $$\theta_\text{old}$$ is the policy parameters before the update and thus known to us; $$\rho^{\pi_{\theta_\text{old}}}$$ is defined in the same way as [above](#dpg); $$\beta(a \vert s)$$ is the behavior policy for collecting trajectories. Noted that we use an estimated advantage $$\hat{A}(.)$$ rather than the true advantage function $$A(.)$$ because the true rewards are usually unknown.
 
-If on policy,  the behavior policy is $$\pi_{\theta_\text{old}}(a \vert s)$$:
+
+When training on policy, theoretically the policy for collecting data is same as the policy that we want to optimize. However, when rollout workers and optimizers are running in parallel asynchronously, the behavior policy can get stale. TRPO considers this subtle difference: It labels the behavior policy as $$\pi_{\theta_\text{old}}(a \vert s)$$ and thus the objective function becomes:
 
 $$
 J(\theta) = \mathbb{E}_{s \sim \rho^{\pi_{\theta_\text{old}}}, a \sim \pi_{\theta_\text{old}}} \big[ \frac{\pi_\theta(a \vert s)}{\pi_{\theta_\text{old}}(a \vert s)} \hat{A}_{\theta_\text{old}}(s, a) \big]

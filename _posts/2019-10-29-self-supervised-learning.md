@@ -47,7 +47,7 @@ Broadly speaking, all the generative models can be considered as self-supervised
 
 Many ideas have been proposed for self-supervised representation learning on images. A common workflow is to train a model on one or multiple pretext tasks with unlabelled images and then use one intermediate feature layer of this model to feed a multinomial logistic regression classifier on ImageNet classification. The final classification accuracy quantifies how good the learned representation is. 
 
-Recently, some researchers proposed to train supervised learning on labelled data and self-supervised pretext tasks on unlabelled data simultaneously with shared weights, like in [Zhai et al, 2019](https://arxiv.org/abs/1905.03670) and [Sun et al, 2019](https://arxiv.org/abs/1910.0947).
+Recently, some researchers proposed to train supervised learning on labelled data and self-supervised pretext tasks on unlabelled data simultaneously with shared weights, like in [Zhai et al, 2019](https://arxiv.org/abs/1905.03670) and [Sun et al, 2019](https://arxiv.org/abs/1909.11825).
 
 
 ### Distortion

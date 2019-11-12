@@ -16,7 +16,7 @@ Given a task and enough labels, supervised learning can solve it really well. Go
 
 What if we can get labels for free for unlabelled data and train unsupervised dataset in a supervised manner? We can achieve this by framing a supervised learning task in a special form to predict only a subset of information using the rest. In this way, all the information needed, both inputs and labels, has been provided. This is known as *self-supervised learning*.
 
-This idea has been widely used in [language modeling]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}). The default task for a language model is to predict the next word given the past sequence. [BERT]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}#bert) adds two other auxiliary tasks and both rely on self-generated labels.
+This idea has been widely used in language modeling. The default task for a language model is to predict the next word given the past sequence. [BERT]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}#bert) adds two other auxiliary tasks and both rely on self-generated labels.
 
 
 ![Self-supervised learning summary]({{ '/assets/images/self-sup-lecun.png' | relative_url }})
@@ -25,6 +25,8 @@ This idea has been widely used in [language modeling]({{ site.baseurl }}{% post_
 
 
 [Here](https://github.com/jason718/awesome-self-supervised-learning) is a nicely curated list of papers in self-supervised learning. Please check it out if you are interested in reading more in depth.
+
+Note that this post does not focus on either NLP / [language modeling]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}) or [generative modeling](https://lilianweng.github.io/lil-log/tag/generative-model).
 
 
 {: class="table-of-content"}

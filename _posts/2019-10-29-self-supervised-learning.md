@@ -350,12 +350,12 @@ All the cases discussed in this section are in robotic learning, mainly for stat
 
 The concept of metric learning has been mentioned multiple times in the [previous](#counting-feature-loss) [sections](#tracking). A common setting is: Given a triple of samples, (*anchor* $$s_a$$, *positive* sample $$s_p$$, *negative* sample $$s_n$$), the learned representation embedding $$\phi(s)$$ fulfills that $$s_a$$ stays close to $$s_p$$ but far away from $$s_n$$ in the latent space. 
 
-<a href="#grasp2vec" /><mark><b>Grasp2Vec</b></mark> ([Jang et al., 2018](https://arxiv.org/abs/1811.06964)) aims to learn an object-centric vision representation in the robot grasping task from free, unlabelled grasping activities. By object-centric, it means that, irrespective of how the environment or the robot looks like, if two images contain similar items, they should be mapped to similar representation; otherwise the embeddings should be far apart. 
+<a href="#grasp2vec" /><mark><b>Grasp2Vec</b></mark> ([Jang & Devin et al., 2018](https://arxiv.org/abs/1811.06964)) aims to learn an object-centric vision representation in the robot grasping task from free, unlabelled grasping activities. By object-centric, it means that, irrespective of how the environment or the robot looks like, if two images contain similar items, they should be mapped to similar representation; otherwise the embeddings should be far apart. 
 
 
 ![Grasp2vec]({{ '/assets/images/grasp2vec.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 16. A conceptual illustration of how grasp2vec learns an object-centric state embedding. (Image source: [Jang et al., 2018](https://arxiv.org/abs/1811.06964))*
+*Fig. 16. A conceptual illustration of how grasp2vec learns an object-centric state embedding. (Image source: [Jang & Devin et al., 2018](https://arxiv.org/abs/1811.06964))*
 
 
 The grasping system can tell whether it moves an object but cannot tell which object it is. Cameras are set up to take images of the entire scene and the grasped object. During early training, the grasp robot is executed to grasp any object $$o$$ at random, producing a triple of images, $$(s_\text{pre}, s_\text{post}, o)$$:
@@ -384,7 +384,7 @@ The embedding function $$\phi_o$$ works great for presenting a goal $$g$$ with a
 
 ![Grasp2vec attention map]({{ '/assets/images/grasp2vec-attention-map.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 17. Localization results of grasp2vec embedding. The heatmap of localizing a goal object in a pre-grasping scene is defined as $$\phi_o(o)^\top \phi_{s, \text{spatial}} (s_\text{pre})$$, where $$\phi_{s, \text{spatial}}$$ is the output of the last resnet block after ReLU. The fourth column is a failure case and the last three columns take real images as goals. (Image source: [Jang et al., 2018](https://arxiv.org/abs/1811.06964))*
+*Fig. 17. Localization results of grasp2vec embedding. The heatmap of localizing a goal object in a pre-grasping scene is defined as $$\phi_o(o)^\top \phi_{s, \text{spatial}} (s_\text{pre})$$, where $$\phi_{s, \text{spatial}}$$ is the output of the last resnet block after ReLU. The fourth column is a failure case and the last three columns take real images as goals. (Image source: [Jang & Devin et al., 2018](https://arxiv.org/abs/1811.06964))*
 
 Other than the embedding-similarity-based reward function, there are a few other tricks for training the RL policy in the grasp2vec framework:
 - *posthoc labelingP*: Augment the dataset by labeling a randomly grasped object as a correct goal, like HER (Hindsight Experience Replay; [Andrychowicz, et al., 2017](https://papers.nips.cc/paper/7090-hindsight-experience-replay.pdf)).
@@ -522,7 +522,7 @@ $$
 
 [18] Debidatta Dwibedi, et al. ["Learning actionable representations from visual observations."](https://arxiv.org/abs/1808.00928) IROS. 2018.
 
-[19] Eric Jang, et al. ["Grasp2Vec: Learning Object Representations from Self-Supervised Grasping"](https://arxiv.org/abs/1811.06964) CoRL. 2018.
+[19] Eric Jang & Coline Devin, et al. ["Grasp2Vec: Learning Object Representations from Self-Supervised Grasping"](https://arxiv.org/abs/1811.06964) CoRL. 2018.
 
 [20] Ashvin Nair, et al. ["Visual reinforcement learning with imagined goals"](https://arxiv.org/abs/1807.04742) NeuriPS. 2018.
 

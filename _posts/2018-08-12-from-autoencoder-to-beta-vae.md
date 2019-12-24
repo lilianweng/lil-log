@@ -568,3 +568,4 @@ Cited as:
 [17] Xi Chen, et al. ["PixelSNAIL: An Improved Autoregressive Generative Model."](https://arxiv.org/abs/1712.09763) arXiv preprint arXiv:1712.09763 (2017).
 
 [18] Karol Gregor, et al. ["Temporal Difference Variational Auto-Encoder."](https://arxiv.org/abs/1806.03107) ICLR 2019.
+

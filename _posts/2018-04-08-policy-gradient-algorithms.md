@@ -887,7 +887,7 @@ The equation for updating $$\alpha_{T-1}$$ in <span style="color: #32CD32;">gree
 
 
 $$
-J(\alpha) = \mathbb{E}_{a_t \sim \pi_t} [-\alpha \log \pi_t(a_t\mid\pi_t) - \alpha \mathcal{H}_0]
+J(\alpha) = \mathbb{E}_{a_t \sim \pi_t} [-\alpha \log \pi_t(a_t \mid s_t) - \alpha \mathcal{H}_0]
 $$
 
 The final algorithm is same as SAC except for learning $$\alpha$$ explicitly with respect to the objective $$J(\alpha)$$ (see Fig. 7):

@@ -12,6 +12,9 @@ tags: representation-learning long-read generative-model object-recognition
 
 <!--more-->
 
+<span style="color: #286ee0;">[Updated on 2020-01-09: add a new session on [Contrastive Predictive Coding](#contrastive-predictive-coding)].</span>
+
+
 Given a task and enough labels, supervised learning can solve it really well. Good performance usually requires a decent amount of labels, but collecting manual labels is expensive (i.e. ImageNet) and hard to be scaled up. Considering the amount of unlabelled data (e.g. free text, all the images on the Internet) is substantially more than a limited number of human curated labelled datasets, it is kinda wasteful not to use them. However, unsupervised learning is not easy and usually works much less efficiently than supervised learning.
 
 What if we can get labels for free for unlabelled data and train unsupervised dataset in a supervised manner? We can achieve this by framing a supervised learning task in a special form to predict only a subset of information using the rest. In this way, all the information needed, both inputs and labels, has been provided. This is known as *self-supervised learning*.
@@ -216,6 +219,60 @@ $$
 ![BiGAN]({{ '/assets/images/bi-GAN.png' | relative_url }})
 {: style="width: 80%;" class="center"}
 *Fig. 10. Illustration of how Bidirectional GAN works. (Image source: [Donahue, et al, 2017](https://arxiv.org/abs/1605.09782))*
+
+
+
+### Contrastive Predictive Coding
+
+The <mark><b>Contrastive Predictive Coding (CPC)</b></mark> ([van den Oord, et al. 2018](https://arxiv.org/abs/1807.03748)) is an approach for unsupervised learning from high-dimensional data by translating a generative modeling problem to a classification problem. The *contrastive loss* or *InfoNCE loss* in CPC, inspired by [Noise Contrastive Estimation (NCE)]({{ site.baseurl }}{% post_url 2017-10-15-learning-word-embedding %}#noise-contrastive-estimation-nce), uses cross-entropy loss to measure how well the model can classify the "future" representation amongst a set of unrelated "negative" samples. Such design is partially motivated by the fact that the unimodal loss like MSE has no enough capacity but learning a full generative model could be too expensive. 
+
+
+![CPC on audio input]({{ '/assets/images/CPC-audio.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 11. Illustration of applying Contrastive Predictive Coding on the audio input. (Image source: [van den Oord, et al. 2018](https://arxiv.org/abs/1807.03748))*
+
+
+CPC uses an encoder to compress the input data $$z_t = g_\text{enc}(x_t)$$ and an *autoregressive* decoder to learn the high-level context that are potentially shared across future predictions, $$c_t = g_\text{ar}(z_{\leq t})$$. The end-to-end training relies on the NCE-inspired contrastive loss. 
+
+While predicing future information, CPC is optimized to maximize the the mutual information between input $$x$$ and context vector $$c$$:
+
+$$
+I(x; c) = \sum_{x, c} p(x, c) \log\frac{p(x, c)}{p(x)p(c)} = \sum_{x, c} p(x, c)\log\frac{p(x|c)}{p(x)}
+$$
+
+Rather than modeling the future observations $$p_k(x_{t+k} \vert c_t)$$ directly (which could be fairly expensive), CPC models a density function to preserve the mutual information between $$x_{t+k}$$ and $$c_t$$:
+
+$$
+f_k(x_{t+k}, c_t) = \exp(z_{t+k}^\top W_k c_t) \propto \frac{p(x_{t+k}|c_t)}{p(x_{t+k})}
+$$
+
+where $$f_k$$ can be unnormalized and a linear transformation $$W_k^\top c_t$$ is used for the prediction with a different $$W_k$$ matrix for every step $$k$$.
+
+Given a set of $$N$$ random samples $$X = \{x_1, \dots, x_N\}$$ containing only one positive sample $$x_t \sim p(x_{t+k} \vert c_t)$$ and $$N-1$$ negative samples $$x_{i \neq t} \sim p(x_{t+k})$$, the cross-entropy loss for classifying the positive sample (where $$\frac{f_k}{\sum f_k}$$ is the prediction) correctly is:
+
+$$
+\mathcal{L}_N = - \mathbb{E}_X \Big[\log \frac{f_k(x_{t+k}, c_t)}{\sum_{i=1}^N f_k (x_i, c_t)}\Big]
+$$
+
+
+![CPC on images]({{ '/assets/images/CPC-image.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 12. Illustration of applying Contrastive Predictive Coding on images. (Image source: [van den Oord, et al. 2018](https://arxiv.org/abs/1807.03748))*
+
+
+When using CPC on images ([Henaff, et al. 2019](https://arxiv.org/abs/1905.09272)), the predictor network should only access a masked feature set to avoid a trivial prediction. Precisely:
+1. Each input image is divided into a set of overlapped patches and each patch is encoded by a resnet encoder, resulting in compressed feature vector $$z_{i,j}$$.
+2. A masked conv net makes prediction with a mask such that the receptive field of a given output neuron can only see things above it in the image. Otherwise, the prediction problem would be trivial. The prediction can be made in both directions (top-down and bottom-up).
+3. The prediction is made for $$z_{i+k, j}$$ from context $$c_{i,j}$$: $$\hat{z}_{i+k, j} = W_k c_{i,j}$$. 
+
+
+A contrastive loss quantifies this prediction with a goal to correctly identify the target among a set of negative representation $$\{z_l\}$$ sampled from other patches in the same image and other images in the same batch:
+
+$$
+\mathcal{L}_\text{CPC} 
+= -\sum_{i,j,k} \log p(z_{i+k, j} \vert \hat{z}_{i+k, j}, \{z_l\}) 
+= -\sum_{i,j,k} \log \frac{\exp(\hat{z}_{i+k, j}^\top z_{i+k, j})}{\exp(\hat{z}_{i+k, j}^\top z_{i+k, j}) + \sum_l \exp(\hat{z}_{i+k, j}^\top z_l)}
+$$
 
 
 
@@ -527,6 +584,10 @@ $$
 [20] Ashvin Nair, et al. ["Visual reinforcement learning with imagined goals"](https://arxiv.org/abs/1807.04742) NeuriPS. 2018.
 
 [21] Ashvin Nair, et al. ["Contextual imagined goals for self-supervised robotic learning"](https://arxiv.org/abs/1910.11670) CoRL. 2019.
+
+[22] Aaron van den Oord, Yazhe Li & Oriol Vinyals. [“Representation Learning with Contrastive Predictive Coding”](https://arxiv.org/abs/1807.03748) arXiv preprint arXiv:1807.03748, 2018.
+
+[23] Olivier J. Henaff, et al. [“Data-Efficient Image Recognition with Contrastive Predictive Coding”](https://arxiv.org/abs/1905.09272) arXiv preprint arXiv:1905.09272, 2019.
 
 
 

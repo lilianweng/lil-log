@@ -196,7 +196,7 @@ Given an input word $$w_I$$, the correct output word is known as $$w$$. In the m
 , \tilde{w}_2, \dots, \tilde{w}_N \sim Q$$. Let's label the decision of the binary classifier as $$d$$ and $$d$$ can only take a binary value.
 
 $$
-\mathcal{L}_\theta = - [ \log p(d=1 \vert w, w_I) + \sum_{\substack{i=1 \\ \tilde{w}_i \sim Q}}^N \log p(d=0|\tilde{w}_i, w_I) ]
+\mathcal{L}_\theta = - [ \log p(d=1 \vert w, w_I) + \sum_{i=1, \tilde{w}_i \sim Q}^N \log p(d=0|\tilde{w}_i, w_I) ]
 $$
 
 When $$N$$ is big enough, according to [the Law of large numbers](https://en.wikipedia.org/wiki/Law_of_large_numbers),
@@ -253,7 +253,7 @@ The noise distribution $$Q$$ is a tunable parameter and we would like to design 
 - intuitively it should be very similar to the real data distribution; and
 - it should be easy to sample from. 
 
-For example, the sampleing implementation ([log_uniform_candidate_sampler](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/candidate_sampling_ops.py#L83)) of NCE loss in tensorflow assumes that such noise samples follow a log-uniform distribution, also known as [Zipfian’s law](https://en.wikipedia.org/wiki/Zipf%27s_law). The probability of a given word in logarithm is expected to be reversely proportional to its rank, while high-frequency words are assigned with lower ranks. In this case, $$q(\tilde{w}) = \frac{1}{ \log V}(\log (r_{\tilde{w}} + 1) - \log r_{\tilde{w}})$$, where $$r_{\tilde{w}} \in [1, V]$$ is the rank of a word by frequency in descending order.
+For example, the sampling implementation ([log_uniform_candidate_sampler](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/ops/candidate_sampling_ops.py#L83)) of NCE loss in tensorflow assumes that such noise samples follow a log-uniform distribution, also known as [Zipfian’s law](https://en.wikipedia.org/wiki/Zipf%27s_law). The probability of a given word in logarithm is expected to be reversely proportional to its rank, while high-frequency words are assigned with lower ranks. In this case, $$q(\tilde{w}) = \frac{1}{ \log V}(\log (r_{\tilde{w}} + 1) - \log r_{\tilde{w}})$$, where $$r_{\tilde{w}} \in [1, V]$$ is the rank of a word by frequency in descending order.
 
 
 ### Negative Sampling (NEG)

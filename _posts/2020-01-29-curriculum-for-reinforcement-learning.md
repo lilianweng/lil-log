@@ -12,6 +12,8 @@ tags: reinforcement-learning generative-model meta-learning
 
 <!--more-->
 
+<span style="color: #286ee0;">[Updated on 2020-02-03: mentioning <a href="#pcg">PCG</a> in the "Task-Specific Curriculum" section.</span>
+
 It sounds like an impossible task if we want to teach integral or derivative to a 3-year-old who does not even know basic arithmetics. That's why education is important, as it provides a systematic way to break down complex knowledge and a nice curriculum for teaching concepts from simple to hard. A curriculum makes learning difficult things easier and approachable for us humans. But, how about machine learning models? Can we train our models more efficiently with a curriculum? Can we design a curriculum to speed up learning?
  
 Back in 1993, Jeffrey Elman has proposed the idea of training neural networks with a curriculum. His early work on learning simple language grammar demonstrated the importance of such a strategy: starting with a restricted set of simple data and gradually increasing the complexity of training samples; otherwise the model was not able to learn at all.
@@ -61,7 +63,9 @@ If our naive curriculum is to train the model on samples with a gradually increa
 
 They noticed that combined strategy always outperformed the naive curriculum and would generally (but not always) outperform the mix strategy --- indicating that it is quite important to mix in easy tasks during training to *avoid forgetting*.
  
-To follow the curriculum learning approach as described above, generally, we need to figure out two problems in the training procedure:
+<a name="pcg" />Procedural content generation ([PCG](http://pcg.wikidot.com/)) is a popular approach for creating video games of various levels of difficulty. PCG involves algorithmic randomness and a heavy dose of human expertise in designing game elements and dependencies among them. Procedurally generated levels have been introduced into several benchmark environments for evaluating whether an RL agent can generalize to a new level that it is not trained on ([meta-RL]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %})!), such as [GVGAI](http://www.gvgai.net/), OpenAI [CoinRun](https://openai.com/blog/quantifying-generalization-in-reinforcement-learning/) and [Procgen benchmark](https://openai.com/blog/procgen-benchmark/). Using GVGAI, [Justesen, et al. (2018)](https://arxiv.org/abs/1806.10729) demonstrated that an RL policy can easily overfit to a specific game but training over a simple curriculum that grows the task difficulty together with the model performance helps its generalization to new human-designed levels. Similar results are also found in CoinRun ([Cobbe, et al. 2018](https://arxiv.org/abs/1812.02341)). POET ([Wang et al, 2019](https://arxiv.org/abs/1901.01753)) is another example for leveraging evolutionary algorithm and procedural generated game levels to improve RL generalization, which I've described in details in my [meta-RL post]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %}#evolutionary-algorithm-on-environment-generation).
+ 
+To follow the curriculum learning approaches described above, generally we need to figure out two problems in the training procedure:
 1. Design a metric to quantify how hard a task is so that we can sort tasks accordingly.
 2. Provide a sequence of tasks with an increasing level of difficulty to the model during training.
 
@@ -262,7 +266,7 @@ Their experiments showed complex environments require all three losses above. Wh
 
 Another view is to decompose what an agent is able to complete into a variety of skills and each skill set could be mapped into a task. Let's imagine when an agent interacts with the environment in an unsupervised manner, is there a way to discover useful skills from such interaction and further build into the solutions for more complicated tasks through a curriculum?
 
-[Jabri, et al. (2019)](https://arxiv.org/abs/1912.04226) developed an automatic curriculum, **CARML** (short for "Curricula for Unsupervised Meta-Reinforcement Learning"), by modeling unsupervised trajectories into a latent skill space, with a focus on training [meta-RL]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %}) policies (i.e. can transfer to unseen tasks). The setting of training environments in CARML are same as in [DIAYN]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %}#learning-with-random-rewards). An RL algorithm $$\pi_\theta$$, parameterized by $$\theta$$, is trained via unsupervised interaction formulated as a CMP combined with a learned reward function $$r$$. This setting naturally works for the meta-learning purpose, since a customized reward function can be given only at the test time.
+[Jabri, et al. (2019)](https://arxiv.org/abs/1912.04226) developed an automatic curriculum, **CARML** (short for "Curricula for Unsupervised Meta-Reinforcement Learning"), by modeling unsupervised trajectories into a latent skill space, with a focus on training [meta-RL]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %}) policies (i.e. can transfer to unseen tasks). The setting of training environments in CARML is similar to [DIAYN]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %}#learning-with-random-rewards). Differently, CARML is trained on pixel-level observations but DIAYN operates on the true state space. An RL algorithm $$\pi_\theta$$, parameterized by $$\theta$$, is trained via unsupervised interaction formulated as a CMP combined with a learned reward function $$r$$. This setting naturally works for the meta-learning purpose, since a customized reward function can be given only at the test time.
 
 
 ![CARML]({{ '/assets/images/CARML.png' | relative_url }})
@@ -357,4 +361,9 @@ Learning a latent skill space can be done in different ways, such as in [Hausman
 [13] Josh Merel, et al. ["Reusable neural skill embeddings for vision-guided whole body movement and object manipulation"](https://arxiv.org/abs/1911.06636) arXiv preprint arXiv:1911.06636 (2019).
 
 [14] OpenAI, et al. ["Solving Rubik's Cube with a Robot Hand."](https://arxiv.org/abs/1910.07113) arXiv preprint arXiv:1910.07113 (2019).
+
+[15] Niels Justesen, et al. [“Illuminating Generalization in Deep Reinforcement Learning through Procedural Level Generation”](https://arxiv.org/abs/1806.10729) 2018.
+
+[16] Karl Cobbe, et al. [“Quantifying Generalization in Reinforcement Learning”](https://arxiv.org/abs/1812.02341) arXiv preprint arXiv:1812.02341 (2018).
+
 

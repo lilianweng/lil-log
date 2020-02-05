@@ -12,7 +12,8 @@ tags: reinforcement-learning generative-model meta-learning
 
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2020-02-03: mentioning <a href="#pcg">PCG</a> in the "Task-Specific Curriculum" section.</span>
+<span style="color: #286ee0;">[Updated on 2020-02-03: mentioning <a href="#pcg">PCG</a> in the "Task-Specific Curriculum" section.</span><br/>
+<span style="color: #286ee0;">[Updated on 2020-02-04: Add a new <a href="#curriculum-through-distillation">"curriculum through distillation"</a> section.</span>
 
 It sounds like an impossible task if we want to teach integral or derivative to a 3-year-old who does not even know basic arithmetics. That's why education is important, as it provides a systematic way to break down complex knowledge and a nice curriculum for teaching concepts from simple to hard. A curriculum makes learning difficult things easier and approachable for us humans. But, how about machine learning models? Can we train our models more efficiently with a curriculum? Can we design a curriculum to speed up learning?
  
@@ -23,9 +24,9 @@ Compared to training without a curriculum, we would expect the adoption of the c
 Next, we will look into several categories of curriculum learning, as illustrated in Fig. 1. Most cases are applied to Reinforcement Learning, with a few exceptions on Supervised Learning.
 
 
-![Types of curriculum]({{ '/assets/images/types-of-curriculum.png' | relative_url }})
+![Types of curriculum]({{ '/assets/images/types-of-curriculum-2.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 1. Four types of curriculum for reinforcement learning.*
+*Fig. 1. Five types of curriculum for reinforcement learning.*
 
 
 In "The importance of starting small" paper ([Elman 1993](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.128.4487&rep=rep1&type=pdf)), I especially like the starting sentences and find them both inspiring and affecting:
@@ -332,6 +333,48 @@ Learning a latent skill space can be done in different ways, such as in [Hausman
 
 
 
+## Curriculum through Distillation
+
+[I was thinking of the name of this section for a while, deciding between cloning, inheritance, and distillation. Eventually, I picked distillation because it sounds the coolest B-)]
+
+The motivation for the **progressive neural network** ([Rusu et al. 2016](https://arxiv.org/abs/1606.04671)) architecture is to efficiently transfer learned skills between different tasks and in the meantime avoid catastrophic forgetting. The curriculum is realized through a set of progressively stacked neural network towers (or "columns", as in the paper).
+
+A progressive network has the following structure:
+1. It starts with a single column containing $$L$$ layers of neurons, in which the corresponding activation layers are labelled as $$h^{(1)}_i, i=1, \dots, L$$. We first train this single-column network for one task to convergence, achieving parameter config $$\theta^{(1)}$$.
+2. Once switch to the next task, we need to add a new column to adapt to the new context while freezing $$\theta^{(1)}$$ to lock down the learned skills from the previous task. The new column has activation layers labelled as $$h^{(2)}_i, i=1, \dots, L$$, and parameters $$\theta^{(2)}$$.
+3. Step 2 can be repeated with every new task. The $$i$$-th layer activation in the $$k$$-th column depends on the previous activation layers in all the existing columns:
+
+    $$
+    h^{(k)}_i = f(W^{(k)}_i h^{(k)}_{i-1} + \sum_{j < k} U_i^{(k:j)} h^{(j)}_{i-1})
+    $$
+
+    where $$W^{(k)}_i$$ is the weight matrix of the layer $$i$$ in the column $$k$$; $$U_i^{(k:j)}, j < k$$ are the weight matrices for projecting the layer $$i-1$$ of the column $$j$$ to the layer $$i$$ of column $$k$$ ($$ j < k $$). The above weights matrices should be learned. $$f(.)$$ is a non-linear activation function by choice.
+
+
+![Progressive networks]({{ '/assets/images/progressive-networks.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 10. The progressive neural network architecture. (Image source: [Rusu, et al. 2017](https://arxiv.org/abs/1610.04286))*
+
+
+The paper experimented with Atari games by training a progressive network on multiple games to check whether features learned in one game can transfer to another. That is indeed the case. Though interestingly, learning a high dependency on features in the previous columns does not always indicate good transfer performance on the new task. One hypothesis is that features learned from the old task might introduce biases into the new task, leading to policy getting trapped in a sub-optimal solution. Overall, the progressive network works better than only fine-tuning the top layer and can achieve similar transfer performance as fine-tuning the entire network.
+
+
+One use case for the progressive network is to do sim2real transfer ([Rusu, et al. 2017](https://arxiv.org/abs/1610.04286)), in which the first column is trained in simulator with a lot of samples and then the additional columns (could be for different real-world tasks) are added and trained with a few real data samples.
+
+
+[Czarnecki, et al. (2018)](https://arxiv.org/abs/1806.01780) proposed another RL training framework, **Mix & Match** (short for **M&M**) to provide curriculum through coping knowledge between agents. Given a sequence of agents from simple to complex, $$\pi_1, \dots, \pi_K$$, each parameterized with some shared weights (e.g. by shared some lower common layers). M&M trains a mixture of agents, but only the final performance of the most complex one $$\pi_K$$ matters.
+
+
+In the meantime, M&M learns a categorical distribution $$c \sim \text{Categorical}(1, \dots, K \vert \alpha)$$ with [pmf](https://en.wikipedia.org/wiki/Probability_mass_function) $$p(c=i) = \alpha_i$$ probability to pick which policy to use at a given time. The mixed M&M policy is a simple weighted sum: $$\pi_\text{mm}(a \vert s) = \sum_{i=1}^K \alpha_i \pi_i(a \vert s)$$. Curriculum learning is realized by dynamically adjusting $$\alpha_i$$, from $$\alpha_K=0$$ to $$\alpha_K=1$$. The tuning of $$\alpha$$ can be manual or through [population-based training]({{ site.baseurl }}{% post_url 2019-09-05-evolution-strategies%}#hyperparameter-tuning-pbt).
+
+To encourage cooperation rather than competition among policies, besides the RL loss $$\mathcal{L}_\text{RL}$$, another [distillation](https://arxiv.org/abs/1511.06295)-like loss $$\mathcal{L}_\text{mm}(\theta)$$ is added. The knowledge transfer loss $$\mathcal{L}_\text{mm}(\theta)$$ measures the KL divergence between two policies, $$\propto D_\text{KL}(\pi_{i}(. \vert s) \| \pi_j(. \vert s))$$ for $$i < j$$. It encourages complex agents to match the simpler ones early on. The final loss is $$\mathcal{L} = \mathcal{L}_\text{RL}(\theta \vert \pi_\text{mm}) + \lambda \mathcal{L}_\text{mm}(\theta)$$.
+
+
+![Mix & Match]({{ '/assets/images/mix-and-match.png' | relative_url }})
+{: style="width: 60%;" class="center"}
+*Fig. 11. The Mix & Match architecture for training a mixture of policies.  (Image source: [Czarnecki, et al., 2018](https://arxiv.org/abs/1806.01780))*
+
+
 ## References
 
 [1] Jeffrey L. Elman. ["Learning and development in neural networks: The importance of starting small."](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.128.4487&rep=rep1&type=pdf) Cognition 48.1 (1993): 71-99.
@@ -362,8 +405,17 @@ Learning a latent skill space can be done in different ways, such as in [Hausman
 
 [14] OpenAI, et al. ["Solving Rubik's Cube with a Robot Hand."](https://arxiv.org/abs/1910.07113) arXiv preprint arXiv:1910.07113 (2019).
 
-[15] Niels Justesen, et al. [“Illuminating Generalization in Deep Reinforcement Learning through Procedural Level Generation”](https://arxiv.org/abs/1806.10729) 2018.
+[15] Niels Justesen, et al. ["Illuminating Generalization in Deep Reinforcement Learning through Procedural Level Generation"](https://arxiv.org/abs/1806.10729) NeurIPS 2018 Deep RL Workshop.
 
-[16] Karl Cobbe, et al. [“Quantifying Generalization in Reinforcement Learning”](https://arxiv.org/abs/1812.02341) arXiv preprint arXiv:1812.02341 (2018).
+[16] Karl Cobbe, et al. ["Quantifying Generalization in Reinforcement Learning"](https://arxiv.org/abs/1812.02341) arXiv preprint arXiv:1812.02341 (2018).
+
+[17] Andrei A. Rusu et al. ["Progressive Neural Networks"](https://arxiv.org/abs/1606.04671) arXiv preprint arXiv:1606.04671 (2016).
+
+[18] Andrei A. Rusu et al. ["Sim-to-Real Robot Learning from Pixels with Progressive Nets."](https://arxiv.org/abs/1610.04286) CoRL 2017.
+
+[19] Wojciech Marian Czarnecki, et al. ["Mix & Match – Agent Curricula for Reinforcement Learning."](https://arxiv.org/abs/1806.01780) ICML 2018.
+
+
+
 
 

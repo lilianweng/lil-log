@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Generalized Language Models"
 date: 2019-01-31 12:00:00
-tags: nlp
+tags: nlp long-read transformer
 image: "elmo-and-bert.png"
 ---
 
@@ -11,7 +11,9 @@ image: "elmo-and-bert.png"
 
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2019-02-14: add [ULMFiT](#ulmfit) and [OpenAI GPT-2](#openai-gpt-2).]</span>
+<span style="color: #286ee0;">[Updated on 2019-02-14: add [ULMFiT](#ulmfit) and [OpenAI GPT-2](#openai-gpt-2).]</span><br/>
+<span style="color: #286ee0;">[Updated on 2020-02-29: add [ALBERT](#albert).</span>
+
 
 <br />
 ![Elmo & Bert]({{ '/assets/images/elmo-and-bert.png' | relative_url }})
@@ -291,7 +293,7 @@ $$
 $$
 
 
-### BPE
+### Byte Pair Encoding
 
 **Byte Pair Encoding** ([**BPE**](https://arxiv.org/abs/1508.07909)) is used to encode the input sequences. BPE was originally proposed as a data compression algorithm in 1990s and then was adopted to solve the open-vocabulary issue in machine translation, as we can easily run into rare and unknown words when translating into a new language. Motivated by the intuition that rare and unknown words can often be decomposed into multiple subwords, BPE finds the best word segmentation by iteratively and greedily merging frequent pairs of characters.
 
@@ -369,7 +371,7 @@ It is unsurprising to believe that a representation that learns the context arou
     - (c) with 10% probability, keep it the same.
 2. The model only predicts the missing words, but it has no information on which words have been replaced or which words should be predicted. The output size is only 15% of the input size. 
 
-**Task 2: Next sentence prediction**
+<a name="NSP" />**Task 2: Next sentence prediction**
 
 Motivated by the fact that many downstream tasks involve the understanding of relationships between sentences (i.e., [QA](#qa), [NLI](#nli)), BERT added another auxiliary task on training a *binary classifier* for telling whether one sentence is the next sentence of the other:
 1. Sample sentence pairs (A, B) so that:
@@ -428,6 +430,33 @@ A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
 
 
 
+## ALBERT
+
+**ALBERT** ([Lan, et al. 2019](https://arxiv.org/abs/1909.11942)), short for **A Lite BERT**, is a light-weighted version of [BERT](#BERT) model. An ALBERT model can be trained 1.7x faster with 18x fewer parameters, compared to a BERT model of similar configuration. ALBERT incorporates three changes as follows: the first two help reduce parameters and memory consumption and hence speed up the training speed, while the third one proposes a more chanllenging training task to replace the next sentence prediction (NSP) objective.
+
+
+### Factorized Embedding Parameterization
+
+In BERT, the WordPiece tokenization embedding size $$E$$ is configured to be the same as the hidden state size $$H$$. That is saying, if we want to increase the model size (larger $$H$$), we need to learn a larger tokenization embedding too, which is expensive because it depends on the vocabulary size ($$V$$). 
+
+Conceptually, because the tokenization embedding is expected to learn *context-independent* representation and the hidden states are *context-dependent*, it makes sense to separate the size of the hidden layers from the size of vocabulary embedding. Using factorized embedding parameterization, the large vocabulary embedding matrix of size $$V \times H$$ is decomposed into two small matrices of size $$V \times E$$ and $$E \times H$$. Given $$H \gt E$$ or even $$H \gg E$$, factorization can result in significant parameter reduction.
+
+
+### Cross-layer Parameter Sharing
+
+Parameter sharing across layers can happen in many ways: (a) only share feed-forward part; (b) only share attention parameters; or (c) share all the parameters. This technique reduces the number of parameters by a ton and does not damage the performance too much.
+
+
+### Sentence-Order Prediction (SOP)
+
+Interestingly, the [next sentence prediction (NSP)](#NSP) task of BERT turned out to be too easy. ALBERT instead adopted a sentence-order prediction (SOP) [self-supervised]({{ site.baseurl }}{% post_url 2019-11-10-self-supervised-learning %}) loss, 
+Positive sample: two consecutive segments from the same document.
+Negative sample: same as above, but the segment order is switched.
+
+For the NSP task, the model can make reasonable predictions if it is able to detect topics when A and B are from different contexts. In comparison, SOP is harder as it requires the model to fully understand the coherence and ordering between segments.
+
+
+
 ## OpenAI GPT-2
 
 The [OpenAI](https://blog.openai.com/better-language-models/) [GPT-2](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) language model is a direct successor to [GPT](#openai-gpt). GPT-2 has 1.5B parameters, 10x more than the original GPT, and it achieves SOTA results on 7 out of 8 tested language modeling datasets in a *zero-shot transfer setting* without any task-specific fine-tuning. The pre-training dataset contains 8 million Web pages collected by crawling qualified outbound links from [Reddit](https://www.reddit.com/). Large improvements by OpenAI GPT-2 are specially noticeable on small datasets and datasets used for measuring *long-term dependency*.
@@ -446,7 +475,7 @@ The pre-training task for GPT-2 is solely language modeling. All the downstream 
 
 ### BPE on Byte Sequences
 
-Same as the original GPT, GPT-2 uses [BPE](#bpe) but on [UTF-8](https://en.wikipedia.org/wiki/UTF-8) byte sequences. Each byte can represent 256 different values in 8 bits, while UTF-8 can use up to 4 bytes for one character, supporting up to $$2^{31}$$ characters in total. Therefore, with byte sequence representation we only need a vocabulary of size 256 and do not need to worry about pre-processing, tokenization, etc. Despite of the benefit, current byte-level LMs still have non-negligible performance gap with the SOTA word-level LMs.
+Same as the original GPT, GPT-2 uses [BPE](#byte-pair-encoding) but on [UTF-8](https://en.wikipedia.org/wiki/UTF-8) byte sequences. Each byte can represent 256 different values in 8 bits, while UTF-8 can use up to 4 bytes for one character, supporting up to $$2^{31}$$ characters in total. Therefore, with byte sequence representation we only need a vocabulary of size 256 and do not need to worry about pre-processing, tokenization, etc. Despite of the benefit, current byte-level LMs still have non-negligible performance gap with the SOTA word-level LMs.
 
 BPE merges frequently co-occurred byte pairs in a greedy manner. To prevent it from generating multiple versions of common words (i.e. `dog.`, `dog!` and `dog?` for the word `dog`), GPT-2 prevents BPE from merging characters across categories (thus `dog` would not be merged with punctuations like `.`, `!` and `?`). This tricks help increase the quality of the final byte segmentation.
 
@@ -634,4 +663,6 @@ Cited as:
 [14] Alec Radford, et al. ["Language Models are Unsupervised Multitask Learners."](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf). 2019.
 
 [15] Rico Sennrich, et al. ["Neural machine translation of rare words with subword units."](https://arxiv.org/abs/1508.07909) arXiv preprint arXiv:1508.07909. 2015.
+
+[16] Zhenzhong Lan, et al. [“ALBERT: A Lite BERT for Self-supervised Learning of Language Representations”](https://arxiv.org/abs/1909.11942) arXiv Preprint arXiv:1909.11942 (2019).
 

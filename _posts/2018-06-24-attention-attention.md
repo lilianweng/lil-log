@@ -303,7 +303,7 @@ In problems like sorting or travelling salesman, both input and output are seque
 {: style="width: 75%;" class="center"}
 *Fig. 13. The architecture of a Pointer Network model. (Image source: [Vinyals, et al. 2015](https://arxiv.org/abs/1506.03134))*
 
-The Ptr-Net outputs a sequence of integer indices, $$\boldsymbol{c} = (c_1, \dots, c_m)$$ given a sequence of input vectors $$\boldsymbol{x} = (x_1, \dots, x_n)$$ and $$1 \leq c_i \leq n$$. The model still embraces an encoder-decoder framework. The encoder and decoder hidden states are denoted as $$(\boldsymbol{h}_1, \dots, \boldsymbol{h}_n)$$ and $$(\boldsymbol{s}_1, \dots, \boldsymbol{s}_m)$$, respectively. Note that $$\mathbf{s}_i$$ is the output gate after cell activation in the decoder. The Ptr-Net applies addictive attention between states and then normalizes it by softmax to model the output conditional probability:
+The Ptr-Net outputs a sequence of integer indices, $$\boldsymbol{c} = (c_1, \dots, c_m)$$ given a sequence of input vectors $$\boldsymbol{x} = (x_1, \dots, x_n)$$ and $$1 \leq c_i \leq n$$. The model still embraces an encoder-decoder framework. The encoder and decoder hidden states are denoted as $$(\boldsymbol{h}_1, \dots, \boldsymbol{h}_n)$$ and $$(\boldsymbol{s}_1, \dots, \boldsymbol{s}_m)$$, respectively. Note that $$\mathbf{s}_i$$ is the output gate after cell activation in the decoder. The Ptr-Net applies additive attention between states and then normalizes it by softmax to model the output conditional probability:
 
 
 $$

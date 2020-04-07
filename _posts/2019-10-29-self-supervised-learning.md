@@ -541,6 +541,19 @@ $$
 > - Supervised learning baselines still beat all of them by far.
 
 
+---
+Cited as:
+```
+@article{weng2019selfsup,
+  title   = "Self-Supervised Representation Learning",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2019",
+  url     = "https://lilianweng.github.io/lil-log/2019/11/10/self-supervised-learning.html"
+}
+```
+
+
 ### References
 
 [1] Alexey Dosovitskiy, et al. ["Discriminative unsupervised feature learning with exemplar convolutional neural networks."](https://arxiv.org/abs/1406.6909) IEEE transactions on pattern analysis and machine intelligence 38.9 (2015): 1734-1747.

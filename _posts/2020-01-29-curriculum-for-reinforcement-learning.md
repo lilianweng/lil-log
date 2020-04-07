@@ -352,7 +352,7 @@ A progressive network has the following structure:
 
 
 ![Progressive networks]({{ '/assets/images/progressive-networks.png' | relative_url }})
-{: style="width: 100%;" class="center"}
+{: style="width: 85%;" class="center"}
 *Fig. 10. The progressive neural network architecture. (Image source: [Rusu, et al. 2017](https://arxiv.org/abs/1610.04286))*
 
 
@@ -373,6 +373,18 @@ To encourage cooperation rather than competition among policies, besides the RL 
 ![Mix & Match]({{ '/assets/images/mix-and-match.png' | relative_url }})
 {: style="width: 60%;" class="center"}
 *Fig. 11. The Mix & Match architecture for training a mixture of policies.  (Image source: [Czarnecki, et al., 2018](https://arxiv.org/abs/1806.01780))*
+
+---
+Cited as:
+```
+@article{weng2020curriculum,
+  title   = "Curriculum for Reinforcement Learning",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2020",
+  url     = "https://lilianweng.github.io/lil-log/2020/01/29/curriculum-for-reinforcement-learning.html"
+}
+```
 
 
 ## References

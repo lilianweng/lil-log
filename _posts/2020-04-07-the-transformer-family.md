@@ -2,16 +2,16 @@
 layout: post
 comments: true
 title: "The Transformer Family"
-date: 2020-03-28 00:00:00
+date: 2020-04-07 12:00:00
 tags: attention transformer reinforcement-learning
 ---
 
-> Inspired by recent progress on various enhanced versions of Transformer models, this post presents how the vanilla Transformer can be improved for longer-term attention span, less memory and computation computation, etc.
+> Inspired by recent progress on various enhanced versions of Transformer models, this post presents how the vanilla Transformer can be improved for longer-term attention span, less memory and computation consumption, RL task solving, etc.
 
 <!--more-->
 
 
-It has been almost two years since my last post on [attention]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}). Recent progress on new and enhanced versions of the Transformer model motivates me to write another post on this specific topic, focusing on how the vanilla Transformer is improved for longer-term attention span, less memory and computation computation, etc.
+It has been almost two years since my last post on [attention]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}). Recent progress on new and enhanced versions of Transformer motivates me to write another post on this specific topic, focusing on how the vanilla Transformer can be improved for longer-term attention span, less memory and computation consumption, RL task solving and more.
 
 
 {: class="table-of-content"}
@@ -30,7 +30,7 @@ It has been almost two years since my last post on [attention]({{ site.baseurl }
 | $$\mathbf{X} \in \mathbb{R}^{L \times d}$$ | The input sequence where each element has been mapped into an embedding vector of shape $$d$$, same as the model size. |
 | $$\mathbf{W}^k \in \mathbb{R}^{d \times d_k}$$ | The key weight matrix. |
 | $$\mathbf{W}^q \in \mathbb{R}^{d \times d_k}$$ | The query weight matrix. |
-| $$\mathbf{W}^v \in \mathbb{R}^{d \times d_v}$$ | The value weight matrix. Often we have $$d_k = d_v = k$$. |
+| $$\mathbf{W}^v \in \mathbb{R}^{d \times d_v}$$ | The value weight matrix. Often we have $$d_k = d_v = d$$. |
 | $$\mathbf{W}^k_i, \mathbf{W}^q_i \in \mathbb{R}^{d \times d_k/h}; \mathbf{W}^v_i \in \mathbb{R}^{d \times d_v/h}$$ | The weight matrices per head. |
 | $$\mathbf{W}^o \in \mathbb{R}^{d_v \times d}$$ | The output weight matrix. |
 | $$\mathbf{Q} = \mathbf{X}\mathbf{W}^q \in \mathbb{R}^{L \times d_k}$$ | The query embedding inputs. |
@@ -46,11 +46,11 @@ It has been almost two years since my last post on [attention]({{ site.baseurl }
 
 ## Attention and Self-Attention
 
-*Attention* is a mechanism in the neural network design that a model can learn to make predictions by selectively attending to a given set of data. The amount of attention is controlled by learned weights and thus the output is usually formed as a weighted average.
+*Attention* is a mechanism in the neural network that a model can learn to make predictions by selectively attending to a given set of data. The amount of attention is quantified by learned weights and thus the output is usually formed as a weighted average.
 
-*Self-attention*, as its name suggests, is a type of attention mechanism where the model makes estimation for one part of a data sample by relating to different parts of the observation about the same sample. Conceptually, it feels quite similar to [non-local means](https://en.wikipedia.org/wiki/Non-local_means). Also note that self-attention is permutation-invariant; in other words, it is an operation on sets.
+*Self-attention* is a type of attention mechanism where the model makes prediction for one part of a data sample using other parts of the observation about the same sample. Conceptually, it feels quite similar to [non-local means](https://en.wikipedia.org/wiki/Non-local_means). Also note that self-attention is permutation-invariant; in other words, it is an operation on sets.
 
-There are various of forms of attention / self-attention, the Transformer ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)) adopted the *scaled dot-product attention*: given a query matrix $$\mathbf{Q}$$, a key matrix $$\mathbf{K}$$ and a value matrix $$\mathbf{V}$$, the output is a weighted sum of the value vectors in the value matrix, where the weight assigned to each value slot is determined by the dot-product of the query with all the keys:
+There are various forms of attention / self-attention, Transformer ([Vaswani et al., 2017](https://arxiv.org/abs/1706.03762)) relies on the *scaled dot-product attention*: given a query matrix $$\mathbf{Q}$$, a key matrix $$\mathbf{K}$$ and a value matrix $$\mathbf{V}$$, the output is a weighted sum of the value vectors, where the weight assigned to each value slot is determined by the dot-product of the query with the corresponding key:
 
 
 $$
@@ -66,13 +66,13 @@ $$
 
 where $$S_i$$ is a collection of key positions for the $$i$$-th query to attend to.
 
-See my old [post]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}) on attention for more content.
+See my old [post]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}#a-family-of-attention-mechanisms) for other types of attention if interested.
 
 
 
 ## Multi-Head Self-Attention
 
-The *multi-head self-attention* module is a key component in Transformer. Rather than only computing the attention once, the multi-head mechanism splits the inputs into smaller chunks and then computes the scaled dot-product attention over each subspace in parallel. The independent attention outputs are then simply concatenated and linearly transformed into the expected dimensions. 
+The *multi-head self-attention* module is a key component in Transformer. Rather than only computing the attention once, the multi-head mechanism splits the inputs into smaller chunks and then computes the scaled dot-product attention over each subspace in parallel. The independent attention outputs are simply concatenated and linearly transformed into expected dimensions. 
 
 
 $$
@@ -82,7 +82,7 @@ $$
 \end{aligned}
 $$
 
-where $$[.;.]$$ is a concatenation operation. $$\mathbf{W}^q_i, \mathbf{W}^k_i \in \mathbb{R}^{d \times d_k/h}, \mathbf{W}^v_i \in \mathbb{R}^{d \times d_v/h}$$ are weight matrices to map input embeddings of size $$d$$ into query, key and value matrices. And $$\mathbf{W}^o \in \mathbb{R}^{d_v \times d}$$ is the output linear transformation. All the weights should be learned during training.
+where $$[.;.]$$ is a concatenation operation. $$\mathbf{W}^q_i, \mathbf{W}^k_i \in \mathbb{R}^{d \times d_k/h}, \mathbf{W}^v_i \in \mathbb{R}^{d \times d_v/h}$$ are weight matrices to map input embeddings of size $$L \times d$$ into query, key and value matrices. And $$\mathbf{W}^o \in \mathbb{R}^{d_v \times d}$$ is the output linear transformation. All the weights should be learned during training.
 
 
 ![Multi-head scaled dot-product attention]({{ '/assets/images/multi-head-attention.png' | relative_url }})
@@ -92,14 +92,14 @@ where $$[.;.]$$ is a concatenation operation. $$\mathbf{W}^q_i, \mathbf{W}^k_i \
 
 ## Transformer
 
-The **Transformer** (which will be referred to as "vanilla Transformer" to distinguish it from other enhanced versions; [Vaswani, et al., 2017](https://arxiv.org/abs/1706.03762)) model has an encoder-decoder architecture, as commonly used in many NMT models. Later only the Transformer decoder was shown to have great performance in language modeling tasks, like in [GPT and BERT]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}#openai-gpt).
+The **Transformer** (which will be referred to as "vanilla Transformer" to distinguish it from other enhanced versions; [Vaswani, et al., 2017](https://arxiv.org/abs/1706.03762)) model has an encoder-decoder architecture, as commonly used in many [NMT]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}#born-for-translation) models. Later decoder-only Transformer was shown to achieve great performance in language modeling tasks, like in [GPT and BERT]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}#openai-gpt).
 
 
 **Encoder-Decoder Architecture**
 
-The Transformer **encoder** generates an attention-based representation with capability to locate a specific piece of information from a large context. It consists of a stack of 6 identity modules, each containing two submodules, a *multi-head self-attention* layer and a *point-wise* fully connected feed-forward network. By point-wise, it means that it applies the same linear transformation (with same weights) to each element in the sequence. This can also be viewed as a convolutional layer with filter size 1. Each submodule has a residual connection and LayeNorm. All the submodules output data of the same dimension $$d$$.
+The **encoder** generates an attention-based representation with capability to locate a specific piece of information from a large context. It consists of a stack of 6 identity modules, each containing two submodules, a *multi-head self-attention* layer and a *point-wise* fully connected feed-forward network. By point-wise, it means that it applies the same linear transformation (with same weights) to each element in the sequence. This can also be viewed as a convolutional layer with filter size 1. Each submodule has a residual connection and layer normalization. All the submodules output data of the same dimension $$d$$.
 
-The function of Transformer **decoder** is to retrieve information from the encoded representation. The architecture is quite similar to the encoder, except that the decoder contains two multi-head attention submodules instead of one in each identical repeating module. The first multi-head attention submodule is *masked* to prevent positions from attending to future positions.
+The function of Transformer **decoder** is to retrieve information from the encoded representation. The architecture is quite similar to the encoder, except that the decoder contains two multi-head attention submodules instead of one in each identical repeating module. The first multi-head attention submodule is *masked* to prevent positions from attending to the future.
 
 
 ![Transformer]({{ '/assets/images/transformer.png' | relative_url }})
@@ -109,7 +109,7 @@ The function of Transformer **decoder** is to retrieve information from the enco
 
 **Positional Encoding**
 
-Because self-attention operation is permutation invariant, it is important to use proper **positional encoding**to provide *order information* to the model. The positional encoding $$\mathbf{P} \in \mathbb{R}^{L \times d}$$ has the same dimension as the model size $$d$$, so it can be added on the input embedding directly. The vanilla Transformer considered two types of encodings:
+Because self-attention operation is permutation invariant, it is important to use proper **positional encoding**to provide *order information* to the model. The positional encoding $$\mathbf{P} \in \mathbb{R}^{L \times d}$$ has the same dimension as the input embedding, so it can be added on the input directly. The vanilla Transformer considered two types of encodings:
 
 (1) *Sinusoidal positional encoding* is defined as follows, given the token position $$i=1,\dots,L$$ and the dimension $$\delta=1,\dots,d$$:
 
@@ -134,9 +134,9 @@ In this way each dimension of the positional encoding corresponds to a sinusoid 
 
 **Quick Follow-ups**
 
-Following the vanilla Transformer, [Al-Rfou et al. (2018)](https://arxiv.org/abs/1808.04444) added a set of auxiliary losses to enable training a deep Transformer model on character-level language modeling which outperformed LSTMs. There are several types of auxiliary tasks:
-- Instead of producing only one prediction at the sequence end, every *immediate position* is also asked to make a correct prediction, forcing the model to predict given smaller contexts (e.g. first couple tokens at the beginning of the context window).
-- Each intermediate Transformer layer is used for making predictions. Lower layers are weighted to contribute less and less to the total loss as training progresses. 
+Following the vanilla Transformer, [Al-Rfou et al. (2018)](https://arxiv.org/abs/1808.04444) added a set of auxiliary losses to enable training a deep Transformer model on character-level language modeling which outperformed LSTMs. Several types of auxiliary tasks are used:
+- Instead of producing only one prediction at the sequence end, every *immediate position* is also asked to make a correct prediction, forcing the model to predict given smaller contexts (e.g. first couple tokens at the beginning of a context window).
+- Each intermediate Transformer layer is used for making predictions as well. Lower layers are weighted to contribute less and less to the total loss as training progresses. 
 - Each position in the sequence can predict multiple targets, i.e. two or more predictions of the future tokens.
 
 ![Transformer]({{ '/assets/images/transformer-aux-losses.png' | relative_url }})
@@ -147,7 +147,7 @@ Following the vanilla Transformer, [Al-Rfou et al. (2018)](https://arxiv.org/abs
 
 ## Adaptive Computation Time (ACT)
 
-**Adaptive Computation Time** (short for **ACT**; [Graves, 2016](https://arxiv.org/abs/1603.08983)) is a mechanism for dynamically deciding how many computational steps are needed in a recurrent neural network.
+**Adaptive Computation Time** (short for **ACT**; [Graves, 2016](https://arxiv.org/abs/1603.08983)) is a mechanism for dynamically deciding how many computational steps are needed in a recurrent neural network. Here is a cool [tutorial](https://distill.pub/2016/augmented-rnns/#adaptive-computation-time) on ACT from distill.pub.
 
 Let's say, we have a RNN model $$\mathcal{R}$$ composed of input weights $$W_x$$, a parametric state transition function $$\mathcal{S}(.)$$, a set of output weights $$W_y$$ and an output bias $$b_y$$. Given an input sequence $$(x_1, \dots, x_L)$$, the output sequence $$(y_1, \dots, y_L)$$ is computed by:
 
@@ -198,9 +198,7 @@ $$
 {: style="width: 85%;" class="center"}
 *Fig. 5. The computation graph of a RNN with ACT mechanism. (Image source: [Graves, 2016](https://arxiv.org/abs/1603.08983))*
 
-To avoid infinite pondering over each input, ACT adds a *ponder cost* $$\mathcal{P}(x) = \sum_{t=1}^L N(t) + R(t) $$  in the loss function to encourage a smaller number of intermediate computational steps.
-
-Check out this cool [tutorial](https://distill.pub/2016/augmented-rnns/#adaptive-computation-time) on ACT from distill.pub.
+To avoid unnecessary pondering over each input, ACT adds a *ponder cost* $$\mathcal{P}(x) = \sum_{t=1}^L N(t) + R(t) $$  in the loss function to encourage a smaller number of intermediate computational steps.
 
 
 ## Improved Attention Span
@@ -209,14 +207,14 @@ The goal of improving attention span is to make the context that can be used in 
 
 
 
-### Longer Attention Span (Transform-XL)
+### Longer Attention Span (Transformer-XL)
 
-The vanilla Transformer has a fixed and limited attention span. The model can only attend to other elements in the same segments during each update step and no information cannot flow across separated fixed-length segments. 
+The vanilla Transformer has a fixed and limited attention span. The model can only attend to other elements in the same segments during each update step and no information can flow across separated fixed-length segments. 
 
 This *context segmentation* causes several issues:
-- The model cannot capture very long term dependency.
+- The model cannot capture very long term dependencies.
 - It is hard to predict the first few tokens in each segment given no or thin context.
-- The evaluation is expensive. Whenever the segment is shifted  to the right by one, the new segment has to be re-processed from scratch, although there are a lot of overlapped tokens.
+- The evaluation is expensive. Whenever the segment is shifted  to the right by one, the new segment is re-processed from scratch, although there are a lot of overlapped tokens.
 
 **Transformer-XL** ([Dai et al., 2019](https://arxiv.org/abs/1901.02860); "XL" means "extra long") solves the context segmentation problem with two main modifications:
 1. Reusing hidden states between segments.
@@ -225,36 +223,37 @@ This *context segmentation* causes several issues:
 
 **Hidden State Reuse**
 
-The recurrent connection between segments is introduced in the model by continuously using the hidden states from the previous segments. 
+The recurrent connection between segments is introduced into the model by continuously using the hidden states from the previous segments. 
 
 
 ![Training phrase of Transformer-XL]({{ '/assets/images/transformer-XL-training.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 6. The comparison of the training phrase in the vanilla transformer and the transformer-XL with a segment length 4. (Image source: the left part of Figure 2 in [Dai et al., 2019](https://arxiv.org/abs/1901.02860)).*
+*Fig. 6. A comparison between the training phrase of vanilla Transformer & Transformer-XL with a segment length 4. (Image source: left part of Figure 2 in [Dai et al., 2019](https://arxiv.org/abs/1901.02860)).*
 
 
-Let's label the hidden state of the $$n$$-th layer for the $$(\tau + 1)$$-th segment in the model as $$\mathbf{h}_{\tau+1}^{(n)} \in \mathbb{R}^{L \times d}$$. In addition to the hidden state of the last layer for the same segment $$mathbf{h}_{\tau+1}^{(n-1)}$$, it also depends on the hidden state of the same layer for the previous segment $$\mathbf{h}_{\tau}^{(n)}$$.  By incorporating information from the previous hidden states, the model extends the attention span much longer in the past, over multiple segments. 
+Let's label the hidden state of the $$n$$-th layer for the $$(\tau + 1)$$-th segment in the model as $$\mathbf{h}_{\tau+1}^{(n)} \in \mathbb{R}^{L \times d}$$. In addition to the hidden state of the last layer for the same segment $$\mathbf{h}_{\tau+1}^{(n-1)}$$, it also depends on the hidden state of the same layer for the previous segment $$\mathbf{h}_{\tau}^{(n)}$$.  By incorporating information from the previous hidden states, the model extends the attention span much longer in the past, over multiple segments. 
 
 $$
 \begin{aligned}
-\widetilde{\mathbf{h}}_{\tau+1}^{(n-1)} &= [\text{stop-gradient}(\mathbf{h}_{\tau}^{(n-1)}) \circ \mathbf{h}_{\tau+1}^{(n-1)}] \\
+\color{red}{\widetilde{\mathbf{h}}_{\tau+1}^{(n-1)}} &= [\text{stop-gradient}(\mathbf{h}_{\tau}^{(n-1)}) \circ \mathbf{h}_{\tau+1}^{(n-1)}] \\
 \mathbf{Q}_{\tau+1}^{(n)} &= \mathbf{h}_{\tau+1}^{(n-1)}\mathbf{W}^q \\
-\mathbf{K}_{\tau+1}^{(n)} &= \widetilde{\mathbf{h}}_{\tau+1}^{n-1}\mathbf{W}^k \\
-\mathbf{V}_{\tau+1}^{(n)} &= \widetilde{\mathbf{h}}_{\tau+1}^{n-1}\mathbf{W}^v \\
+\mathbf{K}_{\tau+1}^{(n)} &= \color{red}{\widetilde{\mathbf{h}}_{\tau+1}^{(n-1)}} \mathbf{W}^k \\
+\mathbf{V}_{\tau+1}^{(n)} &= \color{red}{\widetilde{\mathbf{h}}_{\tau+1}^{(n-1)}} \mathbf{W}^v \\
 \mathbf{h}_{\tau+1}^{(n)} &= \text{transformer-layer}(\mathbf{Q}_{\tau+1}^{(n)}, \mathbf{K}_{\tau+1}^{(n)}, \mathbf{V}_{\tau+1}^{(n)})
 \end{aligned}
 $$
 
 
+Note that both key and value rely on the extended hidden state, while the query only consumes hidden state at current step. The concatenation operation $$[. \circ .]$$ is along the sequence length dimension.
 
 
 **Relative Positional Encoding**
 
-In order to work with this new form of attention span, Transformer-XL proposed a new type of positional encoding. If it adopts the same approach of the vanilla Transformer and encodes the absolute position, the previous and current segments will be assigned with the same positional encoding, which is undesired.
+In order to work with this new form of attention span, Transformer-XL proposed a new type of positional encoding. If using the same approach by vanilla Transformer and encoding the absolute position, the previous and current segments will be assigned with the same encoding, which is undesired.
 
-To keep the positional information flow coherent across segments, Transformer-XL encodes the *relative* position instead, as it might be sufficient enough to know the position offset, i.e. $$i-j$$, between one key vector $$k_{\tau, j}$$ and its query $$q_{\tau, i}$$.
+To keep the positional information flow coherently across segments, Transformer-XL encodes the *relative* position instead, as it could be sufficient enough to know the position offset for making good predictions, i.e. $$i-j$$, between one key vector $$\mathbf{k}_{\tau, j}$$ and its query $$\mathbf{q}_{\tau, i}$$.
 
-If omitting the scalar $$1/\sqrt{d_k}$$ and the normalizing term in softmax but considering positional encodings, we can write the attention score between query at position $$i$$ and key at position $$j$$ as:
+If omitting the scalar $$1/\sqrt{d_k}$$ and the normalizing term in softmax but including positional encodings, we can write the attention score between query at position $$i$$ and key at position $$j$$ as:
 
 $$
 \begin{aligned}
@@ -283,42 +282,33 @@ $$
 
 ### Adaptive Attention Span
 
-One key success of Transformer is its capability for capturing long term dependencies. Depending on the context, the model may need to attend further sometime than others. If the attention span is able to adapt its length flexibly and only attend further back when needed, it can help reduce both computation and memory cost to support longer maximum context size used in the model.
+One key success of Transformer is the capability of capturing long-term dependencies. Depending on the context, the model may need to attend further sometime than others. If the attention span could adapt its length flexibly and only attend further back when needed, it would help reduce both computation and memory cost to support longer maximum context size in the model.
 
-This is the motivation for **Adaptive Attention Span**. [Sukhbaatar, et al. (2019)](https://arxiv.org/abs/1905.07799) proposed a self-attention mechanism that can learn its optimal attention span. They hypothesized that different attention heads might assign attention differently within the same context window (See Fig. X) and thus the optimal span can be learned separately.
+This is the motivation for **Adaptive Attention Span**. ([Sukhbaatar, et al., 2019](https://arxiv.org/abs/1905.07799)) proposed a self-attention mechanism that can learn its optimal attention span. They hypothesized that different attention heads might assign scores differently within the same context window (See Fig. 7) and thus the optimal span can be learned separately per head.
 
 
 ![Attention per head]({{ '/assets/images/attention-per-head.png' | relative_url }})
 {: style="width: 70%;" class="center"}
-*Fig. 7. Two attention heads in the same Transformer model, A & B, assign attention differently within the same context window. Head A attends more to the recent tokens, while head B look further back into the past uniformly. (Image source: [Sukhbaatar, et al. 2019](https://arxiv.org/abs/1905.07799).)*
+*Fig. 7. Two attention heads in the same model, A & B, assign attention differently within the same context window. Head A attends more to the recent tokens, while head B look further back into the past uniformly. (Image source: [Sukhbaatar, et al. 2019](https://arxiv.org/abs/1905.07799))*
 
-Given the current token at position $$i$$, we need to compute the attention weights between this token and all other tokens at positions $$j \in [i - s, i)$$ within $$i$$'s attention span, where $$s$$ is the context length. In the following example, the relative positional encoding is only added onto the key vectors.
-
+Given the $$i$$-th token, we need to compute the attention weights between this token and all others at positions $$S_i = \{j: i - \ell \leq j < i\}$$ within $$i$$'s attention span, where $$\ell$$ is the context length.
 
 $$
 \begin{aligned}
-e_{ij} &= \mathbf{q}_i (\mathbf{k}_j + \mathbf{p}_{i-j})^\top = \mathbf{x}_i {\mathbf{W}^q} (\mathbf{x}_j\mathbf{W}^k + \mathbf{p}_{i-j})^\top \\ 
+e_{ij} &= \mathbf{q}_i {\mathbf{k}_j}^\top \\ 
 a_{ij} &= \text{softmax}(e_{ij}) = \frac{\exp(e_{ij})}{\sum_{r=i-s}^{i-1} \exp(e_{ir})} \\
 \mathbf{y}_i &= \sum_{r=i-s}^{i-1}a_{ir}\mathbf{v}_r = \sum_{r=i-s}^{i-1}a_{ir}\mathbf{x}_r\mathbf{W}^v
 \end{aligned}
 $$
 
 
-A *soft mask function* $$m_z$$ is added to control the effective attention span, which maps the distance between query and key tokens into a [0, 1] value. $$m_z$$ is parameterized by $$z \in [0, s]$$:
+A *soft mask function* $$m_z$$ is added to control for an effective adjustable attention span, which maps the distance between query and key into a [0, 1] value. $$m_z$$ is parameterized by $$z \in [0, s]$$ and $$z$$ is to be learned:
 
 $$
 m_z(x) = \text{clamp}(\frac{1}{R}(R+z-x), 0, 1)
 $$
 
-where $$R$$ is a hyper-parameter controlling the softness of $$m_z$$ and $$z$$ is to be learned.
-
-The soft mask function is applied to the softmax elements in the attention weights:
-
-$$
-a_{ij} = \frac{m_z(i-j)\exp(s_{ij})}{\sum_{r=i-s}^{i-1}m_z(i-r) \exp(s_{ir})}
-$$
-
-In the above equation, $$z$$ is differentiable so it is trained jointly with the other parts of the model. Parameters $$z_i, i=1, \dots, h$$ are learned differently *per head*. Also, the loss function has an extra L1 penalty on $$\sum_i z_i$$.
+where $$R$$ is a hyper-parameter which defines the softness of $$m_z$$.
 
 
 ![Soft masking function]({{ '/assets/images/soft-masking-function.png' | relative_url }})
@@ -326,9 +316,19 @@ In the above equation, $$z$$ is differentiable so it is trained jointly with the
 *Fig. 8. The soft masking function used in the adaptive attention span. (Image source: [Sukhbaatar, et al. 2019](https://arxiv.org/abs/1905.07799).)*
 
 
-Using [Adaptive Computation Time](#adaptive-computation-time-act), the approach can be further enhanced to have flexible attention span length adaptive to the current input dynamically. The span parameter $$z_t$$ of an attention head at time $$t$$ is a sigmoidal function, $$z_t = S \sigma(\mathbf{v}^\top \mathbf{x}_t +b)$$, where the vector $$\mathbf{v}$$ and the bias scalar $$b$$ are learned jointly with other parameters.
+The soft mask function is applied to the softmax elements in the attention weights:
 
-In the experiments of Transformer with adaptive attention span, [Sukhbaatar, et al. (2019)](https://arxiv.org/abs/1905.07799) found that there is a general tendency that lower layers do not require very long attention span, while a few attention heads in the higher layers use exceptionally long span. Adaptive attention span also helps largely reduce the number of FLOPS, especially in a big model with many attention layers and the context length is large.
+$$
+a_{ij} = \frac{m_z(i-j)\exp(s_{ij})}{\sum_{r=i-s}^{i-1}m_z(i-r) \exp(s_{ir})}
+$$
+
+In the above equation, $$z$$ is differentiable so it is trained jointly with the other parts of the model. Parameters $$z_i, i=1, \dots, h$$ are learned *separately per head*. Also, the loss function has an extra L1 penalty on $$\sum_i z_i$$.
+
+
+Using [Adaptive Computation Time](#adaptive-computation-time-act), the approach can be further enhanced to have flexible attention span length adaptive to the current input dynamically. The span parameter $$z_t$$ of an attention head at time $$t$$ is a sigmoidal function, $$z_t = S \sigma(\mathbf{v} \cdot \mathbf{x}_t +b)$$, where the vector $$\mathbf{v}$$ and the bias scalar $$b$$ are learned jointly with other parameters.
+
+
+In the experiments of Transformer with adaptive attention span, [Sukhbaatar, et al. (2019)](https://arxiv.org/abs/1905.07799) found that there is a general tendency that lower layers do not require very long attention span, while a few attention heads in the higher layers may use exceptionally long span. Adaptive attention span also helps largely reduce the number of FLOPS, especially in a big model with many attention layers and the context length is large.
 
 
 ### Localized Attention Span (Image Transformer)

@@ -286,7 +286,7 @@ w_t(i) &= \frac{\tilde{w}_t(i)^{\gamma_t}}{\sum_{j=1}^N \tilde{w}_t(j)^{\gamma_t
 \end{aligned}
 $$
 
-The complete process of generating the attention vector $$\mathbf{w}_t$$ at time step t is illustrated in Fig. X. All the parameters produced by the controller are unique for each head. If there are multiple read and write heads in parallel, the controller would output multiple sets.
+The complete process of generating the attention vector $$\mathbf{w}_t$$ at time step t is illustrated in Fig. 12. All the parameters produced by the controller are unique for each head. If there are multiple read and write heads in parallel, the controller would output multiple sets.
 
 
 ![NTM-flow-addressing]({{ '/assets/images/NTM-flow-addressing.png' | relative_url }})

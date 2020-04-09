@@ -35,7 +35,7 @@ Similarly, we can explain the relationship between words in one sentence or clos
 {: style="width: 65%;" class="center"}
 *Fig. 2. One word "attends" to other words in the same sentence differently.*
 
-In a nutshell, attention in the deep learning can be broadly interpreted as a vector of importance weights: in order to predict or infer one element, such as a pixel in an image or a word in a sentence, we estimate using the attention vector how strongly it is correlated with (or "*attends to*" as you may have read in many papers) other elements and take the sum of their values weighted by the attention vector as the approximation of the target.
+In a nutshell, attention in deep learning can be broadly interpreted as a vector of importance weights: in order to predict or infer one element, such as a pixel in an image or a word in a sentence, we estimate using the attention vector how strongly it is correlated with (or "*attends to*" as you may have read in many papers) other elements and take the sum of their values weighted by the attention vector as the approximation of the target.
 
 
 

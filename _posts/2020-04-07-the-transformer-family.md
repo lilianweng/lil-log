@@ -282,16 +282,16 @@ $$
 
 ### Adaptive Attention Span
 
-One key success of Transformer is the capability of capturing long-term dependencies. Depending on the context, the model may need to attend further sometime than others. If the attention span could adapt its length flexibly and only attend further back when needed, it would help reduce both computation and memory cost to support longer maximum context size in the model.
+One key advantage of Transformer is the capability of capturing long-term dependencies. Depending on the context, the model may prefer to attend further sometime than others; or one attention head may had different attention pattern from the other. If the attention span could adapt its length flexibly and only attend further back when needed, it would help reduce both computation and memory cost to support longer maximum context size in the model.
 
-This is the motivation for **Adaptive Attention Span**. ([Sukhbaatar, et al., 2019](https://arxiv.org/abs/1905.07799)) proposed a self-attention mechanism that can learn its optimal attention span. They hypothesized that different attention heads might assign scores differently within the same context window (See Fig. 7) and thus the optimal span can be learned separately per head.
+This is the motivation for **Adaptive Attention Span**. [Sukhbaatar, et al., (2019)](https://arxiv.org/abs/1905.07799) proposed a self-attention mechanism that seeks an optimal attention span. They hypothesized that different attention heads might assign scores differently within the same context window (See Fig. 7) and thus the optimal span would be trained separately per head.
 
 
 ![Attention per head]({{ '/assets/images/attention-per-head.png' | relative_url }})
 {: style="width: 70%;" class="center"}
 *Fig. 7. Two attention heads in the same model, A & B, assign attention differently within the same context window. Head A attends more to the recent tokens, while head B look further back into the past uniformly. (Image source: [Sukhbaatar, et al. 2019](https://arxiv.org/abs/1905.07799))*
 
-Given the $$i$$-th token, we need to compute the attention weights between this token and all others at positions $$S_i = \{j: i - \ell \leq j < i\}$$ within $$i$$'s attention span, where $$\ell$$ is the context length.
+Given the $$i$$-th token, we need to compute the attention weights between this token and other keys at positions $$j \in S_i = \{j: i - \ell \leq j < i\}$$, where $$S_i$$ defineds the $$i$$-th token's context window and $$\ell$$ is the context length.
 
 $$
 \begin{aligned}
@@ -322,39 +322,39 @@ $$
 a_{ij} = \frac{m_z(i-j)\exp(s_{ij})}{\sum_{r=i-s}^{i-1}m_z(i-r) \exp(s_{ir})}
 $$
 
-In the above equation, $$z$$ is differentiable so it is trained jointly with the other parts of the model. Parameters $$z_i, i=1, \dots, h$$ are learned *separately per head*. Also, the loss function has an extra L1 penalty on $$\sum_i z_i$$.
+In the above equation, $$z$$ is differentiable so it is trained jointly with other parts of the model. Parameters $$z^{(i)}, i=1, \dots, h$$ are learned *separately per head*. Moreover, the loss function has an extra L1 penalty on $$\sum_{i=1}^h z^{(i)}$$.
 
 
-Using [Adaptive Computation Time](#adaptive-computation-time-act), the approach can be further enhanced to have flexible attention span length adaptive to the current input dynamically. The span parameter $$z_t$$ of an attention head at time $$t$$ is a sigmoidal function, $$z_t = S \sigma(\mathbf{v} \cdot \mathbf{x}_t +b)$$, where the vector $$\mathbf{v}$$ and the bias scalar $$b$$ are learned jointly with other parameters.
+Using [Adaptive Computation Time](#adaptive-computation-time-act), the approach can be further enhanced to have flexible attention span length, adaptive to the current input dynamically. The span parameter $$z_t$$ of an attention head at time $$t$$ is a sigmoidal function, $$z_t = S \sigma(\mathbf{v} \cdot \mathbf{x}_t +b)$$, where the vector $$\mathbf{v}$$ and the bias scalar $$b$$ are learned jointly with other parameters.
 
 
-In the experiments of Transformer with adaptive attention span, [Sukhbaatar, et al. (2019)](https://arxiv.org/abs/1905.07799) found that there is a general tendency that lower layers do not require very long attention span, while a few attention heads in the higher layers may use exceptionally long span. Adaptive attention span also helps largely reduce the number of FLOPS, especially in a big model with many attention layers and the context length is large.
+In the experiments of Transformer with adaptive attention span, [Sukhbaatar, et al. (2019)](https://arxiv.org/abs/1905.07799) found a general tendency that lower layers do not require very long attention spans, while a few attention heads in higher layers may use exceptionally long spans. Adaptive attention span also helps greatly reduce the number of FLOPS, especially in a big model with many attention layers and a large context length.
 
 
 ### Localized Attention Span (Image Transformer)
 
-Most popular / original use cases for Transformer are for language modeling. The text sequence is one-dimensional in a clearly defined chronological order and thus the attention span grows linearly with increased context size.
+The original, also the most popular, use case for Transformer is to do language modeling. The text sequence is one-dimensional in a clearly defined chronological order and thus the attention span grows linearly with increased context size.
 
-However, if we want to use Transformer on images, it is unclear how to define the attention span and what is the order. **Image Transformer** ([Parmer, et al 2018](https://arxiv.org/abs/1802.05751)) adopts a formulation of image generation similar to sequence modeling within the Transformer framework. Additionally, in Image Transformer, the self-attention span is restricted to only **local** neighborhoods, so that the model can scale up to process more images in parallel and keep the likelihood loss tractable.
+However, if we want to use Transformer on images, it is unclear how to define the scope of context or the order. **Image Transformer** ([Parmer, et al 2018](https://arxiv.org/abs/1802.05751)) embraces a formulation of image generation similar to sequence modeling within the Transformer framework. Additionally, Image Transformer restricts the self-attention span to only *local* neighborhoods, so that the model can scale up to process more images in parallel and keep the likelihood loss tractable.
 
-The encoder-decoder architecture stays for image-conditioned generation:
+The encoder-decoder architecture remains for image-conditioned generation:
 - The encoder generates a contextualized, per-pixel-channel representation of the source image;
 - The decoder *auto-regressively* generates an output image, one channel per pixel at each time step.
 
-The representation of the current pixel to be generated is the query $$\mathbf{x}_q$$. The other positions whose representations will be used as keys in computing $$\mathbf{x}_q$$ are called $$\mathbf{x}^k_1, \mathbf{x}^k_2, \dots$$ and they together form the memory matrix $$\mathbf{M}$$, in which the $$i$$-th column corresponds to one vector $$\mathbf{x}^k_i$$.
+Let's label the representation of the current pixel to be generated as the query $$\mathbf{q}$$. Other positions whose representations will be used for computing $$\mathbf{q}$$ are key vector $$\mathbf{k}_1, \mathbf{k}_2, \dots$$ and they together form a memory matrix $$\mathbf{M}$$. The scope of $$\mathbf{M}$$ defines the context window for pixel query $$\mathbf{q}$$.
 
 
-Image Transformer introduces two types of localized attention span mechanisms, as illustrated below. 
+Image Transformer introduced two types of localized $$\mathbf{M}$$, as illustrated below. 
 
 
 ![Attention patterns in Image Transformer]({{ '/assets/images/image-transformer-attention.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 9. Illustration of 1D and 2D attention span for visual inputs in Image Transformer. (Image source: Figure 2 in [Parmer et al, 2018](https://arxiv.org/abs/1802.05751))*
+*Fig. 9. Illustration of 1D and 2D attention span for visual inputs in Image Transformer. The black line marks a query block and the cyan outlines the actual attention span for pixel q. (Image source: Figure 2 in [Parmer et al, 2018](https://arxiv.org/abs/1802.05751))*
 
 
-(1) *1D Local Attention*: The input image is flattened in [raster scanning](https://en.wikipedia.org/wiki/Raster_scan#Scanning_pattern) order, that is, from left to right and top to bottom. The linearized image is then partitioned into non-overlapping query blocks. The pixels in the same query block as $$\mathbf{x}_q$$ are included into the context window for attention, as well as $$l_m$$ additional pixels that have been generated before.
+(1) *1D Local Attention*: The input image is flattened in [raster scanning](https://en.wikipedia.org/wiki/Raster_scan#Scanning_pattern) order, that is, from left to right and top to bottom. The linearized image is then partitioned into non-overlapping query blocks. The context window consists of pixels in the same query block as $$\mathbf{q}$$ and a fixed number of additional pixels generated before this query block.
 
-(2) *2D Local Attention*: The image is partitioned into multiple non-overlapping rectangular query blocks. The current pixel can attend to all others in the same memory blocks. To make sure the pixel at the top-left corner can also have a valid context window, the memory block is extended to the top by $$h_m$$ and to the left and right by $$w_m$$, respectively.
+(2) *2D Local Attention*: The image is partitioned into multiple non-overlapping rectangular query blocks. The query pixel can attend to all others in the same memory blocks. To make sure the pixel at the top-left corner can also have a valid context window, the memory block is extended to the top, left and right by a fixed amount, respectively.
 
 
 

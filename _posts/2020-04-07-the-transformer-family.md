@@ -291,7 +291,7 @@ This is the motivation for **Adaptive Attention Span**. [Sukhbaatar, et al., (20
 {: style="width: 70%;" class="center"}
 *Fig. 7. Two attention heads in the same model, A & B, assign attention differently within the same context window. Head A attends more to the recent tokens, while head B look further back into the past uniformly. (Image source: [Sukhbaatar, et al. 2019](https://arxiv.org/abs/1905.07799))*
 
-Given the $$i$$-th token, we need to compute the attention weights between this token and other keys at positions $$j \in S_i = \{j: i - \ell \leq j < i\}$$, where $$S_i$$ defineds the $$i$$-th token's context window and $$\ell$$ is the context length.
+Given the $$i$$-th token, we need to compute the attention weights between this token and other keys at positions $$j \in S_i$$, where $$S_i$$ defineds the $$i$$-th token's context window.
 
 $$
 \begin{aligned}
@@ -352,7 +352,7 @@ Image Transformer introduced two types of localized $$\mathbf{M}$$, as illustrat
 *Fig. 9. Illustration of 1D and 2D attention span for visual inputs in Image Transformer. The black line marks a query block and the cyan outlines the actual attention span for pixel q. (Image source: Figure 2 in [Parmer et al, 2018](https://arxiv.org/abs/1802.05751))*
 
 
-(1) *1D Local Attention*: The input image is flattened in [raster scanning](https://en.wikipedia.org/wiki/Raster_scan#Scanning_pattern) order, that is, from left to right and top to bottom. The linearized image is then partitioned into non-overlapping query blocks. The context window consists of pixels in the same query block as $$\mathbf{q}$$ and a fixed number of additional pixels generated before this query block.
+(1) *1D Local Attention*: The input image is flattened in the [raster scanning](https://en.wikipedia.org/wiki/Raster_scan#Scanning_pattern) order, that is, from left to right and top to bottom. The linearized image is then partitioned into non-overlapping query blocks. The context window consists of pixels in the same query block as $$\mathbf{q}$$ and a fixed number of additional pixels generated before this query block.
 
 (2) *2D Local Attention*: The image is partitioned into multiple non-overlapping rectangular query blocks. The query pixel can attend to all others in the same memory blocks. To make sure the pixel at the top-left corner can also have a valid context window, the memory block is extended to the top, left and right by a fixed amount, respectively.
 
@@ -360,7 +360,7 @@ Image Transformer introduced two types of localized $$\mathbf{M}$$, as illustrat
 
 ## Less Time and Memory Cost
 
-This section focuses on what can be done to reduce the computation time and memory consumption.
+This section introduces several improvements made on Transformer to reduce the computation time and memory consumption.
 
 
 ### Sparse Attention Matrix Factorization (Sparse Transformers)
@@ -369,100 +369,101 @@ The compute and memory cost of the vanilla Transformer grows quadratically with 
 
 **Sparse Transformer** ([Child et al., 2019](https://arxiv.org/abs/1904.10509)) introduced *factorized self-attention*, through sparse matrix factorization, making it possible to train dense attention networks with hundreds of layers on sequence length up to 16,384, which would be infeasible on modern hardware otherwise.
 
-Given a set of attention connectivity pattern $$\mathcal{S} = \{S_1, \dots, S_n\}$$, where each $$S_i$$ records a set of key positions that the $$i$$-th output vector attends to.
+Given a set of attention connectivity pattern $$\mathcal{S} = \{S_1, \dots, S_n\}$$, where each $$S_i$$ records a set of key positions that the $$i$$-th query vector attends to.
 
 
 $$
 \begin{aligned}
-\text{Attend}(\mathbf{X}, S) &= \Big( a(\mathbf{x}_i, S_i) \Big)_{i \in \{1, \dots, L\}} \\
+\text{Attend}(\mathbf{X}, \mathcal{S}) &= \Big( a(\mathbf{x}_i, S_i) \Big)_{i \in \{1, \dots, L\}} \\
 \text{ where } a(\mathbf{x}_i, S_i) &= \text{softmax}\Big(\frac{(\mathbf{x}_i \mathbf{W}^q)(\mathbf{x}_j \mathbf{W}^k)_{j \in S_i}^\top}{\sqrt{d_k}}\Big) (\mathbf{x}_j \mathbf{W}^v)_{j \in S_i}
 \end{aligned}
 $$
 
-Note that although the size of $$S_i$$ is not fixed, $$a(\mathbf{x}_i, S_i)$$ is always of size $$d_v$$ and thus $$\text{attend}(\mathbf{X}, S) \in \mathbb{R}^{L \times d_v}$$. 
+Note that although the size of $$S_i$$ is not fixed, $$a(\mathbf{x}_i, S_i)$$ is always of size $$d_v$$ and thus $$\text{Attend}(\mathbf{X}, \mathcal{S}) \in \mathbb{R}^{L \times d_v}$$. 
 
-In anto-regressive models, the set of attention span is defined as $$S_i = \{j: j \leq i\}$$ as it allows each token to attend to all the positions in the past. 
+In anto-regressive models, one attention span is defined as $$S_i = \{j: j \leq i\}$$ as it allows each token to attend to all the positions in the past. 
 
 In factorized self-attention, the set $$S_i$$ is decomposed into a *tree* of dependencies, such that for every pair of $$(i, j)$$ where $$j \leq i$$, there is a path connecting $$i$$ back to $$j$$ and $$i$$ can attend to $$j$$ either directly or indirectly.
 
-Precisely, the set $$S_i$$ is divided into $$p$$ non-overlapping subsets, where the $$m$$-th head is denoted as $$A^{m}_i \subset S_i, m = 1,\dots, p$$. Therefore the path between the output position $$i$$ and any $$j$$ has a maximum length $$p + 1$$. For example, if $$(j, a, b, c, \dots, i)$$ is a path of indices from $$i$$ to $$j$$, we would have $$j \in A_a^{(1)}, a \in A_b^{(2)}, b \in A_c^{(3)}$$, so on and so forth.
+Precisely, the set $$S_i$$ is divided into $$p$$ *non-overlapping* subsets, where the $$m$$-th subset is denoted as $$A^{(m)}_i \subset S_i, m = 1,\dots, p$$. Therefore the path between the output position $$i$$ and any $$j$$ has a maximum length $$p + 1$$. For example, if $$(j, a, b, c, \dots, i)$$ is a path of indices between $$i$$ and $$j$$, we would have $$j \in A_a^{(1)}, a \in A_b^{(2)}, b \in A_c^{(3)}, \dots$$, so on and so forth.
 
 
 **Sparse Factorized Attention**
 
-Sparse Transformer proposed two types of fractorized attention. It is easier to understand the concepts as illustrated in Fig. 9 with image inputs as examples.
+Sparse Transformer proposed two types of fractorized attention. It is easier to understand the concepts as illustrated in Fig. 10 with 2D image inputs as examples.
 
 
 ![Sparse attention]({{ '/assets/images/sparse-attention.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 10. The top row illustrates the attention connectivity patterns in (a) transformer, (b) sparse transformer with strided attention, and (c) sparse transformer with fixed attention, respectively. The bottom row contains corresponding self-attention connectivity matrices. (Image source: [Child et al., 2019](https://arxiv.org/abs/1904.10509) + a few of extra annotations.)*
+*Fig. 10. The top row illustrates the attention connectivity patterns in (a) Transformer, (b) Sparse Transformer with strided attention, and (c) Sparse Transformer with fixed attention. The bottom row contains corresponding self-attention connectivity matrices. Note that the top and bottom rows are not in the same scale. (Image source: [Child et al., 2019](https://arxiv.org/abs/1904.10509) + a few of extra annotations.)*
 
 
-(1) *Strided* attention with stride $$l \sim \sqrt{n}$$: This works well with image data as the structure is aligned with strides. In the image case, each pixel would attend to all the previous $$l$$ pixels in the raster scanning order (naturally cover the entire width of the image) and then those pixels attend to others in the same column.
-
-$$
-\begin{aligned}
-A_i^{(1)} &= \{ t, t+1, \dots, i\} \text{, where } t = \max(0, i - l) \\
-A_i^{(2)} &= \{j: (i-j) \mod l = 0\}
-\end{aligned}
-$$
-
-(2) *Fixed* attention:
+(1) *Strided* attention with stride $$\ell \sim \sqrt{n}$$. This works well with image data as the structure is aligned with strides. In the image case, each pixel would attend to all the previous $$\ell$$ pixels in the raster scanning order (naturally cover the entire width of the image) and then those pixels attend to others in the same column (defined by another attention connectivity subset).
 
 $$
 \begin{aligned}
-A_i^{(1)} &= \{j: \lfloor\frac{j}{l}\rfloor = \lfloor\frac{i}{l}\rfloor \} \\
-A_i^{(2)} &= \{j: j \mod l \in \{l-c, \dots, l-1\} \}
+A_i^{(1)} &= \{ t, t+1, \dots, i\} \text{, where } t = \max(0, i - \ell) \\
+A_i^{(2)} &= \{j: (i-j) \mod \ell = 0\}
 \end{aligned}
 $$
 
-where $$c$$ is a hyperparameter. If $$c=1$$, it restricts the representation whereas many depend on a small number of positions. The paper chose $$c\in \{ 8, 16, 32 \}$$ for $$l \in \{ 128, 256 \}$$.
+(2) *Fixed* attention. A small set of tokens summarize previous locations and propagate that information to all future locations.
+
+$$
+\begin{aligned}
+A_i^{(1)} &= \{j: \lfloor \frac{j}{\ell} \rfloor = \lfloor \frac{i}{\ell} \rfloor \} \\
+A_i^{(2)} &= \{j: j \mod \ell \in \{\ell-c, \dots, \ell-1\} \}
+\end{aligned}
+$$
+
+where $$c$$ is a hyperparameter. If $$c=1$$, it restricts the representation whereas many depend on a few positions. The paper chose $$c\in \{ 8, 16, 32 \}$$ for $$\ell \in \{ 128, 256 \}$$.
 
 
-There three ways to use sparse attention patterns in the Transformer architecture:
+**Use Factorized Self-Attention in Transformer**
+
+There are three ways to use sparse factorized attention patterns in Transformer architecture:
 1. One attention type per residual block and then interleave them, <br/>
-$$\text{attention}(\mathbf{X}) = \text{Attend}(\mathbf{X}, A^{(r \mod p)}) \mathbf{W}^o$$.
+$$\text{attention}(\mathbf{X}) = \text{Attend}(\mathbf{X}, A^{(n \mod p)}) \mathbf{W}^o$$, where $$n$$ is the index of the current residual block.
 2. Set up a single head which attends to locations that all the factorized heads attend to, <br/>
 $$\text{attention}(\mathbf{X}) = \text{Attend}(\mathbf{X}, \cup_{m=1}^p A^{(m)}) \mathbf{W}^o $$.
-3. Use a multi-head attention mechanism similar to the vanilla Transformer. Each head might adopt a pattern presented above, 1 or 2. => This option often performs the best.
+3. Use a multi-head attention mechanism, but different from vanilla Transformer, each head might adopt a pattern presented above, 1 or 2. => This option often performs the best.
 
-Sparse transformer also proposed a set of changes so as to train the Transformer up to hundreds of layers, including gradient checkpointing, recomputing attention & FF layers during the backward pass, mixed precision training, efficient block-sparse implementation, etc. Please check the [paper](https://arxiv.org/abs/1904.10509) for details.
+Sparse Transformer also proposed a set of changes so as to train the Transformer up to hundreds of layers, including gradient checkpointing, recomputing attention & FF layers during the backward pass, mixed precision training, efficient block-sparse implementation, etc. Please check the [paper](https://arxiv.org/abs/1904.10509) for more details.
 
 
 ### Locality-Sensitive Hashing (Reformer)
 
-The improvement in the Reformer model ([Kitaev, et al. 2020](https://arxiv.org/abs/2001.04451)) is based on the following pain-points in Transformer:
+The improvements proposed by the **Reformer** model ([Kitaev, et al. 2020](https://arxiv.org/abs/2001.04451)) aim to solve the following pain points in Transformer:
 - Memory in a model with $$N$$ layers is $$N$$-times larger than in a single-layer model because we need to store activations for back-propagation.
-- The intermediate FFN layers are often quite large.
+- The intermediate FF layers are often quite large.
 - The attention matrix on sequences of length $$L$$ often requires $$O(L^2)$$ in both memory and time.
 
 Reformer proposed two main changes:
 1. Replace the dot-product attention with *locality-sensitive hashing (LSH) attention*, reducing the complexity from $$O(L^2)$$ to $$O(L\log L)$$.
-2. Replace the standard residual blocks with *reversible residual layers*, which allows storing activations only once in the training process instead of $$N$$ times (i.e. proportional to the number of layers).
+2. Replace the standard residual blocks with *reversible residual layers*, which allows storing activations only once during training instead of $$N$$ times (i.e. proportional to the number of layers).
 
 
-**Locality-sensitive hashing Attention**
+**Locality-Sensitive Hashing Attention**
 
-In $$\mathbf{Q} \mathbf{K}^\top$$ part of the [attention formula](#attention-and-self-attention), we are only interested in the largest elements because only large elements contribute a lot after $$\text{softmax}(.)$$.
-For each query $$\mathbf{q}_i \in \mathbf{Q}$$, we are looking for row vectors in $$\mathbf{K}$$ closest to $$\mathbf{q}_i$$. In order to find nearest neighbors quickly in a high-dimensional space, Reformer incorporates [Locality-Sensitive Hashing (LSH)](https://en.wikipedia.org/wiki/Locality-sensitive_hashing) into its attention mechanism.
+In $$\mathbf{Q} \mathbf{K}^\top$$ part of the [attention formula](#attention-and-self-attention), we are only interested in the largest elements as only large elements contribute a lot after softmax. For each query $$\mathbf{q}_i \in \mathbf{Q}$$, we are looking for row vectors in $$\mathbf{K}$$ closest to $$\mathbf{q}_i$$. In order to find nearest neighbors quickly in high-dimensional space, Reformer incorporates [Locality-Sensitive Hashing (LSH)](https://en.wikipedia.org/wiki/Locality-sensitive_hashing) into its attention mechanism.
 
-A hashing scheme $$x \mapsto h(x)$$ is *locality-sensitive* if it preserves the distancing information between data points, such that close vectors get similar hashes while distant vectors have different one. The Reformer adopts a hashing scheme as such, given a fixed random matrix $$\mathbf{R} \in \mathbb{R}^{d \times b/2}$$, the hash function is $$h(x) = \arg\max([xR; −xR])$$.
+A hashing scheme $$x \mapsto h(x)$$ is *locality-sensitive* if it preserves the distancing information between data points, such that close vectors obtain similar hashes while distant vectors have very different ones. The Reformer adopts a hashing scheme as such, given a fixed random matrix $$\mathbf{R} \in \mathbb{R}^{d \times b/2}$$ (where $$b$$ is a hyperparam), the hash function is $$h(x) = \arg\max([xR; −xR])$$.
 
-If we omit the scalar in self-attention and summarize the denominator into a normalizing term $$z(.)$$, an normal attention equation becomes:
 
+<!-- If we omit the scalar in self-attention and summarize the denominator into a normalizing term $$Z(.)$$, an normal attention output looks as follows:
 
 $$
-o_i = \sum_{j \in S_i} \exp(\mathbf{q}_i \cdot \mathbf{k}_j - z(i, S_i)) \mathbf{v}_j \text{, where } S_i = \{j: i \geq j\}
-$$
-
+\mathbf{o}_i = \sum_{j \in S_i} \exp(\mathbf{q}_i \cdot \mathbf{k}_j - Z(i, S_i)) \mathbf{v}_j \text{, where } S_i = \{j: j \leq i\}
+$$ 
+-->
 
 
 ![LSH attention matrix]({{ '/assets/images/LSH-attention-matrix.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 11. Illustration of Locality-Sensitive Hashing (LSH) attention. (Image source: right part of Figure 1 in the [paper](https://arxiv.org/abs/2001.04451)).*
+*Fig. 11. Illustration of Locality-Sensitive Hashing (LSH) attention. (Image source: right part of Figure 1 in [Kitaev, et al. 2020](https://arxiv.org/abs/2001.04451)).*
 
 
-In LSH attention, a query can only attend to positions in the same hashing bucket, $$S_i = \{j: h(\mathbf{q}_i) = h(\mathbf{k}_j)\}$$. It is carried out in the following process, as illustrated in Fig. 9:
+In LSH attention, a query can only attend to positions in the same hashing bucket, $$S_i = \{j: h(\mathbf{q}_i) = h(\mathbf{k}_j)\}$$. It is carried out in the following process, as illustrated in Fig. 11:
 - (a) The attention matrix for full attention is often sparse.
 - (b) Using LSH, we can sort the keys and queries to be aligned according to their hash buckets.
 - (c) Set $$\mathbf{Q} = \mathbf{K}$$ (precisely $$\mathbf{k}_j = \mathbf{q}_j / \|\mathbf{q}_j\|$$), so that there are equal numbers of keys and queries in one bucket, easier for batching. Interestingly, this "shared-QK" config does not affect the performance of the Transformer.
@@ -472,14 +473,14 @@ In LSH attention, a query can only attend to positions in the same hashing bucke
 
 ![LSH attention]({{ '/assets/images/LSH-attention.png' | relative_url }})
 {: style="width: 75%;" class="center"}
-*Fig. 12. The LSH attention consists of 4 steps: bucketing, sorting, chunking, and attention computation. (Image source: left part of Figure 1 in the [paper](https://arxiv.org/abs/2001.04451)).*
+*Fig. 12. The LSH attention consists of 4 steps: bucketing, sorting, chunking, and attention computation. (Image source: left part of Figure 1 in [Kitaev, et al. 2020](https://arxiv.org/abs/2001.04451)).*
 
 
 **Reversible Residual Network**
 
-Another improvement in Reformer is to use reversible residual layers. The motivation for reversible residual network ([Gomez et al. 2017](https://arxiv.org/abs/1707.04585)) is to design the architecture in a way that activations at any given layer can be recovered from the activations at the following layer, using only the model parameters. Hence, we can save memory by recomputing the activation during backprop rather than storing all the activations.
+Another improvement by Reformer is to use *reversible residual layers* ([Gomez et al. 2017](https://arxiv.org/abs/1707.04585)). The motivation for reversible residual network is to design the architecture in a way that activations at any given layer can be recovered from the activations at the following layer, using only the model parameters. Hence, we can save memory by recomputing the activation during backprop rather than storing all the activations.
 
-Given a layer $$x \maps y$$, the normal residual layer does $$y = x + F(x)$$, but the reversible splits the input and output into pairs $$(x_1, x_2) \mapsto (y_1, y_2)$$ and does the following:
+Given a layer $$x \mapsto y$$, the normal residual layer does $$y = x + F(x)$$, but the reversible layer splits both input and output into pairs $$(x_1, x_2) \mapsto (y_1, y_2)$$ and then executes the following:
 
 $$
 y_1 = x_1 + F(x_2),\; y_2 = x_2 + G(y_1) 
@@ -491,11 +492,11 @@ $$
 x_2 = y_2 - G(y_1), \; x_1 = y_1 − F(x_2)
 $$
 
-Following the same idea of reversible residual layers, Reformer applies it to the Transformer by combination attention ($$F$$) and feed-forward layers ($$G$$) within a revnet block: 
+Reformer applies the same idea to Transformer by combination attention ($$F$$) and feed-forward layers ($$G$$) within a reversible net block: 
 
 
 $$
-Y_1 = X_1 + \text{Attention}(X_2), Y_2 = X_2 + \text{FeedForward}(Y_1)
+Y_1 = X_1 + \text{Attention}(X_2), \; Y_2 = X_2 + \text{FeedForward}(Y_1)
 $$
 
 The memory can be further reduced by chunking the feed-forward computation:
@@ -509,9 +510,9 @@ The resulting reversible Transformer does not need to store activation in every 
 
 ## Make it Recurrent (Universal Transformer)
 
-The **Universal Transformer** ([Dehghani, et al. 2019](https://arxiv.org/abs/1807.03819)) combines self-attention in Transformer with the recurrent mechanism in RNN, aiming to benefit from both the long-term global receptive field of Transformer and the learned inductive biases of RNN.
+The **Universal Transformer** ([Dehghani, et al. 2019](https://arxiv.org/abs/1807.03819)) combines self-attention in Transformer with the recurrent mechanism in RNN, aiming to benefit from both a long-term global receptive field of Transformer and learned inductive biases of RNN.
 
-Rather than going through a fixed number of layers, the Universal Transformer dynamically adjusts the number of steps using an [ACT](#adaptive-computation-time-act) mechanism. If we fix the number of steps, an Universal Transformer is equivalent to a multi-layer Transformer with shared parameters across layers. 
+Rather than going through a fixed number of layers, Universal Transformer dynamically adjusts the number of steps using [adaptive computation time](#adaptive-computation-time-act). If we fix the number of steps, an Universal Transformer is equivalent to a multi-layer Transformer with shared parameters across layers. 
 
 On a high level, the universal transformer can be viewed as a recurrent function for learning the hidden state representation per token. The recurrent function evolves in parallel across token positions and the information between positions is shared through self-attention.
 
@@ -520,17 +521,17 @@ On a high level, the universal transformer can be viewed as a recurrent function
 {: style="width: 100%;" class="center"}
 *Fig. 13. How the Universal Transformer refines a set of hidden state representations repeatedly for every position in parallel. (Image source: Figure 1 in [Dehghani, et al. 2019](https://arxiv.org/abs/1807.03819)).*
 
-Given an input sequence of length $$L$$, the universal transformer iteratively updates the representation $$\mathbf{H}^t \in \mathbb{R}^{L \times d}$$ at step $$t$$ for an adjustable number of steps. At step 0, $$\mathbf{H}^0$$ is initialized to be the same as the input embedding matrix. All the positions are processed in parallel in the multi-head self-attention mechanism and then go through a recurrent transition function.
+Given an input sequence of length $$L$$, Universal Transformer iteratively updates the representation $$\mathbf{H}^t \in \mathbb{R}^{L \times d}$$ at step $$t$$ for an adjustable number of steps. At step 0, $$\mathbf{H}^0$$ is initialized to be same as the input embedding matrix. All the positions are processed in parallel in the multi-head self-attention mechanism and then go through a recurrent transition function.
 
 
 $$
 \begin{aligned}
-\mathbf{A}^t &= \text{LayerNorm}(\mathbf{H}^{t-1} + \text{MultiHeadSelfAttention}(\mathbf{H}^{t-1} + \mathbf{P}^t) \\
+\mathbf{A}^t &= \text{LayerNorm}(\mathbf{H}^{t-1} + \text{MultiHeadAttention}(\mathbf{H}^{t-1} + \mathbf{P}^t) \\
 \mathbf{H}^t &= \text{LayerNorm}(\mathbf{A}^{t-1} + \text{Transition}(\mathbf{A}^t))
 \end{aligned}
 $$
 
-where $$\text{Transition}(.)$$ is either a [separable convolution](https://arxiv.org/abs/1610.02357) or a fully-connected neural network that consists of two point-wise (i.e. applied to each row of $$\mathbf{A}^t$$ individually) affine transformation + one ReLU. 
+where $$\text{Transition}(.)$$ is either a [separable convolution](https://arxiv.org/abs/1610.02357) or a fully-connected neural network that consists of two position-wise (i.e. applied to each row of $$\mathbf{A}^t$$ individually) affine transformation + one ReLU. 
 
 The positional encoding $$\mathbf{P}^t$$ uses sinusoidal position signal but with an additional time dimension:
 
@@ -546,19 +547,19 @@ $$
 
 ![Universal Transformer]({{ '/assets/images/universal-transformer.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 14. A simplified illustration of the universal transformer model. The encoder and decoder share the same basic recurrent structure. But the decoder also attends to final encoder representation $$\mathbf{H}^T$$. (Image source: Figure 2 in [Dehghani, et al. 2019](https://arxiv.org/abs/1807.03819))*
+*Fig. 14. A simplified illustration of Universal Transformer. The encoder and decoder share the same basic recurrent structure. But the decoder also attends to final encoder representation $$\mathbf{H}^T$$. (Image source: Figure 2 in [Dehghani, et al. 2019](https://arxiv.org/abs/1807.03819))*
 
 
-In the adaptive version of universal transformer, the number of recurrent steps $$T$$ is dynamically determined by [adaptive computation time](#adaptive-computation-time-act). Each position is equipped with a dynamic ACT halting mechanism. Once a per-token recurrent block halts, it stops taking more recurrent updates but simply copies the current value to the next step until all the blocks halt, or the model reaches a maximum step limit. 
+In the adaptive version of Universal Transformer, the number of recurrent steps $$T$$ is dynamically determined by [ACT](#adaptive-computation-time-act). Each position is equipped with a dynamic ACT halting mechanism. Once a per-token recurrent block halts, it stops taking more recurrent updates but simply copies the current value to the next step until all the blocks halt or until the model reaches a maximum step limit. 
 
 
 
 ## Stabilization for RL (GTrXL)
 
-The self-attention mechanism avoids compressing the whole past into a fixed-size hidden state and does not suffer from vanishing or exploding gradients as much as RNNs. Reinforcement learning tasks can definitely benefit from these traits. However, it is quite difficult to train a Transformer even in supervised learning, let alone in the RL context. It could be quite challenging to stabilize and train a RL agent by itself using a LSTM model, after all.
+The self-attention mechanism avoids compressing the whole past into a fixed-size hidden state and does not suffer from vanishing or exploding gradients as much as RNNs. Reinforcement Learning tasks can for sure benefit from these traits. *However*, it is quite difficult to train Transformer even in supervised learning, let alone in the RL context. It could be quite challenging to stabilize and train a LSTM agent by itself, after all.
 
-The **Gated Transformer-XL** (**GTrXL**; [Parisotto, et al. 2019](https://arxiv.org/abs/1910.06764)) is one attempt to use Transformer for RL. GTrXL succeeded in stabilizing training with two changes on top of Transformer-XL:
-1. The layer normalization is only applied on the input stream in a residual module, but NOT on the shortcut stream. A key benefit to this reordering is to allow the original input to flow from the first to the last layer.
+The **Gated Transformer-XL** (**GTrXL**; [Parisotto, et al. 2019](https://arxiv.org/abs/1910.06764)) is one attempt to use Transformer for RL. GTrXL succeeded in stabilizing training with two changes on top of [Transformer-XL](#longer-attention-span-transformer-xl):
+1. The layer normalization is only applied on the input stream in a residual module, but NOT on the shortcut stream. A key benefit to this reordering is to allow the original input to flow from the first to last layer.
 2. The residual connection is replaced with a GRU-style (Gated Recurrent Unit; [Chung et al., 2014](https://arxiv.org/abs/1412.3555)) *gating* mechanism.
 
 $$
@@ -575,7 +576,7 @@ The gating function parameters are explicitly initialized to be close to an iden
 
 ![GTrXL]({{ '/assets/images/gated-transformer-XL.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 15. Comparison of the model architecture of Transformer-XL, Transformer-XL with the layer norm reordered, and the Gated Transformer-XL. (Image source: Figure 1 in [Parisotto, et al. 2019](https://arxiv.org/abs/1910.06764))*
+*Fig. 15. Comparison of the model architecture of Transformer-XL, Transformer-XL with the layer norm reordered, and Gated Transformer-XL. (Image source: Figure 1 in [Parisotto, et al. 2019](https://arxiv.org/abs/1910.06764))*
 
 ---
 Cited as:

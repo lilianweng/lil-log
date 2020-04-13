@@ -47,23 +47,23 @@ Here is a list of notations to help you read through equations in the post easil
 | $$s \in \mathcal{S}$$ | States. |
 | $$a \in \mathcal{A}$$ | Actions. |
 | $$r \in \mathcal{R}$$ | Rewards. |
-| $$S_t, A_t, R_t$$ | State, action, and reward at time step t of one trajectory. I may occasionally use $$s_t, a_t, r_t$$ as well. |
+| $$S_t, A_t, R_t$$ | State, action, and reward at time step $$t$$ of one trajectory. I may occasionally use $$s_t, a_t, r_t$$ as well. |
 | $$\gamma$$ | Discount factor; penalty to uncertainty of future rewards; $$0<\gamma \leq 1$$. |
 | $$G_t$$ | Return; or discounted future reward; $$G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$$. |
-| $$P(s', r \vert s, a)$$ | Transition probability of getting to the next state s' from the current state s with action a and reward r. |
-| $$\pi(a \vert s)$$ | Stochastic policy (agent behavior strategy); $$\pi_\theta(.)$$ is a policy parameterized by θ. |
+| $$P(s', r \vert s, a)$$ | Transition probability of getting to the next state $$s'$$ from the current state $$s$$ with action $$a$$ and reward $$r$$. |
+| $$\pi(a \vert s)$$ | Stochastic policy (agent behavior strategy); $$\pi_\theta(.)$$ is a policy parameterized by $$\theta$$. |
 | $$\mu(s)$$ | Deterministic policy; we can also label this as $$\pi(s)$$, but using a different letter gives better distinction so that we can easily tell when the policy is stochastic or deterministic without further explanation. Either $$\pi$$ or $$\mu$$ is what a reinforcement learning algorithm aims to learn. |
-| $$V(s)$$ | State-value function measures the expected return of state s; $$V_w(.)$$ is a value function parameterized by w.|
-| $$V^\pi(s)$$ | The value of state s when we follow a policy π; $$V^\pi (s) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s]$$. |
-| $$Q(s, a)$$ | Action-value function is similar to $$V(s)$$, but it assesses the expected return of a pair of state and action (s, a); $$Q_w(.)$$ is a action value function parameterized by w. |
-| $$Q^\pi(s, a)$$ | Similar to $$V^\pi(.)$$, the value of (state, action) pair when we follow a policy π; $$Q^\pi(s, a) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s, A_t = a]$$. |
+| $$V(s)$$ | State-value function measures the expected return of state $$s$$; $$V_w(.)$$ is a value function parameterized by $$w$$.|
+| $$V^\pi(s)$$ | The value of state $$s$$ when we follow a policy $$\pi$$; $$V^\pi (s) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s]$$. |
+| $$Q(s, a)$$ | Action-value function is similar to $$V(s)$$, but it assesses the expected return of a pair of state and action $$(s, a)$$; $$Q_w(.)$$ is a action value function parameterized by $$w$$. |
+| $$Q^\pi(s, a)$$ | Similar to $$V^\pi(.)$$, the value of (state, action) pair when we follow a policy $$\pi$$; $$Q^\pi(s, a) = \mathbb{E}_{a\sim \pi} [G_t \vert S_t = s, A_t = a]$$. |
 | $$A(s, a)$$ | Advantage function, $$A(s, a) = Q(s, a) - V(s)$$; it can be considered as another version of Q-value with lower variance by taking the state-value off as the baseline. |
 
 
 
 ### Policy Gradient
 
-The goal of reinforcement learning is to find an optimal behavior strategy for the agent to obtain optimal rewards. The **policy gradient** methods target at modeling and optimizing the policy directly. The policy is usually modeled with a parameterized function respect to θ, $$\pi_\theta(a \vert s)$$. The value of the reward (objective) function depends on this policy and then various algorithms can be applied to optimize θ for the best reward.
+The goal of reinforcement learning is to find an optimal behavior strategy for the agent to obtain optimal rewards. The **policy gradient** methods target at modeling and optimizing the policy directly. The policy is usually modeled with a parameterized function respect to $$\theta$$, $$\pi_\theta(a \vert s)$$. The value of the reward (objective) function depends on this policy and then various algorithms can be applied to optimize $$\theta$$ for the best reward.
 
 The reward function is defined as:
 
@@ -74,13 +74,13 @@ J(\theta)
 = \sum_{s \in \mathcal{S}} d^\pi(s) \sum_{a \in \mathcal{A}} \pi_\theta(a \vert s) Q^\pi(s, a)
 $$
 
-where $$d^\pi(s)$$ is the stationary distribution of Markov chain for $$\pi_\theta$$ (on-policy state distribution under π). 
-For simplicity, the θ parameter would be omitted for the policy $$\pi_\theta$$ when the policy is present in the subscript of other functions; for example, $$d^{\pi}$$ and $$Q^\pi$$ should be $$d^{\pi_\theta}$$ and $$Q^{\pi_\theta}$$ if written in full.
+where $$d^\pi(s)$$ is the stationary distribution of Markov chain for $$\pi_\theta$$ (on-policy state distribution under $$\pi$$). For simplicity, the parameter $$\theta$$ would be omitted for the policy $$\pi_\theta$$ when the policy is present in the subscript of other functions; for example, $$d^{\pi}$$ and $$Q^\pi$$ should be $$d^{\pi_\theta}$$ and $$Q^{\pi_\theta}$$ if written in full.
+
 Imagine that you can travel along the Markov chain's states forever, and eventually, as the time progresses, the probability of you ending up with one state becomes unchanged --- this is the stationary probability for $$\pi_\theta$$. $$d^\pi(s) = \lim_{t \to \infty} P(s_t = s \vert s_0, \pi_\theta)$$ is the probability that $$s_t=s$$ when starting from $$s_0$$ and following policy $$\pi_\theta$$ for t steps. Actually, the existence of the stationary distribution of Markov chain is one main reason for why PageRank algorithm works. If you want to read more, check [this](https://jeremykun.com/2015/04/06/markov-chain-monte-carlo-without-all-the-bullshit/).
 
 It is natural to expect policy-based methods are more useful in the continuous space. Because there is an infinite number of actions and (or) states to estimate the values for and hence value-based approaches are way too expensive computationally in the continuous space. For example, in [generalized policy iteration]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}#policy-iteration), the policy improvement step $$\arg\max_{a \in \mathcal{A}} Q^\pi(s, a)$$ requires a full scan of the action space, suffering from the [curse of dimensionality](https://en.wikipedia.org/wiki/Curse_of_dimensionality).
 
-Using *gradient ascent*, we can move θ toward the direction suggested by the gradient $$\nabla_\theta J(\theta)$$ to find the best θ for $$\pi_\theta$$ that produces the highest return. 
+Using *gradient ascent*, we can move $$\theta$$ toward the direction suggested by the gradient $$\nabla_\theta J(\theta)$$ to find the best $$\theta$$ for $$\pi_\theta$$ that produces the highest return.
 
 
 ### Policy Gradient Theorem
@@ -218,7 +218,7 @@ $$
 Therefore we are able to measure $$G_t$$ from real sample trajectories and use that to update our policy gradient. It relies on a full trajectory and that's why it is a Monte-Carlo method. 
 
 The process is pretty straightforward:
-1. Initialize the policy parameter θ at random.
+1. Initialize the policy parameter $$\theta$$ at random.
 2. Generate one trajectory on policy $$\pi_\theta$$: $$S_1, A_1, R_2, S_2, A_2, \dots, S_T$$.
 3. For t=1, 2, ... , T:
     1. Estimate the the return $$G_t$$;
@@ -235,10 +235,10 @@ Two main components in policy gradient are the policy model and the value functi
 
 Actor-critic methods consist of two models, which may optionally share parameters:
 * **Critic** updates the value function parameters w and depending on the algorithm it could be action-value $$Q_w(a \vert s)$$ or state-value $$V_w(s)$$.
-* **Actor** updates the policy parameters θ for $$\pi_\theta(a \vert s)$$, in the direction suggested by the critic.
+* **Actor** updates the policy parameters $$\theta$$ for $$\pi_\theta(a \vert s)$$, in the direction suggested by the critic.
 
 Let's see how it works in a simple action-value actor-critic algorithm.
-1. Initialize s, θ, w at random; sample $$a \sim \pi_\theta(a \vert s)$$.
+1. Initialize $$s, \theta, w$$ at random; sample $$a \sim \pi_\theta(a \vert s)$$.
 2. For $$t = 1 \dots T$$:
     1. Sample reward $$r_t \sim R(s, a)$$ and next state $$s' \sim P(s' \vert s, a)$$;
     2. Then sample the next action $$a' \sim \pi_\theta(a' \vert s')$$;
@@ -264,7 +264,7 @@ J(\theta)
 = \mathbb{E}_{s \sim d^\beta} \big[ \sum_{a \in \mathcal{A}} Q^\pi(s, a) \pi_\theta(a \vert s) \big]
 $$
 
-where $$d^\beta(s)$$ is the stationary distribution of the behavior policy β; recall that $$d^\beta(s) = \lim_{t \to \infty} P(S_t = s \vert S_0, \beta)$$; and $$Q^\pi$$ is the action-value function estimated with regard to the target policy π (not the behavior policy!).
+where $$d^\beta(s)$$ is the stationary distribution of the behavior policy $$\beta$$; recall that $$d^\beta(s) = \lim_{t \to \infty} P(S_t = s \vert S_0, \beta)$$; and $$Q^\pi$$ is the action-value function estimated with regard to the target policy $$\pi$$ (not the behavior policy!).
 
 Given that the training observations are sampled by $$a \sim \beta(a \vert s)$$, we can rewrite the gradient as:
 
@@ -280,7 +280,7 @@ $$
 \end{aligned}
 $$
 
-where $$\frac{\pi_\theta(a \vert s)}{\beta(a \vert s)}$$ is the [importance weight](http://timvieira.github.io/blog/post/2014/12/21/importance-sampling/). Because $$Q^\pi$$ is a function of the target policy and thus a function of policy parameter θ,  we should take the derivative of $$\nabla_\theta Q^\pi(s, a)$$ as well according to the product rule. However, it is super hard to compute $$\nabla_\theta Q^\pi(s, a)$$ in reality. Fortunately if we use an approximated gradient with the gradient of Q ignored, we still guarantee the policy improvement and eventually achieve the true local minimum. This is justified in the proof [here](https://arxiv.org/pdf/1205.4839.pdf) (Degris, White & Sutton, 2012).
+where $$\frac{\pi_\theta(a \vert s)}{\beta(a \vert s)}$$ is the [importance weight](http://timvieira.github.io/blog/post/2014/12/21/importance-sampling/). Because $$Q^\pi$$ is a function of the target policy and thus a function of policy parameter $$\theta$$,  we should take the derivative of $$\nabla_\theta Q^\pi(s, a)$$ as well according to the product rule. However, it is super hard to compute $$\nabla_\theta Q^\pi(s, a)$$ in reality. Fortunately if we use an approximated gradient with the gradient of Q ignored, we still guarantee the policy improvement and eventually achieve the true local minimum. This is justified in the proof [here](https://arxiv.org/pdf/1205.4839.pdf) (Degris, White & Sutton, 2012).
 
 In summary, when applying policy gradient in the off-policy setting, we can simple adjust it with a weighted sum and the weight is the ratio of the target policy to the behavior policy, $$\frac{\pi_\theta(a \vert s)}{\beta(a \vert s)}$$.
 
@@ -296,15 +296,15 @@ In A3C, the critics learn the value function while multiple actors are trained i
 Let's use the state-value function as an example. The loss function for state value is to minimize the mean squared error, $$J_v(w) = (G_t - V_w(s))^2$$ and gradient descent can be applied to find the optimal w. This state-value function is used as the baseline in the policy gradient update.
 
 Here is the algorithm outline:
-1. We have global parameters, θ and w; similar thread-specific parameters, θ' and w'.
+1. We have global parameters, $$\theta$$ and $$w$$; similar thread-specific parameters, $$\theta'$$ and $$w'$$.
 2. Initialize the time step $$t = 1$$
-3. While $$T <= T_\text{MAX}$$:
-    1. Reset gradient: dθ = 0 and dw = 0.
-    2. Synchronize thread-specific parameters with global ones: θ' = θ and w' = w.
+3. While $$T \leq T_\text{MAX}$$:
+    1. Reset gradient: $$\mathrm{d}\theta = 0$$ and $$\mathrm{d}w = 0$$.
+    2. Synchronize thread-specific parameters with global ones: $$\theta' = \theta$$ and $$w' = w$$.
     3. $$t_\text{start}$$ = t and sample a starting state $$s_t$$.
-    4. While ($$s_t$$ != TERMINAL) and $$t - t_\text{start} <= t_\text{max}$$:
+    4. While ($$s_t$$ != TERMINAL) and $$t - t_\text{start} \leq t_\text{max}$$:
         1. Pick the action $$A_t \sim \pi_{\theta'}(A_t \vert S_t)$$ and receive a new reward $$R_t$$ and a new state $$s_{t+1}$$.
-        2. Update t = t + 1 and T = T + 1
+        2. Update $$t = t + 1$$ and $$T = T + 1$$
     5. Initialize the variable that holds the return estimation $$R = \begin{cases} 
 	0 & \text{if } s_t \text{ is TERMINAL} \\
 	V_{w'}(s_t) & \text{otherwise}
@@ -312,10 +312,10 @@ Here is the algorithm outline:
 	$$
     6. For $$i = t-1, \dots, t_\text{start}$$:
         1. $$R \leftarrow \gamma R + R_i$$; here R is a MC measure of $$G_i$$.
-        2. Accumulate gradients w.r.t. θ': $$d\theta \leftarrow d\theta + \nabla_{\theta'} \log \pi_{\theta'}(a_i \vert s_i)(R - V_{w'}(s_i))$$;<br/>Accumulate gradients w.r.t. w': $$dw \leftarrow dw + 2 (R - V_{w'}(s_i)) \nabla_{w'} (R - V_{w'}(s_i))$$.
-    7. Update asynchronously θ using dθ, and w using dw.
+        2. Accumulate gradients w.r.t. $$\theta'$$: $$d\theta \leftarrow d\theta + \nabla_{\theta'} \log \pi_{\theta'}(a_i \vert s_i)(R - V_{w'}(s_i))$$;<br/>Accumulate gradients w.r.t. w': $$dw \leftarrow dw + 2 (R - V_{w'}(s_i)) \nabla_{w'} (R - V_{w'}(s_i))$$.
+    7. Update asynchronously $$\theta$$ using $$\mathrm{d}\theta$$, and $$w$$ using $$\mathrm{d}w$$.
 
-A3C enables the parallelism in multiple agent training. The gradient accumulation step (6.2) can be considered as a parallelized reformation of minibatch-based stochastic gradient update: the values of w or θ get corrected by a little bit in the direction of each training thread independently.
+A3C enables the parallelism in multiple agent training. The gradient accumulation step (6.2) can be considered as a parallelized reformation of minibatch-based stochastic gradient update: the values of $$w$$ or $$\theta$$ get corrected by a little bit in the direction of each training thread independently.
 
 
 ### A2C
@@ -339,7 +339,7 @@ In methods described above, the policy function $$\pi(. \vert s)$$ is always mod
 
 Refresh on a few notations to facilitate the discussion:
 * $$\rho_0(s)$$: The initial distribution over states
-* $$\rho^\mu(s \to s', k)$$: Starting from state s, the visitation probability density at state s' after moving k steps by policy μ.
+* $$\rho^\mu(s \to s', k)$$: Starting from state s, the visitation probability density at state s' after moving k steps by policy $$\mu$$.
 * $$\rho^\mu(s')$$: Discounted state distribution, defined as $$\rho^\mu(s') = \int_\mathcal{S} \sum_{k=1}^\infty \gamma^{k-1} \rho_0(s) \rho^\mu(s \to s', k) ds$$.
 
 
@@ -349,7 +349,7 @@ $$
 J(\theta) = \int_\mathcal{S} \rho^\mu(s) Q(s, \mu_\theta(s)) ds
 $$
 
-**Deterministic policy gradient theorem**: Now it is the time to compute the gradient! According to the chain rule, we first take the gradient of Q w.r.t. the action a and then take the gradient of the deterministic policy function μ w.r.t. θ:
+**Deterministic policy gradient theorem**: Now it is the time to compute the gradient! According to the chain rule, we first take the gradient of Q w.r.t. the action a and then take the gradient of the deterministic policy function $$\mu$$ w.r.t. $$\theta$$:
 
 
 $$
@@ -397,7 +397,7 @@ In the off-policy approach with a stochastic policy, importance sampling is ofte
 
 **DDPG** ([Lillicrap, et al., 2015](https://arxiv.org/pdf/1509.02971.pdf)), short for **Deep Deterministic Policy Gradient**, is a model-free off-policy actor-critic algorithm, combining [DPG](#dpg) with [DQN]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning%}#deep-q-network). Recall that DQN (Deep Q-Network) stabilizes the learning of Q-function by experience replay and the frozen target network. The original DQN works in discrete space, and DDPG extends it to continuous space with the actor-critic framework while learning a deterministic policy.
 
-In order to do better exploration, an exploration policy μ' is constructed by adding noise $$\mathcal{N}$$:
+In order to do better exploration, an exploration policy $$\mu'$$ is constructed by adding noise $$\mathcal{N}$$:
 
 $$
 \mu'(s) = \mu_\theta(s) + \mathcal{N}
@@ -555,14 +555,14 @@ $$
 J^\text{TRPO} (\theta) = \mathbb{E} [ r(\theta) \hat{A}_{\theta_\text{old}}(s, a) ]
 $$
 
-Without a limitation on the distance between $$\theta_\text{old}$$ and $$\theta$$, to maximize $$J^\text{TRPO} (\theta)$$ would lead to instability with extremely large parameter updates and big policy ratios. PPO imposes the constraint by forcing r(θ) to stay within a small interval around 1, precisely [1-ε, 1+ε], where ε is a hyperparameter.
+Without a limitation on the distance between $$\theta_\text{old}$$ and $$\theta$$, to maximize $$J^\text{TRPO} (\theta)$$ would lead to instability with extremely large parameter updates and big policy ratios. PPO imposes the constraint by forcing $$r(\theta)$$ to stay within a small interval around 1, precisely $$[1-\epsilon, 1+\epsilon]$$, where $$\epsilon$$ is a hyperparameter.
 
 
 $$
 J^\text{CLIP} (\theta) = \mathbb{E} [ \min( r(\theta) \hat{A}_{\theta_\text{old}}(s, a), \text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon) \hat{A}_{\theta_\text{old}}(s, a))]
 $$
 
-The function $$\text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon)$$ clips the ratio within [1-ε, 1+ε]. The objective function of PPO takes the minimum one between the original value and the clipped version and therefore we lose the motivation for increasing the policy update to extremes for better rewards.
+The function $$\text{clip}(r(\theta), 1 - \epsilon, 1 + \epsilon)$$ clips the ratio to be no more than $$1+\epsilon$$ and no less than $$1-\epsilon$$. The objective function of PPO takes the minimum one between the original value and the clipped version and therefore we lose the motivation for increasing the policy update to extremes for better rewards.
 
 When applying PPO on the network architecture with shared parameters for both policy (actor) and value (critic) functions, in addition to the clipped reward, the objective function is augmented with an error term on the value estimation (formula in red) and an entropy term (formula in blue) to encourage sufficient exploration. 
 
@@ -588,10 +588,10 @@ PPO has been tested on a set of benchmark tasks and proved to produce awesome re
 
 **Retrace Q-value Estimation**
 
-[*Retrace*](http://papers.nips.cc/paper/6538-safe-and-efficient-off-policy-reinforcement-learning.pdf) is an off-policy return-based Q-value estimation algorithm with a nice guarantee for convergence for any target and behavior policy pair (π, β), plus good data efficiency.
+[*Retrace*](http://papers.nips.cc/paper/6538-safe-and-efficient-off-policy-reinforcement-learning.pdf) is an off-policy return-based Q-value estimation algorithm with a nice guarantee for convergence for any target and behavior policy pair $$(\pi, \beta)$$, plus good data efficiency.
 
 Recall how TD learning works for prediction:
-1. Compute TD error: $$\delta_t = R_t + \gamma \mathbb{E}_{a \sim \pi} Q(S_{t+1}, a) - Q(S_t, A_t)$$; the term $$r_t + \gamma \mathbb{E}_{a \sim \pi} Q(s_{t+1}, a) $$ is known as “TD target”. The expectation $$\mathbb{E}_{a \sim \pi}$$ is used because for the future step the best estimation we can make is what the return would be if we follow the current policy π. 
+1. Compute TD error: $$\delta_t = R_t + \gamma \mathbb{E}_{a \sim \pi} Q(S_{t+1}, a) - Q(S_t, A_t)$$; the term $$r_t + \gamma \mathbb{E}_{a \sim \pi} Q(s_{t+1}, a) $$ is known as “TD target”. The expectation $$\mathbb{E}_{a \sim \pi}$$ is used because for the future step the best estimation we can make is what the return would be if we follow the current policy $$\pi$$. 
 2. Update the value by correcting the error to move toward the goal: $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \delta_t$$. In other words, the incremental update on Q is proportional to the TD error: $$\Delta Q(S_t, A_t) = \alpha \delta_t$$.
 
 When the rollout is off policy, we need to apply importance sampling on the Q update:
@@ -601,7 +601,7 @@ $$
 = \gamma^t \prod_{1 \leq \tau \leq t} \frac{\pi(A_\tau \vert S_\tau)}{\beta(A_\tau \vert S_\tau)} \delta_t
 $$
 
-The product of importance weights looks pretty scary when we start imagining how it can cause super high variance and even explode. Retrace Q-value estimation method modifies $$\Delta Q$$ to have importance weights truncated by no more than a constant c:
+The product of importance weights looks pretty scary when we start imagining how it can cause super high variance and even explode. Retrace Q-value estimation method modifies $$\Delta Q$$ to have importance weights truncated by no more than a constant $$c$$:
 
 $$
 \Delta Q^\text{ret}(S_t, A_t) 
@@ -1139,7 +1139,7 @@ Cited as:
 
 [5] timvieira.github.io [Importance sampling](http://timvieira.github.io/blog/post/2014/12/21/importance-sampling/)
 
-[6] Mnih, Volodymyr, et al. ["Asynchronous methods for deep reinforcement learning."](https://arxiv.org/abs/1602.01783) ICML. 2016. 
+[6] Mnih, Volodymyr, et al. ["Asynchronous methods for deep reinforcement learning."](https://arxiv.org/abs/1602.01783) ICML. 2016.
 
 [7] David Silver, et al. ["Deterministic policy gradient algorithms."](https://hal.inria.fr/file/index/docid/938992/filename/dpg-icml2014.pdf) ICML. 2014.
 

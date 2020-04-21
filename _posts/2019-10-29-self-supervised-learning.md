@@ -356,14 +356,14 @@ where $$\mathbf{1}_{[k \neq i]}$$ is an indicator function: 1 if $$k\neq i$$ 0 o
 *Fig. 16. The algorithm for SimCLR. (Image source: [Chen et al, 2020](https://arxiv.org/abs/2002.05709)).*
 
 
-**CURL** ([Srinivas, et al. 2020](https://arxiv.org/abs/2004.04136)) applies the above ideas in Reinforcement Learning. It learns a visual representation for RL tasks by matching embeddings of two data-augmented versions, $$o_q$$ and $$o_k$$, of the raw observation $$o$$ via contrastive loss. CURL primarily relies on random crop data augmentation. The key encoder is implemented as a momentum encoder with weights as EMA of the query encoder weights, same as in [MoCo](#moco).
+**CURL** ([Srinivas & Laskin, et al. 2020](https://arxiv.org/abs/2004.04136)) applies the above ideas in Reinforcement Learning. It learns a visual representation for RL tasks by matching embeddings of two data-augmented versions, $$o_q$$ and $$o_k$$, of the raw observation $$o$$ via contrastive loss. CURL primarily relies on random crop data augmentation. The key encoder is implemented as a momentum encoder with weights as EMA of the query encoder weights, same as in [MoCo](#moco).
 
 One significant difference between RL and supervised visual tasks is that RL depends on *temporal* consistency between consecutive frames. Therefore, CURL applies augmentation consistently on each stack of frames to retain information about the temporal structure of the observation.
 
 
 ![CURL]({{ '/assets/images/CURL.png' | relative_url }})
 {: style="width: 90%;" class="center"}
-*Fig. 17. The architecture of CURL. (Image source: [Srinivas, et al. 2020](https://arxiv.org/abs/2004.04136))*
+*Fig. 17. The architecture of CURL. (Image source: [Srinivas & Laskin, et al. 2020](https://arxiv.org/abs/2004.04136))*
 
 
 

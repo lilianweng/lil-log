@@ -592,7 +592,7 @@ Cited as:
 
 
 
-## References
+## Reference
 
 [1] Ashish Vaswani, et al. ["Attention is all you need."](http://papers.nips.cc/paper/7181-attention-is-all-you-need.pdf) NIPS 2017.
 

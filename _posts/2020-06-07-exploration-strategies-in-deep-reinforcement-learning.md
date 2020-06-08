@@ -514,6 +514,18 @@ Different from VIC which models $$\Omega$$ conditioned only on the start and end
 
 DIAYN ("Diversity is all you need"; [Eysenbach, et al. 2018](https://arxiv.org/abs/1802.06070)) has the idea lying in the same direction, although with a different name --- DIAYN models the policies conditioned on a latent *skill* variable. See my [previous post]({{ site.baseurl }}{% post_url 2019-06-23-meta-reinforcement-learning %}#learning-with-random-rewards) for more details.
 
+---
+Cited as:
+```
+@article{weng2020exploration,
+  title   = "Exploration Strategies in Deep Reinforcement Learning",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2020",
+  url     = "https://lilianweng.github.io/lil-log/2020/06/07/exploration-strategies-in-deep-reinforcement-learning.html"
+}
+```
+
 
 
 ## Reference

@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "The Multi-Armed Bandit Problem and Its Solutions"
 date: 2018-01-23 22:09:00
-tags: reinforcement-learning
+tags: reinforcement-learning exploration
 image: "klay-thompson.jpg"
 ---
 

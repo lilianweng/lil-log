@@ -443,7 +443,7 @@ Reformer proposed two main changes:
 2. Replace the standard residual blocks with *reversible residual layers*, which allows storing activations only once during training instead of $$N$$ times (i.e. proportional to the number of layers).
 
 
-**Locality-Sensitive Hashing Attention**
+<a name="LSH" />**Locality-Sensitive Hashing Attention**
 
 In $$\mathbf{Q} \mathbf{K}^\top$$ part of the [attention formula](#attention-and-self-attention), we are only interested in the largest elements as only large elements contribute a lot after softmax. For each query $$\mathbf{q}_i \in \mathbf{Q}$$, we are looking for row vectors in $$\mathbf{K}$$ closest to $$\mathbf{q}_i$$. In order to find nearest neighbors quickly in high-dimensional space, Reformer incorporates [Locality-Sensitive Hashing (LSH)](https://en.wikipedia.org/wiki/Locality-sensitive_hashing) into its attention mechanism.
 

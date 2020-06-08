@@ -218,12 +218,13 @@ div.qa {
   }
 
   h4 {
-    @include relative-font-size(1.15);
+    @include relative-font-size(1.1);
 
     @include media-query($on-laptop) {
       @include relative-font-size(1.125);
     }
     font-weight: $base-font-weight * 2.0;
+    color: $grey-color;
   }
 
   a {

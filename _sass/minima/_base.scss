@@ -205,8 +205,7 @@ blockquote {
   padding: 10px;
   margin: 10px;
   padding-left: 25px;
-  @include relative-font-size(1.125);
-  letter-spacing: -1px;
+  @include relative-font-size(0.9);
   background: #f0f0f0;
 
   > :last-child {

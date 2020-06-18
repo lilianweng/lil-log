@@ -7,7 +7,7 @@ tags: object-detection object-recognition
 image: "manu-2013-segmentation.png"
 ---
 
-> In Part 3, we would examine five object detection models: R-CNN, Fast R-CNN, Faster R-CNN, and Mask R-CNN. These models are highly related and the new versions show great speed improvement compared to the older ones.
+> In Part 3, we would examine four object detection models: R-CNN, Fast R-CNN, Faster R-CNN, and Mask R-CNN. These models are highly related and the new versions show great speed improvement compared to the older ones.
 
 
 <!--more-->

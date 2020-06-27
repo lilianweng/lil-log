@@ -335,7 +335,7 @@ A2C has been [shown](https://blog.openai.com/baselines-acktr-a2c/) to be able to
 
 [[paper](https://hal.inria.fr/file/index/docid/938992/filename/dpg-icml2014.pdf)\|code]
 
-In methods described above, the policy function $$\pi(. \vert s)$$ is always modeled as a probability distribution over actions $$\mathcal{A}$$ given the current state and thus it is *stochastic*. **Deterministic policy gradient (DPG)** instead models the policy as a deterministic decision: $$a = \mu(s)$$. It may look bizarre --- how can you calculate the gradient of the policy function when it outputs a single action? Let's look into it step by step.
+In methods described above, the policy function $$\pi(. \vert s)$$ is always modeled as a probability distribution over actions $$\mathcal{A}$$ given the current state and thus it is *stochastic*. **Deterministic policy gradient (DPG)** instead models the policy as a deterministic decision: $$a = \mu(s)$$. It may look bizarre --- how can you calculate the gradient of the action probability when it outputs a single action? Let's look into it step by step.
 
 Refresh on a few notations to facilitate the discussion:
 * $$\rho_0(s)$$: The initial distribution over states
@@ -451,9 +451,9 @@ $$
 
 [[paper](https://arxiv.org/pdf/1706.02275.pdf)\|[code](https://github.com/openai/maddpg)]
 
-**Multi-agent DDPG** (**MADDPG**) ([Lowe et al., 2017](https://arxiv.org/pdf/1706.02275.pdf))extends DDPG to an environment where multiple agents are coordinating to complete tasks with only local information. In the viewpoint of one agent, the environment is non-stationary as policies of other agents are quickly upgraded and remain unknown. MADDPG is an actor-critic model redesigned particularly for handling such a changing environment and interactions between agents.
+**Multi-agent DDPG** (**MADDPG**) ([Lowe et al., 2017](https://arxiv.org/pdf/1706.02275.pdf)) extends DDPG to an environment where multiple agents are coordinating to complete tasks with only local information. In the viewpoint of one agent, the environment is non-stationary as policies of other agents are quickly upgraded and remain unknown. MADDPG is an actor-critic model redesigned particularly for handling such a changing environment and interactions between agents.
 
-The problem can be formalized in the multi-agent version of MDP, also known as *Markov games*. Say, there are N agents in total with a set of states $$\mathcal{S}$$. Each agent owns a set of possible action, $$\mathcal{A}_1, \dots, \mathcal{A}_N$$, and a set of observation, $$\mathcal{O}_1, \dots, \mathcal{O}_N$$. The state transition function involves all states, action and observation spaces  $$\mathcal{T}: \mathcal{S} \times \mathcal{A}_1 \times \dots \mathcal{A}_N \mapsto \mathcal{S}$$. Each agent's stochastic policy only involves its own state and action: $$\pi_{\theta_i}: \mathcal{O}_i \times \mathcal{A}_i \mapsto [0, 1]$$, a probability distribution over actions given its own observation, or a deterministic policy: $$\mu_{\theta_i}: \mathcal{O}_i \mapsto \mathcal{A}_i$$.
+The problem can be formalized in the multi-agent version of MDP, also known as *Markov games*. MADDPG is proposed for partially observable Markov games. Say, there are N agents in total with a set of states $$\mathcal{S}$$. Each agent owns a set of possible action, $$\mathcal{A}_1, \dots, \mathcal{A}_N$$, and a set of observation, $$\mathcal{O}_1, \dots, \mathcal{O}_N$$. The state transition function involves all states, action and observation spaces  $$\mathcal{T}: \mathcal{S} \times \mathcal{A}_1 \times \dots \mathcal{A}_N \mapsto \mathcal{S}$$. Each agent's stochastic policy only involves its own state and action: $$\pi_{\theta_i}: \mathcal{O}_i \times \mathcal{A}_i \mapsto [0, 1]$$, a probability distribution over actions given its own observation, or a deterministic policy: $$\mu_{\theta_i}: \mathcal{O}_i \mapsto \mathcal{A}_i$$.
 
 
 

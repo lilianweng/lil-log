@@ -156,7 +156,7 @@ $$
 s_t = \mathcal{S}(s_{t-1}, W_x x_t), \quad y_t = W_y s_t + b_y\quad\text{for }t=1, \dots, L
 $$
 
-ACT enables the above RNN setup to perform a variable number of steps at each input element. Multiple computational steps lead to a sequence of intermediate states $$(s_t^1, \dots, s_t^{N(t)})$$ and outputs $$(y_t^1, \dots, y_t^{N(t)})$$ --- they all share the same state transition function $$\mathcal{S}(.)$$, as well as the same output weights $$W_x$$ and bias $$b_y$$:
+ACT enables the above RNN setup to perform a variable number of steps at each input element. Multiple computational steps lead to a sequence of intermediate states $$(s_t^1, \dots, s_t^{N(t)})$$ and outputs $$(y_t^1, \dots, y_t^{N(t)})$$ --- they all share the same state transition function $$\mathcal{S}(.)$$, as well as the same output weights $$W_y$$ and bias $$b_y$$:
 
 $$
 \begin{aligned}
@@ -339,7 +339,7 @@ However, if we want to use Transformer on images, it is unclear how to define th
 
 The encoder-decoder architecture remains for image-conditioned generation:
 - The encoder generates a contextualized, per-pixel-channel representation of the source image;
-- The decoder *auto-regressively* generates an output image, one channel per pixel at each time step.
+- The decoder *autoregressively* generates an output image, one channel per pixel at each time step.
 
 Let's label the representation of the current pixel to be generated as the query $$\mathbf{q}$$. Other positions whose representations will be used for computing $$\mathbf{q}$$ are key vector $$\mathbf{k}_1, \mathbf{k}_2, \dots$$ and they together form a memory matrix $$\mathbf{M}$$. The scope of $$\mathbf{M}$$ defines the context window for pixel query $$\mathbf{q}$$.
 

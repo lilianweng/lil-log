@@ -55,7 +55,7 @@ In **Genetic Algorithms (GA)**, another popular subcategory of EA, $$x$$ is a se
 [This](http://blog.otoro.net/2017/10/29/visual-evolution-strategies/) is the most basic and canonical version of evolution strategies. It models $$p_\theta(x)$$ as a $$n$$-dimensional isotropic Gaussian distribution, in which $$\theta$$ only tracks the mean $$\mu$$ and standard deviation $$\sigma$$.
 
 $$
-\theta = (\mu, \sigma),\;p_\theta(x) \sim \mathcal{N}(\mathbf{\mu}, \sigma^2 I \sim \mu + \sigma \mathcal{N}(0, I)
+\theta = (\mu, \sigma),\;p_\theta(x) \sim \mathcal{N}(\mathbf{\mu}, \sigma^2 I) = \mu + \sigma \mathcal{N}(0, I)
 $$
 
 The process of Simple-Gaussian-ES, given $$x \in \mathcal{R}^n$$:

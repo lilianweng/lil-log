@@ -14,7 +14,9 @@ image: "transformer.png"
 <span style="color: #286ee0;">[Updated on 2018-10-28: Add [Pointer Network](#pointer-network) and the [link](https://github.com/lilianweng/transformer-tensorflow) to my implementation of Transformer.]</span><br/>
 <span style="color: #286ee0;">[Updated on 2018-11-06: Add a [link](https://github.com/lilianweng/transformer-tensorflow) to the implementation of Transformer model.]</span><br/>
 <span style="color: #286ee0;">[Updated on 2018-11-18: Add [Neural Turing Machines](#neural-turing-machines).]</span><br/>
-<span style="color: #286ee0;">[Updated on 2019-07-18: Correct the mistake on using the term "self-attention" when introducing the [show-attention-tell](https://arxiv.org/abs/1502.03044) paper; moved it to [Self-Attention](#self-attention) section.]</span>
+<span style="color: #286ee0;">[Updated on 2019-07-18: Correct the mistake on using the term "self-attention" when introducing the [show-attention-tell](https://arxiv.org/abs/1502.03044) paper; moved it to [Self-Attention](#self-attention) section.]</span><br/>
+<span style="color: #286ee0;">[Updated on 2020-04-07: A follow-up post on improved Transformer models is [here]({{ site.baseurl }}{% post_url 2020-04-07-the-transformer-family %}).]</span>
+
 
 {: class="table-of-content"}
 * TOC
@@ -431,16 +433,16 @@ Then we apply the dot-product attention to output the self-attention feature map
 $$
 \begin{aligned}
 \alpha_{i,j} &= \text{softmax}(f(\mathbf{x}_i)^\top g(\mathbf{x}_j)) \\
-\mathbf{o}_j &= \sum_{i=1}^N \alpha_{i,j} h(\mathbf{x}_i)
+\mathbf{o}_j &= \mathbf{W}_v \Big( \sum_{i=1}^N \alpha_{i,j} h(\mathbf{x}_i) \Big)
 \end{aligned}
 $$
 
 
-![SAGAN]({{ '/assets/images/self-attention-gan-network.png' | relative_url }})
+![SAGAN]({{ '/assets/images/SAGAN.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 20. The self-attention mechanism in SAGAN. (Image source: Fig. 2 in [Zhang et al., 2018](https://arxiv.org/pdf/1805.08318.pdf))*
+*Fig. 20. The self-attention mechanism in SAGAN. (Image source: Fig. 2 in [Zhang et al., 2018](https://arxiv.org/abs/1805.08318))*
 
-Note that $$\alpha_{i,j}$$ is one entry in the attention map, indicating how much attention the model should pay to the i-th position when synthesizing the j-th location. $$\mathbf{W}_f$$, $$\mathbf{W}_g$$, and $$\mathbf{W}_h$$ are all 1x1 convolution filters. If you feel that 1x1 conv sounds like a weird concept (i.e., isn't it just to multiply the whole feature map with one number?), watch this short [tutorial](https://www.coursera.org/lecture/convolutional-neural-networks/networks-in-networks-and-1x1-convolutions-ZTb8x) by Andrew Ng. The output $$\mathbf{o}_j$$ is a column vector of the final output $$\mathbf{o}= (\mathbf{o}_1, \mathbf{o}_2, \dots, \mathbf{o}_j, \dots, \mathbf{o}_N)$$.
+Note that $$\alpha_{i,j}$$ is one entry in the attention map, indicating how much attention the model should pay to the $$i$$-th position when synthesizing the $$j$$-th location. $$\mathbf{W}_f$$, $$\mathbf{W}_g$$, and $$\mathbf{W}_h$$ are all 1x1 convolution filters. If you feel that 1x1 conv sounds like a weird concept (i.e., isn't it just to multiply the whole feature map with one number?), watch this short [tutorial](https://www.coursera.org/lecture/convolutional-neural-networks/networks-in-networks-and-1x1-convolutions-ZTb8x) by Andrew Ng. The output $$\mathbf{o}_j$$ is a column vector of the final output $$\mathbf{o}= (\mathbf{o}_1, \mathbf{o}_2, \dots, \mathbf{o}_j, \dots, \mathbf{o}_N)$$.
 
 
 Furthermore, the output of the attention layer is multiplied by a scale parameter and added back to the original input feature map:

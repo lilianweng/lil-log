@@ -306,6 +306,8 @@ How to model the conditional density is of your choice. It can be a univariate G
 
 If a flow transformation in a normalizing flow is framed as an autoregressive model --- each dimension in a vector variable is conditioned on the previous dimensions --- this is an **autoregressive flow**.
 
+This section starts with several classic autoregressive models (MADE, PixelRNN, WaveNet) and then we dive into autoregressive flow models (MAF and IAF).
+
 
 ### MADE
 

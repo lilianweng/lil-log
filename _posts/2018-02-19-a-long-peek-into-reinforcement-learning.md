@@ -552,7 +552,7 @@ Let's see how it works in an action-value actor-critic algorithm.
 	3. Update policy parameters: $$\theta \leftarrow \theta + \alpha_\theta Q(s, a; w) \nabla_\theta \ln \pi(a \vert s; \theta)$$.
 	4. Compute the correction for action-value at time t: <br/>
 	$$G_{t:t+1} = r_t + \gamma Q(s', a'; w) - Q(s, a; w)$$ <br/>
-	and use it to update action function parameters: <br/>
+	and use it to update value function parameters: <br/>
 	$$w \leftarrow w + \alpha_w G_{t:t+1} \nabla_w Q(s, a; w) $$.
 	5. Update $$a \leftarrow a'$$ and $$s \leftarrow s'$$.
 

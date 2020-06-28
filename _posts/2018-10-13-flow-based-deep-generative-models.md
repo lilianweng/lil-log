@@ -329,7 +329,7 @@ $$
 {: style="width: 75%;" class="center"}
 *Fig. 5. Demonstration of how MADE works in a three-layer feed-forward neural network. (Image source: [Germain et al., 2015](https://arxiv.org/abs/1502.03509))*
 
-To zero out some connections between layers, we can simply element-wise multiply every weight matrix by a binary mask matrix. Each hidden node is assigned with a random "connectivity integer" between 1 and D-1; the assigned value for the $$k$$-th unit in the $$l$$-th layer is denoted by $$m^l_k$$. The binary mask matrix is determined by element-wise comparing values of two nodes in two layers. 
+To zero out some connections between layers, we can simply element-wise multiply every weight matrix by a binary mask matrix. Each hidden node is assigned with a random "connectivity integer" between $$1$$ and $$D-1$$; the assigned value for the $$k$$-th unit in the $$l$$-th layer is denoted by $$m^l_k$$. The binary mask matrix is determined by element-wise comparing values of two nodes in two layers. 
 
 $$
 \begin{aligned}
@@ -344,7 +344,7 @@ M^{\mathbf{W}^l}_{k', k}
 M^{\mathbf{V}}_{d, k} 
 &= \mathbf{1}_{d \geq m^L_k} 
 = \begin{cases}
-    1, & \text{if } d \geq m^L_k\\
+    1, & \text{if } d > m^L_k\\
     0, & \text{otherwise}
 \end{cases}
 \end{aligned}

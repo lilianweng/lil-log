@@ -31,7 +31,7 @@ KL divergence measures how one probability distribution $$p$$ diverges from a se
 
 $$
 \begin{aligned}
-D_{KL}(p \| q) &= \sum_x p(x) \log \frac{p(x)}{q(x)} dx \\
+D_{KL}(p \| q) &= \sum_x p(x) \log \frac{p(x)}{q(x)} \\
  &= - \sum_x p(x)\log q(x) + \sum_x p(x)\log p(x) \\
  &= H(P, Q) - H(P)
 \end{aligned}

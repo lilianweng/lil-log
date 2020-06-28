@@ -265,7 +265,7 @@ Policy Evaluation is to compute the state-value $$V_\pi$$ for a given policy $$\
 $$
 V_{t+1}(s) 
 = \mathbb{E}_\pi [r + \gamma V_t(s') | S_t = s]
-= \sum_a \pi(a \vert s) \sum_{s', r} P(s', r \vert s, a) (r + \gamma V_k(s'))
+= \sum_a \pi(a \vert s) \sum_{s', r} P(s', r \vert s, a) (r + \gamma V_t(s'))
 $$
 
 #### Policy Improvement

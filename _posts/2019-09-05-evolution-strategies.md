@@ -492,7 +492,7 @@ $$
 **NSRAdapt-ES (NSRA-ES)**: the adaptive weighting parameter $$w = 1.0$$ initially. We start decreasing $$w$$ if performance stays flat for a number of generations. Then when the performance starts to increase, we stop decreasing $$w$$ but increase it instead. In this way, fitness is preferred when the performance stops growing but novelty is preferred otherwise. 
 
 $$
-\theta_m^{(t+1)} \leftarrow \theta_m^{(t)} + \alpha \frac{1}{\sigma}\sum_{i=1}^N \epsilon_i \big(w N(\theta^{(t)}_m + \epsilon_i, \mathcal{A}) + (1-w) F(\theta^{(t)}_m + \epsilon_i)\big)
+\theta_m^{(t+1)} \leftarrow \theta_m^{(t)} + \alpha \frac{1}{\sigma}\sum_{i=1}^N \epsilon_i \big((1-w) N(\theta^{(t)}_m + \epsilon_i, \mathcal{A}) + w F(\theta^{(t)}_m + \epsilon_i)\big)
 $$
 
 

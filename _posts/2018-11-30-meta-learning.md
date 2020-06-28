@@ -49,7 +49,7 @@ It looks very similar to a normal learning task, but *one dataset* is considered
 
 ### Training in the Same Way as Testing
 
-A dataset $$\mathcal{D}$$ contains pairs of feature vectors and labels, $$\mathcal{D} = \{(\mathbf{x}_i, y_i)\}$$ and each label belongs to a known label set $$\mathcal{L}$$.  Let's say, our classifier $$f_\theta$$ with parameter $$\theta$$ outputs a probability of a data point belonging to the class $$y$$ given the feature vector $$\mathbf{x}$$, $$P_\theta(y\vert\mathbf{x})$$. 
+A dataset $$\mathcal{D}$$ contains pairs of feature vectors and labels, $$\mathcal{D} = \{(\mathbf{x}_i, y_i)\}$$ and each label belongs to a known label set $$\mathcal{L}^\text{label}$$.  Let's say, our classifier $$f_\theta$$ with parameter $$\theta$$ outputs a probability of a data point belonging to the class $$y$$ given the feature vector $$\mathbf{x}$$, $$P_\theta(y\vert\mathbf{x})$$. 
 
 The optimal parameters should maximize the probability of true labels across multiple training batches $$B \subset \mathcal{D}$$:
 
@@ -61,7 +61,7 @@ $$
 $$
 
 In few-shot classification, the goal is to reduce the prediction error on data samples with unknown labels given a small support set for "fast learning" (think of how "fine-tuning" works). To make the training process mimics what happens during inference, we would like to "fake" datasets with a subset of labels to avoid exposing all the labels to the model and modify the optimization procedure accordingly to encourage fast learning:
-1. Sample a subset of labels, $$L\subset\mathcal{L}$$.
+1. Sample a subset of labels, $$L\subset\mathcal{L}^\text{label}$$.
 2. Sample a support set $$S^L \subset \mathcal{D}$$ and a training batch $$B^L \subset \mathcal{D}$$. Both of them only contain data points with labels belonging to the sampled label set $$L$$, $$y \in L, \forall (x, y) \in S^L, B^L$$.
 3. The support set is part of the model input. <!-- , $$\hat{y}=f_\theta(\mathbf{x}, S^L)$$ -->
 4. The final optimization uses the mini-batch $$B^L$$ to compute the loss and update the model parameters through backpropagation, in the same way as how we use it in the supervised learning.
@@ -540,7 +540,7 @@ $$
 \text{where } g_\text{MAML}
 &= \nabla_{\theta} \mathcal{L}^{(1)}(\theta_k) &\\[2mm]
 &= \nabla_{\theta_k} \mathcal{L}^{(1)}(\theta_k) \cdot (\nabla_{\theta_{k-1}} \theta_k) \dots (\nabla_{\theta_0} \theta_1) \cdot (\nabla_{\theta} \theta_0) & \scriptstyle{\text{; following the chain rule}} \\
-&= \nabla_{\theta_k} \mathcal{L}^{(1)}(\theta_k) \cdot \prod_{i=1}^k \nabla_{\theta_{i-1}} \theta_i &  \\
+&= \nabla_{\theta_k} \mathcal{L}^{(1)}(\theta_k) \cdot \Big( \prod_{i=1}^k \nabla_{\theta_{i-1}} \theta_i \Big) \cdot I &  \\
 &= \nabla_{\theta_k} \mathcal{L}^{(1)}(\theta_k) \cdot \prod_{i=1}^k \nabla_{\theta_{i-1}} (\theta_{i-1} - \alpha\nabla_\theta\mathcal{L}^{(0)}(\theta_{i-1})) &  \\
 &= \nabla_{\theta_k} \mathcal{L}^{(1)}(\theta_k) \cdot \prod_{i=1}^k (I - \alpha\nabla_{\theta_{i-1}}(\nabla_\theta\mathcal{L}^{(0)}(\theta_{i-1}))) &
 \end{aligned}

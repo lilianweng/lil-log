@@ -47,7 +47,7 @@ Autocoder is invented to reconstruct high-dimensional data using a neural networ
 
 ## Autoencoder
 
-**Autoencoder** is a neural network designed to learn an identity function in an unsupervised way  to reconstruct the original input while compressing the data in the process so as to discover a more efficient and compressed representation. The idea was originated in [the 1980s](https://en.wikipedia.org/wiki/Autoencoder), and later promoted by the seminal paper by [Hinton & Salakhutdinov, 2006](https://pdfs.semanticscholar.org/c50d/ca78e97e335d362d6b991ae0e1448914e9a3.pdf).
+**Autoencoder** is a neural network designed to learn an identity function in an unsupervised way  to reconstruct the original input while compressing the data in the process so as to discover a more efficient and compressed representation. The idea was originated in [the 1980s](https://en.wikipedia.org/wiki/Autoencoder), and later promoted by the seminal paper by [Hinton & Salakhutdinov, 2006](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.459.3788&rep=rep1&type=pdf).
 
 It consists of two networks:
 - *Encoder* network: It translates the original high-dimension input into the latent low-dimensional code. The input size is larger than the output size.
@@ -61,7 +61,7 @@ It consists of two networks:
 
 The encoder network essentially accomplishes the [dimensionality reduction](https://en.wikipedia.org/wiki/Dimensionality_reduction), just like how we would use Principal Component Analysis (PCA) or Matrix Factorization (MF) for. In addition, the autoencoder is explicitly optimized for the data reconstruction from the code. A good intermediate representation not only can capture latent variables, but also benefits a full [decompression](https://ai.googleblog.com/2016/09/image-compression-with-neural-networks.html) process.
 
-The model contains an encoder function $$g(.)$$ parameterized by $$\phi$$ and a decoder function $$f(.)$$ parameterized by $$\theta$$. The low-dimensional code learned for input $$\mathbf{x}$$ in the bottleneck layer is $$\mathbf{z} = $$ and the reconstructed input is $$\mathbf{x}' = f_\theta(g_\phi(\mathbf{x}))$$.
+The model contains an encoder function $$g(.)$$ parameterized by $$\phi$$ and a decoder function $$f(.)$$ parameterized by $$\theta$$. The low-dimensional code learned for input $$\mathbf{x}$$ in the bottleneck layer is $$\mathbf{z} = g_\phi(\mathbf{x})$$ and the reconstructed input is $$\mathbf{x}' = f_\theta(g_\phi(\mathbf{x}))$$.
 
 The parameters $$(\theta, \phi)$$ are learned together to output a reconstructed data sample same as the original input, $$\mathbf{x} \approx f_\theta(g_\phi(\mathbf{x}))$$, or in other words, to learn an identity function. There are various metrics to quantify the difference between two vectors, such as cross entropy when the activation function is sigmoid, or as simple as MSE loss:
 

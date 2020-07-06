@@ -122,7 +122,7 @@ $$
 Q_{\pi}(s, a) = \mathbb{E}_{\pi}[G_t \vert S_t = s, A_t = a]
 $$
 
-Additionally, since we follow the target policy $$\pi$$, we can make use of the probility distribution over possible actions and the Q-values to recover the state-value:
+Additionally, since we follow the target policy $$\pi$$, we can make use of the probability distribution over possible actions and the Q-values to recover the state-value:
 
 $$
 V_{\pi}(s) = \sum_{a \in \mathcal{A}} Q_{\pi}(s, a) \pi(a \vert s)

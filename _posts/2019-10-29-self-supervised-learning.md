@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Self-Supervised Representation Learning"
 date: 2019-11-10 18:00:00
-tags: representation-learning long-read generative-model object-recognition
+tags: representation-learning long-read generative-model object-recognition reinforcement-learning
 ---
 
 

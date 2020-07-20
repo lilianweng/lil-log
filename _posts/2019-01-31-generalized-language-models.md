@@ -449,7 +449,7 @@ Parameter sharing across layers can happen in many ways: (a) only share feed-for
 
 ### Sentence-Order Prediction (SOP)
 
-Interestingly, the [next sentence prediction (NSP)](#NSP) task of BERT turned out to be too easy. ALBERT instead adopted a sentence-order prediction (SOP) [self-supervised]({{ site.baseurl }}{% post_url 2019-11-10-self-supervised-learning %}) loss, 
+Interestingly, the [next sentence prediction (NSP)](#NSP) task of BERT turned out to be too easy. ALBERT instead adopted a sentence-order prediction (SOP) [self-supervised]({{ site.baseurl }}{% post_url 2019-10-29-self-supervised-learning %}) loss, 
 Positive sample: two consecutive segments from the same document.
 Negative sample: same as above, but the segment order is switched.
 

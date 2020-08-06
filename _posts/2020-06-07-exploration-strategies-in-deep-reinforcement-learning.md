@@ -58,7 +58,6 @@ The "Noisy-TV" problem started as a thought experiment in [Burda, et al (2018)](
 
 ![The noisy-TV problem]({{ '/assets/images/the-noisy-TV-problem.gif' | relative_url }})
 {: style="width: 100%;" class="center"}
-
 *Fig. 1. An agent is rewarded with novel experience in the experiment. If a maze has a noisy TC set up, the agent would be attracted and stop moving in the maze. (Image source: [OpenAI Blog: "Reinforcement Learning with Prediction-Based Rewards"](https://openai.com/blog/reinforcement-learning-with-prediction-based-rewards/))*
 
 

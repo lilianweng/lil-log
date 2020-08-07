@@ -93,7 +93,7 @@ The predictions for each cell are grouped into $$B$$ blocks ($$B=5$$ in the NASN
 <a name="ScheduledDropPath"></a>During the experiments, they discovered that a modified version of [*DropPath*](https://arxiv.org/abs/1605.07648), named *ScheduledDropPath*, significantly improves the final performance of NASNet experiments. DropPath stochastically drops out paths (i.e. edges with operations attached in NASNet) with a fixed probability. ScheduledDropPath is DropPath with a linearly increasing probability of path dropping during training time.
 
 
-[Elsken, et al 2019](https://arxiv.org/abs/1808.05377) pointed out three major advantages of the NASNet search space:
+[Elsken, et al (2019)](https://arxiv.org/abs/1808.05377) point out three major advantages of the NASNet search space:
 1. The search space size is reduced drastically;
 2. The [motif](https://en.wikipedia.org/wiki/Network_motif)-based architecture can be more easily transferred to different datasets.
 3. It demonstrates a strong proof of a useful design pattern of repeatedly stacking modules in architecture engineering. For example, we can build strong models by stacking residual blocks in CNN or stacking multi-headed attention blocks in Transformer.
@@ -132,9 +132,9 @@ $$
 
 where $$\text{merge}[]$$ is implemented as depth-wise concatenation in the [paper](https://arxiv.org/abs/1711.00436).
 
-Same as NASNet, experiments in [Liu et al 2017](https://arxiv.org/abs/1711.00436) focused on discovering good cell architecture within a predefined "macro" structure with repeated modules. They showed that the power of simple search methods (e.g. random search or evolutionary algorithms) can be substantially enhanced using well-designed search spaces.
+Same as NASNet, experiments in [Liu et al (2017)](https://arxiv.org/abs/1711.00436) focused on discovering good cell architecture within a predefined "macro" structure with repeated modules. They showed that the power of simple search methods (e.g. random search or evolutionary algorithms) can be substantially enhanced using well-designed search spaces.
 
-[Cai et al. 2018b](https://arxiv.org/abs/1806.02639) proposed a tree-structure search space using path-level network transformation. Each node in a tree structure defines an *allocation* scheme for splitting inputs for child nodes and a *merge* scheme for combining results from child nodes. The path-level network transformation allows replacing a single layer with a multi-branch motif if its corresponding merge scheme is add or concat.
+[Cai et al (2018b)](https://arxiv.org/abs/1806.02639) propose a tree-structure search space using path-level network transformation. Each node in a tree structure defines an *allocation* scheme for splitting inputs for child nodes and a *merge* scheme for combining results from child nodes. The path-level network transformation allows replacing a single layer with a multi-branch motif if its corresponding merge scheme is add or concat.
 
 
 ![Path-level network transformation]({{ '/assets/images/path-level-network-transformations.png' | relative_url }})
@@ -145,7 +145,7 @@ Same as NASNet, experiments in [Liu et al 2017](https://arxiv.org/abs/1711.00436
 
 ### Memory-bank Representation
 
-A memory-bank representation of feed-forward networks is proposed by [Brock et al. 2017](https://arxiv.org/abs/1708.05344) in [SMASH](#prediction-based). Instead of a graph of operations, they view a neural network as a system with multiple memory blocks which can read and write. Each layer operation is designed to: (1) read from a subset of memory blocks; (2) computes results; finally (3) write the results into another subset of blocks. For example, in a sequential model, a single memory block would get read and overwritten consistently.
+A memory-bank representation of feed-forward networks is proposed by [Brock et al. (2017)](https://arxiv.org/abs/1708.05344) in [SMASH](#prediction-based). Instead of a graph of operations, they view a neural network as a system with multiple memory blocks which can read and write. Each layer operation is designed to: (1) read from a subset of memory blocks; (2) computes results; finally (3) write the results into another subset of blocks. For example, in a sequential model, a single memory block would get read and overwritten consistently.
 
 
 ![Memory-bank representation]({{ '/assets/images/NAS-memory-bank-view-representation.png' | relative_url }})
@@ -208,7 +208,7 @@ where a state $$s_t$$ is a tuple of layer operation and related parameters. An a
 *Figure 10. Mutations in the NEAT algorithm. (Image source: Fig 3 & 4 in [Stanley & Miikkulainen, 2002](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf))*
 
 
-[Real et al. (2018)](https://arxiv.org/abs/1802.01548) adopted the evolutionary algorithms (EA) as a way to search for high-performance network architectures, named **AmoebaNet**. They applied the [tournament selection](https://en.wikipedia.org/wiki/Tournament_selection) method, which at each iteration picks a best candidate out of a random set of samples and places its mutated offspring back into the population. When the tournament size is $$1$$, it is equivalent to random selection.
+[Real et al. (2018)](https://arxiv.org/abs/1802.01548) adopt the evolutionary algorithms (EA) as a way to search for high-performance network architectures, named **AmoebaNet**. They apply the [tournament selection](https://en.wikipedia.org/wiki/Tournament_selection) method, which at each iteration picks a best candidate out of a random set of samples and places its mutated offspring back into the population. When the tournament size is $$1$$, it is equivalent to random selection.
 
 <a href="aging-evolutionary-algorithms"></a>AmoebaNet modified the tournament selection to favor *younger* genotypes and always discard the oldest models within each cycle. Such an approach, named *aging evolution*, allows AmoebaNet to cover and explore more search space, rather than to narrow down on good performance models too early. 
 
@@ -235,7 +235,7 @@ Two types of mutations are applied:
 
 In their experiments, EA and RL work equally well in terms of the final validation accuracy, but EA has better anytime performance and is able to find smaller models. Here using EA in NAS is still expensive in terms of computation, as each experiment took 7 days with 450 GPUs.
 
-HNAS ([Liu et al 2017](https://arxiv.org/abs/1711.00436)) also employed the evolutionary algorithms (the original tournament selection) as their search strategy. In the [hierarchical structure](#hierarchical-structure) search space, each edge is an operation. Thus genotype mutation in their experiments is applied by replacing a random edge with a different operation. The replacement set includes an `none` op, so it can alter, remove and add an edge. The initial set of genotypes is created by applying a large number of random mutations on "trivial" motifs (all identity mappings).
+**HNAS** ([Liu et al 2017](https://arxiv.org/abs/1711.00436)) also employs the evolutionary algorithms (the original tournament selection) as their search strategy. In the [hierarchical structure](#hierarchical-structure) search space, each edge is an operation. Thus genotype mutation in their experiments is applied by replacing a random edge with a different operation. The replacement set includes an `none` op, so it can alter, remove and add an edge. The initial set of genotypes is created by applying a large number of random mutations on "trivial" motifs (all identity mappings).
 
 
 
@@ -247,7 +247,7 @@ Constructing a model architecture is a sequential process. Every additional oper
 
 > [A* search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm) ("best-first search") is a popular algorithm for path finding. The problem is framed as finding a path of smallest cost from a specific starting node to a given target node in a weighted graph. At each iteration, A* finds a path to extend by minimizing: $$f(n)=g(n)+h(n)$$, where $$n$$ is the next node, $$g(n)$$ is the cost from start to $$n$$, and $$h(n)$$ is the heuristic function that estimates the minimum cost of going from node $$n$$ to the goal.
  
-PNAS adopted the same search space as [NASNet](#cell-based-representation) and same as [Zoph et al. 2018](https://arxiv.org/abs/1707.07012) each block is specified as a 5-element tuple, but PNAS only considers the element-wise addition as the step 5 combination operator, no concatenation. However, instead of setting the number of blocks $$B$$ at a fixed number, PNAS starts with $$B=1$$, a model with only one block in a cell, and gradually increases $$B$$. 
+PNAS uses the [NASNet](#cell-based-representation) search space. Each block is specified as a 5-element tuple and PNAS only considers the element-wise addition as the step 5 combination operator, no concatenation. Differently, instead of setting the number of blocks $$B$$ at a fixed number, PNAS starts with $$B=1$$, a model with only one block in a cell, and gradually increases $$B$$. 
 
 The performance on a validation set is used as feedback to train a *surrogate* model for *predicting* the performance of novel architectures. With this predictor, we can thus decide which models should be prioritized to be evaluated next. Since the performance predictor should be able to handle various-sized inputs, accuracy, and sample-efficient, they ended up using an RNN model.
  
@@ -279,8 +279,8 @@ The most naive approach is to train every child network independently from scrat
 There are several approaches for using a proxy task performance as the performance estimator of a child network, which is generally cheaper and faster to calculate:
 - Train on a smaller dataset.
 - Train for fewer epochs.
-- Train and evaluate a down-scaled model in the search stage. For example, once a cell structure is learned, we can play with the number of cell repeats or scale up the number of  filters ([Zoph et al. 2018](https://arxiv.org/abs/1707.07012)).
-- Predict the learning curve. [Baker et al (2018)](https://arxiv.org/abs/1705.10823) modeled the prediction of validation accuracies as a time-series regression problem. The features for the regression model ($$\nu$$-support vector machine regressions; $$\nu$$-SVR) include the early sequences of accuracy per epoch, architecture parameters, and hyperparameters.
+- Train and evaluate a down-scaled model in the search stage. For example, once a cell structure is learned, we can play with the number of cell repeats or scale up the number of filters ([Zoph et al. 2018](https://arxiv.org/abs/1707.07012)).
+- Predict the learning curve. [Baker et al (2018)](https://arxiv.org/abs/1705.10823) model the prediction of validation accuracies as a time-series regression problem. The features for the regression model ($$\nu$$-support vector machine regressions; $$\nu$$-SVR) include the early sequences of accuracy per epoch, architecture parameters, and hyperparameters.
 
 
 ### Parameter Sharing
@@ -314,9 +314,9 @@ ENAS alternates between training the shared model weights $$\omega$$ and trainin
 
 ### Prediction-Based
 
-A routine child model evaluation loop is to update model weights via standard gradient descent. SMASH ([Brock et al. 2017](https://arxiv.org/abs/1708.05344)) proposed a different and interesting idea: how about we predict the model weights directly based on the network architecture parameters?
+A routine child model evaluation loop is to update model weights via standard gradient descent. SMASH ([Brock et al. 2017](https://arxiv.org/abs/1708.05344)) proposes a different and interesting idea: *Can we predict the model weights directly based on the network architecture parameters?*
 
-They employed a [HyperNet](https://blog.otoro.net/2016/09/28/hyper-networks/) ([Ha et al 2016](https://arxiv.org/abs/1609.09106)) to directly generate the weights of a model conditioned on an encoding of its architecture configuration. Then the model with HyperNet-generated weights can be validated and provide performance feedback. Note that we don't need extra training for every child model but we do need to train the HyperNet.
+They employ a [HyperNet](https://blog.otoro.net/2016/09/28/hyper-networks/) ([Ha et al 2016](https://arxiv.org/abs/1609.09106)) to directly generate the weights of a model conditioned on an encoding of its architecture configuration. Then the model with HyperNet-generated weights is validated directly. Note that we don't need extra training for every child model but we do need to train the HyperNet.
 
 
 ![SMASH algorithm]({{ '/assets/images/SMASH-algorithm.png' | relative_url }})
@@ -331,17 +331,17 @@ The correlation between model performance with SMASH-generated weights and true 
 *Figure 17. The algorithm of SMASH. (Image source: [Brock et al. 2017](https://arxiv.org/abs/1708.05344))*
 
 
-SMASH can be viewed as another way to implement the idea of [parameter sharing](#parameter-sharing). One problem of SMASH as pointed out by [Pham et al. 2018](https://arxiv.org/abs/1802.03268) is: The usage of HyperNet restricts the weights of SMASH child models to a *low-rank space*, because weights are generated via tensor products. In comparison, [ENAS](#ENAS) has no such restrictions.
+SMASH can be viewed as another way to implement the idea of [parameter sharing](#parameter-sharing). One problem of SMASH as pointed out by [Pham et al. (2018)](https://arxiv.org/abs/1802.03268) is: The usage of HyperNet restricts the weights of SMASH child models to a *low-rank space*, because weights are generated via tensor products. In comparison, [ENAS](#ENAS) has no such restrictions.
 
 
 
 ## One-Shot Approach: Search + Evaluation
 
-Running search & evaluation independently for a large population of child models is expensive. We have seen promising approaches like [Brock et al. 2017](https://arxiv.org/abs/1708.05344) or [Pham et al. 2018](https://arxiv.org/abs/1802.03268), where training a single model is enough for emulating any child model in the search space. 
+Running search & evaluation independently for a large population of child models is expensive. We have seen promising approaches like [Brock et al. (2017)](https://arxiv.org/abs/1708.05344) or [Pham et al. (2018)](https://arxiv.org/abs/1802.03268), where training a single model is enough for emulating any child model in the search space. 
 
 The **one-shot** architecture search extends the idea of weight sharing and further combines the learning of architecture generation together with weight parameters. The following approaches all treat child architectures as different sub-graphs of a supergraph with shared weights between common edges in the supergraph.
 
-[Bender et al (2018)](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf) constructed a single large over-parameterized network, known as the **One-Shot model**, such that it contains every possible operation in the search space. With [ScheduledDropPath](#ScheduledDropPath) (the dropout rate is increased over time, which is $$r^{1/k}$$ at the end of training, where $$0 < r < 1$$ is a hyperparam and $$k$$ is the number of incoming paths) and some carefully designed tricks (e.g. ghost batch normalization, L2 regularization only on the active architecture), the training of such a giant model can be stabilized enough and used for evaluating any child model sampled from the supergraph.
+[Bender et al (2018)](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf) construct a single large over-parameterized network, known as the **One-Shot model**, such that it contains every possible operation in the search space. With [ScheduledDropPath](#ScheduledDropPath) (the dropout rate is increased over time, which is $$r^{1/k}$$ at the end of training, where $$0 < r < 1$$ is a hyperparam and $$k$$ is the number of incoming paths) and some carefully designed tricks (e.g. ghost batch normalization, L2 regularization only on the active architecture), the training of such a giant model can be stabilized enough and used for evaluating any child model sampled from the supergraph.
 
 
 ![One-Shot model architecture]({{ '/assets/images/one-shot-model-architecture.png' | relative_url }})
@@ -362,7 +362,7 @@ They observed that the difference between the accuracy measured with the one-sho
 Clearly designing such a search graph is not a trivial task, but it demonstrates a strong potential with the one-shot approach. It works well with only gradient descent and no additional algorithm like RL or EA is a must.
 
 
-[Liu et al (2019)](https://arxiv.org/abs/1806.09055) believe that one main cause for inefficiency in NAS is to treat the architecture search as a *black-box optimization* and thus we fall into methods like RL, evolution, SMBO, etc. If we shift to rely on standard gradient descent, we could potentially make the search process more effectively. As a result, they proposed *Differentiable Architecture Search* (**DARTS**). DARTS introduces a continuous relaxation on each path in the search supergraph, making it possible to jointly train architecture parameters and weights via gradient descent.
+Some believe that one main cause for inefficiency in NAS is to treat the architecture search as a *black-box optimization* and thus we fall into methods like RL, evolution, SMBO, etc. If we shift to rely on standard gradient descent, we could potentially make the search process more effectively. As a result, [Liu et al (2019)](https://arxiv.org/abs/1806.09055) propose *Differentiable Architecture Search* (**DARTS**). DARTS introduces a continuous relaxation on each path in the search supergraph, making it possible to jointly train architecture parameters and weights via gradient descent.
 
 Let's use the directed acyclic graph (DAG) representation here. A cell is a DAG consisting of a topologically ordered sequence of $$N$$ nodes. Each node has a latent representation $$x_i$$ to be learned. Each edge $$(i, j)$$ is tied to some operation $$o^{(i,j)} \in \mathcal{O}$$ that transforms $$x_j$$ to compose $$x_i$$:
 
@@ -496,25 +496,25 @@ Besides accuracy, ProxylessNAS also considers *latency* as an important metric t
 
 So far we have seen many interesting new ideas on automating the network architecture engineering through neural architecture search and many have achieved very impressive performance. However, it is a bit hard to do inference on *why* some architecture work well and how we can develop modules generalizable across tasks rather than being very dataset-specific.
 
-As also noted in [Elsken, et al 2019](https://arxiv.org/abs/1808.05377): 
+As also noted in [Elsken, et al (2019)](https://arxiv.org/abs/1808.05377): 
 > "..., so far it provides little insights into why specific architectures work well and how similar the architectures derived in independent runs would be. Identifying common motifs, providing an understanding why those motifs are important for high performance, and investigating if these motifs generalize over different problems would be desirable."
 
 In the meantime, purely focusing on improvement over validation accuracy might not be enough ([Cai et al., 2019](https://arxiv.org/abs/1812.00332)). Devices like mobile phones for daily usage in general have limited memory and computation power. While AI applications are on the way to affect our daily life, it is unavoidable to be more *device-specific*.
 
 Another interesting investigation is to consider *unlabelled dataset* and [self-supervised learning]({{ site.baseurl }}{% post_url 2019-11-10-self-supervised-learning %}) for NAS. The size of labelled dataset is always limited and it is not easy to tell whether such a dataset has biases or big deviation from the real world data distribution. 
 
-[Liu et al (2020)](https://arxiv.org/abs/2003.12056) looked into the question *"Can we find high-quality neural architecture without human-annotated labels?"* and proposed a new setup called *Unsupervised Neural Architecture Search* (**UnNAS**). The quality of the architecture needs to be estimated in an unsupervised fashion during the search phase. The paper experimented with three unsupervised [pretext tasks]({{ site.baseurl }}{% post_url 2019-11-10-self-supervised-learning %}#images-based): image rotation prediction, colorization, and solving the jigsaw puzzle.
+[Liu et al (2020)](https://arxiv.org/abs/2003.12056) delve into the question *"Can we find high-quality neural architecture without human-annotated labels?"* and proposed a new setup called *Unsupervised Neural Architecture Search* (**UnNAS**). The quality of the architecture needs to be estimated in an unsupervised fashion during the search phase. The paper experimented with three unsupervised [pretext tasks]({{ site.baseurl }}{% post_url 2019-11-10-self-supervised-learning %}#images-based): image rotation prediction, colorization, and solving the jigsaw puzzle.
 
-They observed that:
+They observed in a set of UnNAS experiments that:
 1. High rank correlation between supervised accuracy and pretext accuracy *on the same dataset*. Typically the rank correlation is higher than 0.8, regardless of the dataset, the search space, and the pretext task.
 2. High rank correlation between supervised accuracy and pretext accuracy *across datasets*.
 3. Better pretext accuracy translates to better supervised accuracy.
 4. Performance of UnNAS architecture is comparable to supervised counterparts, though not better yet.
 
-They hypothesize that the architecture quality is correlated with image statistics. Because CIFAR-10 and ImageNet are all on the natural images, they are comparable and the results are transferable. UnNAS could potentially enable a much larger amount of unlabelled data into the search phase which captures image statistics better.
+One hypothesis is that the architecture quality is correlated with image statistics. Because CIFAR-10 and ImageNet are all on the natural images, they are comparable and the results are transferable. UnNAS could potentially enable a much larger amount of unlabelled data into the search phase which captures image statistics better.
 
 
-Hyperparameter search is a long-standing topic in the ML community. And NAS automates architecture engineering. Gradually we are trying to automate processes in ML which usually demand a lot of human efforts. Taking even one more step further, is it possible to automatically discover ML algorithms? **AutoML-Zero** ([Real et al 2020](https://arxiv.org/abs/2003.03384)) investigated this idea. Using [aging evolutionary algorithms](#aging-evolutionary-algorithms), AutoML-Zero automatically searches for whole ML algorithms using little restriction on the form with only simple mathematical operations as building blocks.
+Hyperparameter search is a long-standing topic in the ML community. And NAS automates architecture engineering. Gradually we are trying to automate processes in ML which usually demand a lot of human efforts. Taking even one more step further, is it possible to automatically discover ML algorithms? **AutoML-Zero** ([Real et al 2020](https://arxiv.org/abs/2003.03384)) investigates this idea. Using [aging evolutionary algorithms](#aging-evolutionary-algorithms), AutoML-Zero automatically searches for whole ML algorithms using little restriction on the form with only simple mathematical operations as building blocks.
 
 It learns three component functions. Each function only adopts very basic operations.
 - `Setup`: initialize memory variables (weights).
@@ -526,7 +526,7 @@ It learns three component functions. Each function only adopts very basic operat
 {: style="width: 70%;" class="center"}
 *Figure 23. Algorithm evaluation on one task (Image source: [Real et al 2020](https://arxiv.org/abs/2003.03384))*
  
-Three types of mutations could be applied to a parent genotype:
+Three types of operations are considered when mutating a parent genotype:
 1. Insert a random instruction or remove an instruction at a random location in a component function;
 2. Randomize all the instructions in a component function;
 3. Modify one of the arguments of an instruction by replacing it with a random choice (e.g. "swap the output address" or "change the value of a constant")

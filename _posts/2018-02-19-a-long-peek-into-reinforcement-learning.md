@@ -12,6 +12,10 @@ image: "RL_illustration.png"
 
 <!--more-->
 
+
+<span style="color: #286ee0;">[Updated on 2020-09-03: Updated the algorithm of [SARSA](#sarsa-on-policy-td-control) and [Q-learning](#q-learning-off-policy-td-control) so that the difference is more pronounced.</span>
+
+
 {: class="table-of-content"}
 * TOC
 {:toc}
@@ -361,25 +365,31 @@ Next, let's dig into the fun part on how to learn optimal policy in TD learning 
 
 #### SARSA: On-Policy TD control
 
-"SARSA" refers to the procedure of updaing Q-value by following a sequence of $$\dots, S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1}, \dots$$. The idea follows the same route of [GPI](#policy-iteration):
-1. At time step t, we start from state $$S_t$$ and pick action according to Q values, $$A_t = \arg\max_{a \in \mathcal{A}} Q(S_t, a)$$; ε-greedy is commonly applied.
-2. With action $$A_t$$, we observe reward $$R_{t+1}$$ and get into the next state $$S_{t+1}$$.
-3. Then pick the next action in the same way as in step 1.: $$A_{t+1} = \arg\max_{a \in \mathcal{A}} Q(S_{t+1}, a)$$.
-4. Update the action-value function: $$ Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha (R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)) $$.
-5. t = t+1 and repeat from step 1.
+"SARSA" refers to the procedure of updaing Q-value by following a sequence of $$\dots, S_t, A_t, R_{t+1}, S_{t+1}, A_{t+1}, \dots$$. The idea follows the same route of [GPI](#policy-iteration). Within one episode, it works as follows:
 
-In each update of SARSA, we need to choose actions for two steps by following the current policy twice (in Step 1. & 3.).
+1. Initialize $$t=0$$. 
+2. Start with $$S_0$$ and choose action $$A_0 = \arg\max_{a \in \mathcal{A}} Q(S_0, a)$$, where $$\epsilon$$-greedy is commonly applied.
+3. At time $$t$$, after applying action $$A_t$$, we observe reward $$R_{t+1}$$ and get into the next state $$S_{t+1}$$.
+4. Then pick the next action in the same way as in step 2: $$A_{t+1} = \arg\max_{a \in \mathcal{A}} Q(S_{t+1}, a)$$.
+5. Update the Q-value function: $$ Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha (R_{t+1} + \gamma Q(S_{t+1}, A_{t+1}) - Q(S_t, A_t)) $$.
+6. Set $$t = t+1$$ and repeat from step 3.
+
+In each step of SARSA, we need to choose the *next* action according to the *current* policy.
 
 
 #### Q-Learning: Off-policy TD control
 
-The development of Q-learning ([Watkins & Dayan, 1992](https://link.springer.com/content/pdf/10.1007/BF00992698.pdf)) is a big breakout in the early days of Reinforcement Learning.
-1. At time step t, we start from state $$S_t$$ and pick action according to Q values, $$A_t = \arg\max_{a \in \mathcal{A}} Q(S_t, a)$$; ε-greedy is commonly applied.
-2. With action $$A_t$$, we observe reward $$R_{t+1}$$ and get into the next state $$S_{t+1}$$.
-3. Update the action-value function: $$ Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha (R_{t+1} + \gamma \max_{a \in \mathcal{A}} Q(S_{t+1}, a) - Q(S_t, A_t)) $$.
-4. t = t+1 and repeat from step 1.
+The development of Q-learning ([Watkins & Dayan, 1992](https://link.springer.com/content/pdf/10.1007/BF00992698.pdf)) is a big breakout in the early days of Reinforcement Learning. Within one episode, it works as follows:
 
-The first two steps are same as in SARSA. In step 3., Q-learning does not follow the current policy to pick the second action but rather estimate $$Q_*$$ out of the best Q values independently of the current policy.
+1. Initialize $$t=0$$. 
+2. Starts with $$S_0$$.
+3. At time step $$t$$, we pick the action according to Q values, $$A_t = \arg\max_{a \in \mathcal{A}} Q(S_t, a)$$ and $$\epsilon$$-greedy is commonly applied.
+4. After applying action $$A_t$$, we observe reward $$R_{t+1}$$ and get into the next state $$S_{t+1}$$.
+5. Update the Q-value function: $$Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha (R_{t+1} + \gamma \max_{a \in \mathcal{A}} Q(S_{t+1}, a) - Q(S_t, A_t))$$.
+4. $$t = t+1$$ and repeat from step 3.
+
+The key difference from SARSA is that Q-learning does not follow the current policy to pick the second action $$A_{t+1}$$. It estimates $$Q^*$$ out of the best Q values, but which action (denoted as $$a^*$$) leads to this maximal Q does not matter and in the next step Q-learning may not follow $$a^*$$.
+
 
 ![SARSA and Q-learning]({{ '/assets/images/sarsa_vs_q_learning.png' | relative_url }})
 {: style="width: 50%;" class="center"}

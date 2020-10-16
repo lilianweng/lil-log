@@ -26,7 +26,7 @@ image: "A3C_vs_A2C.png"
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-12-22: add a new policy gradient method [IMPALA](#impala).]</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2020-10-15: add a new policy gradient method [PPG](#ppg).]</span>
+<span style="color: #286ee0;">[Updated on 2020-10-15: add a new policy gradient method [PPG](#ppg) & some new discussion in [PPO](#ppo).]</span>
 
 
 {: class="table-of-content"}
@@ -576,6 +576,21 @@ $$
 where Both $$c_1$$ and $$c_2$$ are two hyperparameter constants.
 
 PPO has been tested on a set of benchmark tasks and proved to produce awesome results with much greater simplicity.
+
+In a later paper by [Hsu et al., 2020](https://arxiv.org/abs/2009.10897), two common design choices in PPO are revisited, precisely (1) clipped probability ratio for policy regularization and (2) parameterize policy action space by continuous Gaussian or discrete softmax distribution. They first identified three failure modes in PPO and proposed replacements for these two designs.
+
+The failure modes are:
+1. On continuous action spaces, standard PPO is unstable when rewards vanish outside bounded support.
+2. On discrete action spaces with sparse high rewards, standard PPO often gets stuck at suboptimal actions.
+3. The policy is sensitive to initialization when there are locally optimal actions close to initialization.
+
+ 
+Discretizing the action space or use Beta distribution helps avoid failure mode 1&3 associated with Gaussian policy. Using KL regularization (same motivation as in [TRPO](#trpo)) as an alternative surrogate model helps resolve failure mode 1&2. 
+
+
+![PPG]({{ '/assets/images/ppo-loss-functions.png' | relative_url }})
+{: class="center" style="width: 80%;"}
+
 
 
 ### PPG
@@ -1217,4 +1232,6 @@ Cited as:
 [25] Lasse Espeholt, et al. ["IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures"](https://arxiv.org/abs/1802.01561) arXiv preprint 1802.01561 (2018).
 
 [26] Karl Cobbe, et al. ["Phasic Policy Gradient."](https://arxiv.org/abs/2009.04416) arXiv preprint arXiv:2009.04416 (2020).
+
+[27] Chloe Ching-Yun Hsu, et al. ["Revisiting Design Choices in Proximal Policy Optimization."](https://arxiv.org/abs/2009.10897) arXiv preprint arXiv:2009.10897 (2020).
 

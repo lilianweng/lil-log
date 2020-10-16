@@ -1216,3 +1216,5 @@ Cited as:
 
 [25] Lasse Espeholt, et al. ["IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures"](https://arxiv.org/abs/1802.01561) arXiv preprint 1802.01561 (2018).
 
+[26] Karl Cobbe, et al. ["Phasic Policy Gradient."](https://arxiv.org/abs/2009.04416) arXiv preprint arXiv:2009.04416 (2020).
+

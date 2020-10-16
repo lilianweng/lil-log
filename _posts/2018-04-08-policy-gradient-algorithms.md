@@ -22,9 +22,11 @@ image: "A3C_vs_A2C.png"
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-06-26: Thanks to Chanseok, we have a version of this post in [Korean](https://talkingaboutme.tistory.com/entry/RL-Policy-Gradient-Algorithms)].</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2019-09-12: add a new policy gradient method [SVPG](#SVPG).].</span>
+<span style="color: #286ee0;">[Updated on 2019-09-12: add a new policy gradient method [SVPG](#svpg).]</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2019-12-22: add a new policy gradient method [IMPALA](#IMPALA).].</span>
+<span style="color: #286ee0;">[Updated on 2019-12-22: add a new policy gradient method [IMPALA](#impala).]</span>
+<br/>
+<span style="color: #286ee0;">[Updated on 2020-10-15: add a new policy gradient method [PPG](#ppg).]</span>
 
 
 {: class="table-of-content"}
@@ -555,7 +557,7 @@ $$
 J^\text{TRPO} (\theta) = \mathbb{E} [ r(\theta) \hat{A}_{\theta_\text{old}}(s, a) ]
 $$
 
-Without a limitation on the distance between $$\theta_\text{old}$$ and $$\theta$$, to maximize $$J^\text{TRPO} (\theta)$$ would lead to instability with extremely large parameter updates and big policy ratios. PPO imposes the constraint by forcing $$r(\theta)$$ to stay within a small interval around 1, precisely $$[1-\epsilon, 1+\epsilon]$$, where $$\epsilon$$ is a hyperparameter.
+<a name="ppo_loss" />Without a limitation on the distance between $$\theta_\text{old}$$ and $$\theta$$, to maximize $$J^\text{TRPO} (\theta)$$ would lead to instability with extremely large parameter updates and big policy ratios. PPO imposes the constraint by forcing $$r(\theta)$$ to stay within a small interval around 1, precisely $$[1-\epsilon, 1+\epsilon]$$, where $$\epsilon$$ is a hyperparameter.
 
 
 $$
@@ -574,6 +576,40 @@ $$
 where Both $$c_1$$ and $$c_2$$ are two hyperparameter constants.
 
 PPO has been tested on a set of benchmark tasks and proved to produce awesome results with much greater simplicity.
+
+
+### PPG
+
+[[paper](https://arxiv.org/abs/2009.04416)\|[code](https://github.com/openai/phasic-policy-gradient)]
+
+Sharing parameters between policy and value networks have pros and cons. It allows policy and value functions to share the learned features with each other, but it may cause conflicts between competing objectives and demands the same data for training two networks at the same time. **Phasic policy gradient** (**PPG**; [Cobbe, et al 2020](https://arxiv.org/abs/2009.04416)) modifies the traditional on-policy [actor-critic](#actor-critic) policy gradient algorithm. precisely [PPO](#ppo), to have separate training phases for policy and value functions. In two alternating phases:
+1. The *policy phase*: updates the policy network by optimizing the PPO [objective](#ppo_loss) $$L^\text{CLIP} (\theta)$$; 
+2. The *auxiliary phase*: optimizes an auxiliary objective alongside a behavioral cloning loss. In the paper, value function error is the sole auxiliary objective, but it can be quite general and includes any other additional auxiliary losses.
+
+$$
+\begin{aligned}
+L^\text{joint} &= L^\text{aux} + \beta_\text{clone} \cdot \mathbb{E}_t[\text{KL}[\pi_{\theta_\text{old}}(\cdot\mid s_t), \pi_\theta(\cdot\mid s_t)]] \\
+L^\text{aux} &= L^\text{value} = \mathbb{E}_t \big[\frac{1}{2}\big( V_w(s_t) - \hat{V}_t^\text{targ} \big)^2\big]
+\end{aligned}
+$$
+
+where $$\beta_\text{clone}$$ is a hyperparameter for controlling how much we would like to keep the policy not diverge too much from its original behavior while optimizing the auxiliary objectives.
+
+
+![PPG]({{ '/assets/images/PPG_algo.png' | relative_url }})
+{: class="center" style="width: 80%;"}
+*Fig. 6. The algorithm of PPG. (Image source: [Cobbe, et al 2020](https://arxiv.org/abs/2009.04416))*
+
+where 
+- $$N_\pi$$ is the number of policy update iterations in the policy phase. Note that the policy phase performs multiple iterations of updates per single auxiliary phase.
+- $$E_\pi$$ and $$E_V$$ control the sample reuse (i.e. the number of training epochs performed across data in the reply buffer) for the policy and value functions, respectively. Note that this happens within the policy phase and thus $$E_V$$ affects the learning of true value function not the auxiliary value function.
+- $$E_\text{aux}$$ defines the sample reuse in the auxiliary phrase. In PPG, value function optimization can tolerate a much higher level sample reuse; for example, in the experiments of the paper, $$E_\text{aux} = 6$$ while $$E_\pi = E_V = 1$$.
+
+PPG leads to a significant improvement on sample efficiency compared to PPO.
+
+![PPG]({{ '/assets/images/PPG_exp.png' | relative_url }})
+{: class="center"}
+*Fig. 7. The mean normalized performance of PPG vs PPO on the [Procgen](https://arxiv.org/abs/1912.01588) benchmark. (Image source: [Cobbe, et al 2020](https://arxiv.org/abs/2009.04416))*
 
 
 ### ACER
@@ -747,7 +783,7 @@ Once we have defined the objective functions and gradients for soft action-state
 
 ![SAC]({{ '/assets/images/SAC_algo.png' | relative_url }})
 {: class="center" style="width: 90%;"}
-*Fig. 6. The soft actor-critic algorithm. (Image source: [original paper](https://arxiv.org/abs/1801.01290))*
+*Fig. 8. The soft actor-critic algorithm. (Image source: [original paper](https://arxiv.org/abs/1801.01290))*
 
 
 ### SAC with Automatically Adjusted Temperature
@@ -895,7 +931,7 @@ The final algorithm is same as SAC except for learning $$\alpha$$ explicitly wit
 
 ![SAC2]({{ '/assets/images/SAC2_algo.png' | relative_url }})
 {: class="center" style="width: 90%;"}
-*Fig. 7. The soft actor-critic algorithm with automatically adjusted temperature. (Image source: [original paper](https://arxiv.org/abs/1812.05905))*
+*Fig. 9. The soft actor-critic algorithm with automatically adjusted temperature. (Image source: [original paper](https://arxiv.org/abs/1812.05905))*
 
 
 
@@ -950,7 +986,7 @@ Here is the final algorithm:
 
 ![TD3]({{ '/assets/images/TD3.png' | relative_url }})
 {: class="center" style="width: 80%;"}
-*Fig 8. TD3 Algorithm. (Image source: [Fujimoto et al., 2018](https://arxiv.org/abs/1802.09477))*
+*Fig. 10. TD3 Algorithm. (Image source: [Fujimoto et al., 2018](https://arxiv.org/abs/1802.09477))*
 
 
 ### SVPG
@@ -1110,6 +1146,7 @@ After reading through all the algorithms above, I list a few building blocks or 
 * New optimization methods (such as K-FAC).
 * Entropy maximization of the policy helps encourage exploration.
 * Try not to overestimate the value function.
+* Think twice whether the policy and value network should share parameters.
 * TBA more.
 
 

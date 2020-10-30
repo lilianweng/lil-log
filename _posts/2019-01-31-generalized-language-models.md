@@ -346,7 +346,7 @@ Overall the add-on part for end task fine-tuning is very minimal --- one or two 
 *Fig. 12. Training objects in slightly modified BERT models for downstream tasks.  (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
 
 
-A summary table compares differences between fine-tuning of OpenAI GPT and BERT.
+A summary table compares differences between fine-tuning of [OpenAI GPT](#openai-gpt) and BERT.
 
 {: class="info"}
 |              | **OpenAI GPT** | **BERT** |

@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Generalized Language Models"
 date: 2019-01-31 12:00:00
-tags: nlp long-read transformer attention
+tags: nlp long-read transformer attention language-model
 image: "elmo-and-bert.png"
 ---
 

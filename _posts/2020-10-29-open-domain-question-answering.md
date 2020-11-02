@@ -3,24 +3,25 @@ layout: post
 comments: true
 title: "How to Build an Open-Domain Question Answering System?"
 date: 2020-10-29 12:00:00
-tags: nlp language-model
+tags: nlp language-model attention transformer
 ---
 
 
-> A strong model that can answer any question in regard to factual knowledge can be very helpful and practical. This post delves into how to build an Open-Doamin Question Answering system, assuming you have access to a powerful pretrained language model. Both closed-book and open-book QAs are discussed. 
+> A strong model that is capable of answering any question with regard to factual knowledge can enable many useful applications. This post delves into how we can build an Open-Doamin Question Answering (ODQA) system, assuming we have access to a powerful pretrained language model. Both closed-book and open-book approachs are discussed. 
 
 
 <!--more-->
 
 
-A strong model that can answer any question in regard to factual knowledge can be very helpful and practical, such as working as a chatbot or an AI assistant. In this post, we will review several common approaches for building an open-domain question answering system.
+A strong model that can answer any question with regard to factual knowledge can lead to many useful and practical applications, such as working as a chatbot or an AI assistant. In this post, we will review several common approaches for building such an open-domain question answering system.
 
 Disclaimers given so many papers in the wild:
 - Assume we have access to a powerful pretrained [language model]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}).
 - We do not cover how to use structured knowledge base (e.g. Freebase, WikiData) here.
 - We only focus on a single-turn QA instead of a multi-turn conversation style QA.
-- We mostly focus on QA systems involving the usage of neural networks, specially Transformer-based language models.
-- I admit that I missed a lot of papers with architecture designed specific for QA tasks between 2017-2019.
+- We mostly focus on QA models that contain neural networks, specially Transformer-based language models.
+- I admit that I missed a lot of papers with architectures designed specifically for QA tasks between 2017-2019 
+😞
 
 
 {: class="table-of-content"}
@@ -28,21 +29,24 @@ Disclaimers given so many papers in the wild:
 {:toc}
 
 
-## What is Open-Domain QA?
+## What is Open-Domain Question Answering?
 
-**Open-domain Question Answering (ODQA)** is a task that asks a model to produce answers to factoid questions in natural language. The true answer is objective, so it is easy to evaluate the model performance. For example, 
+**Open-domain Question Answering (ODQA)** is a type of language tasks, asking a model to produce answers to factoid questions in natural language. The true answer is objective, so it is simple to evaluate model performance. 
+
+For example, 
 ```
 Question: What did Albert Einstein win the Nobel Prize for?
 Answer: The law of the photoelectric effect.
 ```
-The "open-domain" part refers to the lack of the relevant context for any arbitrarily asked factual question. In the above case, the model only takes as the input the question but no article about why Einstein didn’t win a Nobel Prize for the theory of relativity is provided, where the term "the law of the photoelectric effect" is likely mentioned. In the case when both the question and the context are provided, the task is known as **Reading comprehension (RC)**.
 
-An ODQA model can work with or without access to an external source of knowledge (e.g. Wikipedia), which were referred to as "open-book" or "closed-book" QA, respectively.
+The "open-domain" part refers to the lack of the relevant context for any arbitrarily asked factual question. In the above case, the model only takes as the input the question but no article about "why Einstein didn’t win a Nobel Prize for the theory of relativity" is provided, where the term "the law of the photoelectric effect" is likely mentioned. In the case when both the question and the context are provided, the task is known as **Reading comprehension (RC)**.
 
-When considering different types of open-domain questions, I really like the classification by [Lewis, et al., 2020](https://arxiv.org/abs/2008.02637), in increasing order of difficulty:
+An ODQA model may work with or without *access to an external source of knowledge* (e.g. Wikipedia) and these two conditions are referred to as *open-book* or *closed-book* question answering, respectively.
+
+When considering different types of open-domain questions, I like the classification by [Lewis, et al., 2020](https://arxiv.org/abs/2008.02637), in increasing order of difficulty:
 1. A model is able to correctly memorize and respond with the answer to a question that has been seen at training time.
 2. A model is able to answer novel questions at test time and choose an answer from the set of answers it has seen during training.
-3. A model is able to answer novel questions which have answers not contained in the training data.
+3. A model is able to answer novel questions which have answers not contained in the training dataset.
 
 
 ![QA-summary]({{ '/assets/images/QA-summary.png' | relative_url }})
@@ -52,12 +56,12 @@ When considering different types of open-domain questions, I really like the cla
 
 ### Notation
 
-Given a question $$x$$ and a ground truth answer span $$y$$. the context passage containing the true answer is labelled as $$z \in \mathcal{Z}$$, where $$\mathcal{Z}$$ is an external knowledge corpus and Wikipedia is a common choice.
+Given a question $$x$$ and a ground truth answer span $$y$$, the context passage containing the true answer is labelled as $$z \in \mathcal{Z}$$, where $$\mathcal{Z}$$ is an external knowledge corpus. Wikipedia is a common choice for such an external knowledge source.
 
 
 ### Concerns of QA data fine-tuning
 
-Before we dive into the details of many models below. I would like to point out one concern of fine-tuning a model with QA datasets, which appear as a common step in many models but not all of them. Fine-tuning with question-answering data could be concerning, because there is a significant overlap between questions in the training and testing sets in many QA datasets. 
+Before we dive into the details of many models below. I would like to point out one concern of fine-tuning a model with common QA datasets, which appears as one fine-tuning step in several ODQA models. It could be concerning, because there is a significant overlap between questions in the train and test sets in several public QA datasets. 
 
 [Lewis, et al., (2020)](https://arxiv.org/abs/2008.02637) ([code](https://github.com/facebookresearch/QA-Overlap)) found that 58-71% of test-time answers are also present somewhere in the training sets and 28-34% of test-set questions have a near-duplicate paraphrase in their corresponding training sets. Several models performed notably worse when duplicated or paraphrased questions were removed from the training set.
 

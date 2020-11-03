@@ -13,15 +13,14 @@ tags: nlp language-model attention transformer
 <!--more-->
 
 
-A model that can answer any question with regard to factual knowledge can lead to many useful and practical applications, such as working as a chatbot or an AI assistant. In this post, we will review several common approaches for building such an open-domain question answering system.
+A model that can answer any question with regard to factual knowledge can lead to many useful and practical applications, such as working as a chatbot or an AI assistant🤖. In this post, we will review several common approaches for building such an open-domain question answering system.
 
 Disclaimers given so many papers in the wild:
 - Assume we have access to a powerful pretrained [language model]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}).
 - We do not cover how to use structured knowledge base (e.g. Freebase, WikiData) here.
 - We only focus on a single-turn QA instead of a multi-turn conversation style QA.
 - We mostly focus on QA models that contain neural networks, specially Transformer-based language models.
-- I admit that I missed a lot of papers with architectures designed specifically for QA tasks between 2017-2019 
-😞
+- I admit that I missed a lot of papers with architectures designed specifically for QA tasks between 2017-2019😔
 
 
 {: class="table-of-content"}

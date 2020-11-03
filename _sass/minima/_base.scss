@@ -152,11 +152,12 @@ table.info {
     padding: 2px 6px;
     text-align: left;
     vertical-align: top;
+    border-bottom: 1px solid $grey-color-light;
   }
 
   th {
     text-align: center;
-    border-bottom: 1px solid $grey-color-light;
+    border-bottom: 2px solid $grey-color;
   }
 }
 

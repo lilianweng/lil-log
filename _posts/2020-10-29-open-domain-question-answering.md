@@ -7,13 +7,13 @@ tags: nlp language-model attention transformer
 ---
 
 
-> A strong model that is capable of answering any question with regard to factual knowledge can enable many useful applications. This post delves into how we can build an Open-Doamin Question Answering (ODQA) system, assuming we have access to a powerful pretrained language model. Both closed-book and open-book approachs are discussed. 
+> A model that is capable of answering any question with regard to factual knowledge can enable many useful applications. This post delves into how we can build an Open-Domain Question Answering (ODQA) system, assuming we have access to a powerful pretrained language model. Both closed-book and open-book approachs are discussed. 
 
 
 <!--more-->
 
 
-A strong model that can answer any question with regard to factual knowledge can lead to many useful and practical applications, such as working as a chatbot or an AI assistant. In this post, we will review several common approaches for building such an open-domain question answering system.
+A model that can answer any question with regard to factual knowledge can lead to many useful and practical applications, such as working as a chatbot or an AI assistant. In this post, we will review several common approaches for building such an open-domain question answering system.
 
 Disclaimers given so many papers in the wild:
 - Assume we have access to a powerful pretrained [language model]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}).
@@ -39,7 +39,7 @@ Question: What did Albert Einstein win the Nobel Prize for?
 Answer: The law of the photoelectric effect.
 ```
 
-The "open-domain" part refers to the lack of the relevant context for any arbitrarily asked factual question. In the above case, the model only takes as the input the question but no article about "why Einstein didn’t win a Nobel Prize for the theory of relativity" is provided, where the term "the law of the photoelectric effect" is likely mentioned. In the case when both the question and the context are provided, the task is known as **Reading comprehension (RC)**.
+The "open-domain" part refers to the lack of the relevant context for any arbitrarily asked factual question. In the above case, the model only takes as the input the question but no article about "why Einstein didn't win a Nobel Prize for the theory of relativity" is provided, where the term "the law of the photoelectric effect" is likely mentioned. In the case when both the question and the context are provided, the task is known as **Reading comprehension (RC)**.
 
 An ODQA model may work with or without *access to an external source of knowledge* (e.g. Wikipedia) and these two conditions are referred to as *open-book* or *closed-book* question answering, respectively.
 
@@ -51,7 +51,7 @@ When considering different types of open-domain questions, I like the classifica
 
 ![QA-summary]({{ '/assets/images/QA-summary.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 0. Overview of three frameworks discussed in this post.*
+*Fig. 1. Overview of three frameworks discussed in this post.*
 
 
 ### Notation
@@ -77,7 +77,7 @@ We can decompose the process of finding answers to given questions into two stag
 
 ![retriever + reader QA system]({{ '/assets/images/QA-retriever-reader.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 1. The retriever-reader QA framework combines information retrieval with machine reading comprehension.*
+*Fig. 2. The retriever-reader QA framework combines information retrieval with machine reading comprehension.*
 
 
 Such a retriever + reader framework was first proposed in **DrQA** ("Document retriever Question-Answering" by [Chen et al., 2017](https://arxiv.org/abs/1704.00051); [code](https://github.com/facebookresearch/DrQA)). The retriever and the reader components can be set up and trained independently, or jointly trained [end-to-end](#end-to-end-joint-training).
@@ -110,7 +110,7 @@ Precisely, DrQA implemented Wikipedia as its knowledge source and this choice ha
 
 ![BERTserini]({{ '/assets/images/BERTserini-arch.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 2. An illustration of BERTserini architecture. (Image source: [Yang et al., 2019](https://arxiv.org/abs/1902.01718))*
+*Fig. 3. An illustration of BERTserini architecture. (Image source: [Yang et al., 2019](https://arxiv.org/abs/1902.01718))*
 
 
 *ElasticSearch + BM25* is used by the **Multi-passage BERT** QA model ([Wang et al., 2019](https://arxiv.org/abs/1908.08167)). They found that splitting articles into passages with the length of 100 words by *sliding window* brings 4% improvements, since splitting documents into passages without overlap may cause some near-boundary evidence to lose useful contexts.
@@ -154,7 +154,7 @@ For all possible $$(i,j,k)$$ tuples where $$j-i < J$$, the text span embeddings 
 
 ![DenseSPI]({{ '/assets/images/DenSPI-arch.png' | relative_url }})
 {: style="width: 75%;" class="center"}
-*Fig. 3. An illustration of the Dense-Sparse Phrase Index (DenSPI) architecture. (Image source: [Seo et al., 2019](https://arxiv.org/abs/1906.05807))*
+*Fig. 4. An illustration of Dense-Sparse Phrase Index (DenSPI) architecture. (Image source: [Seo et al., 2019](https://arxiv.org/abs/1906.05807))*
 
 At the inference time, the question is mapped into the same vector space $$x=[d', s'] \in \mathbb{R}^{d^d + d^s}$$, where the dense vector $$d'$$ is extracted from the BERT embedding of the special `[CLS]` symbol. The same BERT model is shared for encoding both questions and phrases. The final answer is predicted by $$k^*, i^*, j^* = \arg\max x^\top z_k^{(i:j)}$$.
 
@@ -215,7 +215,7 @@ where $$\mathbf{W}_s$$ and $$\mathbf{W}_e$$ are learned parameters.
 
 #### BERT-universe
 
-Following the success of [BERT]({{ site.baseurl }} {% post_url 2019-01-31-generalized-language-models %}#bert) ([Devlin et al., 2018](https://arxiv.org/abs/1810.04805)), many QA models develop the machine comprehension component based on BERT. Let’s define the BERT model as a function that can take one or multiple strings (concatenated by `[SEP]`) as input and outputs a set of BERT encoding vectors for the special `[CLS]` token and every input token:
+Following the success of [BERT]({{ site.baseurl }} {% post_url 2019-01-31-generalized-language-models %}#bert) ([Devlin et al., 2018](https://arxiv.org/abs/1810.04805)), many QA models develop the machine comprehension component based on BERT. Let's define the BERT model as a function that can take one or multiple strings (concatenated by `[SEP]`) as input and outputs a set of BERT encoding vectors for the special `[CLS]` token and every input token:
 
 
 $$
@@ -231,7 +231,7 @@ To use BERT for reading comprehension, it learns two additional weights, $$\math
 
 ![BERT for reading comprehension]({{ '/assets/images/BERT-RC.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 4. How BERT is used to solve question-answering tasks. (Image source: [Devlin et al., 2018](https://arxiv.org/abs/1810.04805))*
+*Fig. 5. How BERT is used to solve question-answering tasks. (Image source: [Devlin et al., 2018](https://arxiv.org/abs/1810.04805))*
 
 The key difference of the BERTserini reader from the original BERT is: to allow comparison and aggregation of results from different segments, the final softmax layer over different answer spans is removed. The pre-trained BERT model is fine-tuned on the training set of SQuAD, where all inputs to the reader are padded to 384 tokens with the learning rate 3e-5.
 
@@ -239,14 +239,14 @@ When ranking all the extracted answer spans, the retriever score (BM25) and the 
 
 The original BERT normalizes the probability distributions of start and end position per token for every passage independently. Differently, the **Multi-passage BERT** ([Wang et al., 2019](https://arxiv.org/abs/1908.08167)) normalizes answer scores across all the retrieved passages of one question [globally](https://arxiv.org/abs/1710.10723). Precisely, multi-passage BERT removes the final normalization layer per passage in BERT for QA (same as in BERTserini) and then adds a global `softmax` over all the word positions of all the passages. Global normalization makes the reader model more stable while pin-pointing answers from a large number of passages.
 
-In addition, multi-passage BERT implemented an independent *passage ranker* model via another BERT model and the rank score is generated by a `softmax` over the representation vectors of the first `[CLS]` token, $$\mathbf{h}^\texttt{[CLS]}$$. The passage ranker brings in extra 2% improvements. Similar idea of re-ranking passages with BERT was discussed in [Nogueira & Cho, 2019](https://arxiv.org/abs/1901.04085), too. 
+In addition, multi-passage BERT implemented an independent *passage ranker* model via another BERT model and the rank score for $$(x, z)$$ is generated by a `softmax` over the representation vectors of the first `[CLS]` token. The passage ranker brings in extra 2% improvements. Similar idea of re-ranking passages with BERT was discussed in [Nogueira & Cho, 2019](https://arxiv.org/abs/1901.04085), too. 
 
 Interestingly, [Wang et al., 2019](https://arxiv.org/abs/1908.08167) found that *explicit inter-sentence matching* does not seem to be critical for RC tasks with BERT; check the original paper for how the experiments were designed. One possible reason is that the multi-head self-attention layers in BERT has already embedded the inter-sentence matching.
 
 
 ### End-to-end Joint Training
 
-The retriever and reader components can be jointly trained. This section covers R^3, ORQA, REALM and DPR. There are a lot of common designs among ORQA, REALM and DPR, especially on dense vectors for retrieval and the loss function on maximizing the marginal likelihood of obtaining true answers. They mainly differ from each others on pretraining tasks.
+The retriever and reader components can be jointly trained. This section covers R^3, ORQA, REALM and DPR. There are a lot of common designs, such as BERT-based dense vectors for retrieval and the loss function on maximizing the marginal likelihood of obtaining true answers.
 
 
 The retriever and reader models in the **R^3** ("Reinforced Ranker-Reader"; [Wang, et al., 2017](https://arxiv.org/abs/1709.00023)) QA system are jointly trained via [reinforcement learning]({{ site.baseurl }}{% post_url 2018-02-19-a-long-peek-into-reinforcement-learning %}). (Note that to keep the term consistent between papers in this section, the "ranker" model in the original R^3 paper is referred to as the "retriever" model here.) Both components are variants of [Match-LSTM](https://arxiv.org/abs/1512.08849), which relies on an attention mechanism to compute word similarities between the passage and question sequences.
@@ -277,7 +277,7 @@ The ranker and reader components share the same Match-LSTM module with two separ
 
 ![R^3 QA]({{ '/assets/images/R^3-arch.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 5. The overview of R^3 (reinforced ranker-reader) architecture. Both components share the same Match-LSTM module. (Image source: [Wang, et al., 2017](https://arxiv.org/abs/1709.00023))*
+*Fig. 6. The overview of R^3 (reinforced ranker-reader) architecture. Both components share the same Match-LSTM module. (Image source: [Wang, et al., 2017](https://arxiv.org/abs/1709.00023))*
 
 
 The retriever runs a max-pooling operation per passage and then aggregates to output a probability of each passage entailing the answer. 
@@ -325,6 +325,7 @@ $$
 \end{aligned}
 $$
 
+
 Essentially in training, given a passage $$z$$ sampled by the retriever, the reader is trained by gradient descent while the retriever is trained by [REINFORCE]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce) using $$L(y \vert z, x)$$ as the reward function. However, $$L(y \vert z, x)$$ is not bounded and may introduce a lot of variance. The paper replaces the reward with a customized scoring function by comparing the ground truth $$y$$ and the answer extracted by the reader $$\hat{y}$$:
 
 $$
@@ -336,14 +337,19 @@ f1(y, \hat{y}) & \text{if } y \cap \hat{y} = \varnothing \\
 $$
 
 
-<a name="ORQA" />**ORQA** ("Open-Retrieval Question-Answering"; [Lee, et al., 2019](https://arxiv.org/abs/1906.00300)) jointly learns a retriever + reader QA system to optimize marginal log-likelihood of obtaining correct answers in a supervised manner. Both the retriever and the reader models are based on BERT. No explicit IR system is involved and ORQA is not limited to the closed set of passages returned by a black-box IR system. Instead, it is capable of retrieving any text in an open corpus. During training, ORQA does not need ground-truth context passages (i.e. reading comprehension datasets) but only needs (question, answer) string pairs. ORQA has both *retriever* and *reader* components based on BERT.
+![R^3 reward flow]({{ '/assets/images/R^3-reward-flow.png' | relative_url }})
+{: style="width: 30%;" class="center"}
+*Fig. 7. The workflow of R^3 training process. (Image source: [acl2020-openqa-tutorial/slides/part4](https://github.com/danqi/acl2020-openqa-tutorial/blob/master/slides/part4-retriever-reader.pdf))*
+
+
+<a name="ORQA" />**ORQA** ("Open-Retrieval Question-Answering"; [Lee et al., 2019](https://arxiv.org/abs/1906.00300)) jointly learns a retriever + reader QA model to optimize marginal log-likelihood of obtaining correct answers in a supervised manner. No explicit "black-box" IR system is involved. Instead, it is capable of retrieving any text in an open corpus. During training, ORQA does not need ground-truth context passages (i.e. reading comprehension datasets) but only needs (question, answer) string pairs. Both retriever and reader components are based on BERT, but not shared.
 
 
 ![ORQA-retriever]({{ '/assets/images/ORQA-retriever.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 6. An illustration of the retriever component in ORQA. (Image source: replotted based on one slide in [https://github.com/danqi/acl2020-openqa-tutorial](https://github.com/danqi/acl2020-openqa-tutorial))*
+*Fig. 8. An illustration of the retriever component in ORQA. (Image source: replotted based on one slide in [acl2020-openqa-tutorial/slides/part5](https://github.com/danqi/acl2020-openqa-tutorial/blob/master/slides/part5-dense-retriever-e2e-training.pdf))*
 
-All the evidence blocks are ranked by a retrieval score, defined as the inner product of BERT embedding vectors of the `[CLS]` token of the question $$x$$ and the evidence block $$z$$:
+All the evidence blocks are ranked by a retrieval score, defined as the inner product of BERT embedding vectors of the `[CLS]` token of the question $$x$$ and the evidence block $$z$$. Note that the encoders for questions and context are independent.
 
 
 $$
@@ -354,7 +360,7 @@ S_\text{retr}(z, x) &= h_x^\top h_z
 \end{aligned}
 $$
 
-The retriever module is pretrained with *Inverse Cloze Task (ICT)*, which is to predict the context given a sentence, opposite to the standard Cloze Task. The ICT objective is to maximize the retrieval score of the correct context $$z$$ given a random sentence $$x$$:
+<a name="ICT-loss" />The retriever module is pretrained with *Inverse Cloze Task (ICT)*, which is to predict the context given a sentence, opposite to the standard [Cloze Task](https://en.wikipedia.org/wiki/Cloze_test). The ICT objective is to maximize the retrieval score of the correct context $$z$$ given a random sentence $$x$$:
 
 $$
 L_\text{ICT} = p_\text{early}(z \vert x) = \frac{\exp(S_\text{retr}(z, x))}{\sum_{z'\in\text{BATCH}(\mathcal{Z})} \exp(S_\text{retr}(z', x))}
@@ -362,19 +368,21 @@ $$
 
 where $$\text{BATCH}(\mathcal{Z})$$ is the set of evidence blocks in the same batch used as sampled negatives.
 
-After such pretraining, the BERT retriever is expected to have representations good enough for evidence retrieval. Only the question encoder needs to be fine-tuned for answer extraction. In other words, the evidence block encoder ($$\mathbf{W}_b$$ and $$\text{BERT}_B$$) is fixed and thus all the evidence block encodings can be pre-computed with support for [fast maximum inner product search](#fast-maximum-inner-product-search-mips).
+After such pretraining, the BERT retriever is expected to have representations good enough for evidence retrieval. Only the question encoder needs to be fine-tuned for answer extraction. In other words, the evidence block encoder (i.e., $$\mathbf{W}_z$$ and $$\text{BERT}_z$$) is fixed and thus all the evidence block encodings can be pre-computed with support for [fast Maximum Inner Product Search (MIPS)](#fast-maximum-inner-product-search-mips).
+
 
 ![ORQA-reader]({{ '/assets/images/ORQA-reader.png' | relative_url }})
 {: style="width: 65%;" class="center"}
-*Fig. 7. An illustration of the reader component in ORQA. (Image source: [https://github.com/danqi/acl2020-openqa-tutorial](https://github.com/danqi/acl2020-openqa-tutorial))*
+*Fig. 9. An illustration of the reader component in ORQA. (Image source: [acl2020-openqa-tutorial/slides/part5](https://github.com/danqi/acl2020-openqa-tutorial/blob/master/slides/part5-dense-retriever-e2e-training.pdf))*
 
-The reader follows the same design as in the original BERT QA experiments ([Devlin, et al. 2018](https://arxiv.org/abs/1810.04805)). It learns in a supervised manner, while the parameters of the evidence block encoder are fixed and all other parameters are fine-tuned. Given a question $$x$$ and a gold answer string $$y$$, the reader loss contains two parts:
+The reader follows the same design as in the original [BERT RC]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}#use-bert-in-downstream-tasks) experiments. It learns in a supervised manner, while the parameters of the evidence block encoder are fixed and all other parameters are fine-tuned. Given a question $$x$$ and a gold answer string $$y$$, the reader loss contains two parts:
+
 $$
 \mathcal{L}(x, y) = \mathcal{L}_\text{early}(x, y) + \mathcal{L}_\text{full}(x, y)
 $$
 
-(1) Find all correct text spans within top $$k$$ evidence blocks and optimize for the marginal likelihood of a text span $$s$$ that matches the true answer $$y$$:
 
+(1) Find all correct text spans within top $$k$$ evidence blocks and optimize for the marginal likelihood of a text span $$s$$ that matches the true answer $$y$$:
 
 $$
 \begin{aligned}
@@ -386,9 +394,9 @@ L_\text{full}(x, y) &= - \log \sum_{\substack{z \in \text{TOP}(k)\\ s \in z}} \s
 \end{aligned}
 $$
 
-where $$a=\text{TEXT}(s)$$ indicates whether the answer $$a$$ matches the text span $$s$$. $$\text{TOP}(k)$$ is the top $$k$$ retrieved blocks according to $$S_\text{retr}(b, q)$$. The paper has $$k=5$$.
+where $$y=\text{TEXT}(s)$$ indicates whether the answer $$y$$ matches the text span $$s$$. $$\text{TOP}(k)$$ is the top $$k$$ retrieved blocks according to $$S_\text{retr}(z, x)$$. The paper sets $$k=5$$.
 
-(2) At the early stage of learning, when the retriever is not strong enough, it is possible none of the top $k$ blocks contains the answer. To avoid such sparse learning signals, ORQA considers a larger set of $$c$$ evidence blocks for more aggressive learning. The paper has $$c=5000$$.
+(2) At the early stage of learning, when the retriever is not strong enough, it is possible none of the top $$k$$ blocks contains the answer. To avoid such sparse learning signals, ORQA considers a larger set of $$c$$ evidence blocks for more aggressive learning. The paper has $$c=5000$$.
 
 $$
 L_\text{early}(x, y)
@@ -397,84 +405,44 @@ L_\text{early}(x, y)
 $$
 
 
-Problems in SQuAD dataset are discussed in the ORQA paper:
+Some issues in SQuAD dataset were discussed in the ORQA paper:
 > " The notable drop between development and test accuracy for SQuAD is a reflection of an artifact in the dataset---its 100k questions are derived from only 536 documents. Therefore, good retrieval targets are highly correlated between training examples, violating the IID assumption, and making it unsuitable for learned retrieval. We strongly suggest that those who are interested in end-to-end open-domain QA models no longer train and evaluate with SQuAD for this reason." 
  
 
-<a name="REALM" />**REALM** ("Retrieval-Augmented Language Model pre-training"; [Guu et al., 2020](https://arxiv.org/abs/2002.08909)) jointly trains the retriever + reader model by optimizing the marginal likelihood of obtaining the answer $$a$$ given a question $$q$$ and the knowledge corpus $$\mathcal{D}$$:
-
+<a name="REALM" />**REALM** ("Retrieval-Augmented Language Model pre-training"; [Guu et al., 2020](https://arxiv.org/abs/2002.08909)) also jointly trains retriever + reader by optimizing the marginal likelihood of obtaining the true answer:
 
 $$
-p(a \vert q) 
-= \sum_{d \in \mathcal{D}} \underbrace{p(a \vert q, d)}_\text{reader} \underbrace{p(d \vert q)}_\text{retriever}
-\approx \sum_{d \in \text{TOP}_k(\mathcal{D})} p(a \vert q, d) p(d \vert q)
+p(y \vert x) 
+= \sum_{z \in \mathcal{Z}} \underbrace{p(y \vert x, z)}_\text{reader} \underbrace{p(z \vert x)}_\text{retriever}
+\approx \sum_{z \in \text{TOP}_k(\mathcal{Z})} p(y \vert x, z) p(z \vert x)
 $$
 
 
 ![REALM]({{ '/assets/images/REALM-train.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 8. REALM is first unsupervised pre-trained with salient spans masking and then fine-tuned with QA data. (Image source: [Guu et al., 2020](https://arxiv.org/abs/2002.08909)).*
+*Fig. 10. REALM is first unsupervised pre-trained with salient spans masking and then fine-tuned with QA data. (Image source: [Guu et al., 2020](https://arxiv.org/abs/2002.08909)).*
 
-How REALM computes two probabilities, $$p(z \vert x)$$  and $$p(y \vert x, z)$$, is the same as [ORQA](#ORQA). Both the reader and retriever relies on embedding vectors produced by a pre-trained BERT model.
-
-Different from ICT in ORQA, REALM upgrades the unsupervised pre-training step with several new design decisions, leading towards better retrievals. REALM pre-trains the model with Wikipedia or CC-News corpus.
-1. <a name="ssm" />Use *salient span masking*. Named entities and dates are identified and then one of these "salient spans" is selected and masked. Salient span masking is a special case of MLM and works out well for QA tasks.
+REALM computes two probabilities, $$p(z \vert x)$$ and $$p(y \vert x, z)$$, same as ORQA. However, different from ICT in ORQA, REALM upgrades the unsupervised pre-training step with several new design decisions, leading towards better retrievals. REALM pre-trains the model with Wikipedia or CC-News corpus.
+1. <a name="ssm" />Use *salient span masking*. Named entities and dates are identified. Then one of these "salient spans" is selected and masked. Salient span masking is a special case of MLM and works out well for QA tasks.
 2. Add an *empty null document*. Because not every question demands a context document.
-3. No trivial retrievals. The context document $$z$$ should not be the same as the selected sentence with a masked span, $$x$$.
+3. No trivial retrieval. The context document should not be same as the selected sentence with a masked span.
 4. Apply the same ICT loss as in ORQA to encourage learning when the retrieval quality is still poor at the early stage of training.
 
-> "Among all systems, the most direct comparison with REALM is ORQA (Lee et al., 2019), where the fine-tuning setup, hyperparameters and training data are identical. The improvement of REALM over ORQA is purely due to bet- ter pre-training methods." --- from REALM paper.
+> "Among all systems, the most direct comparison with REALM is ORQA (Lee et al., 2019), where the fine-tuning setup, hyperparameters and training data are identical. The improvement of REALM over ORQA is purely due to better pre-training methods." --- from REALM paper.
 
-Both unsupervised pre-training and supervised fine-tuning optimize the same log-likelihood $$\log p(y \vert x)$$. Because the parameters of the retriever encoder for evidence documents are also updated in the process, the index for MIPS is changing. REALM asynchronously refreshes the index with the updated encoder parameters. 
+Both unsupervised pre-training and supervised fine-tuning optimize the same log-likelihood $$\log p(y \vert x)$$. Because the parameters of the retriever encoder for evidence documents are also updated in the process, the index for MIPS is changing. REALM asynchronously refreshes the index with the updated encoder parameters every several hundred training steps. 
 
 
-<a name="DPR" />**DPR** ("Dense Passage Retriever"; [Karpukhin et al., 2020](https://arxiv.org/abs/2004.04906), [code](https://github.com/facebookresearch/DPR)) argues that ICT pre-training could be too computationally expensive and the ORQA’s context encoder could be optimized because it is not fine-tuned with question-answer pairs. DPR aims to resolve these two issues by only training a dense dual-encoder architecture for retrieval only from a small number of Q/A pairs, without any pre-training.
+<a name="DPR" />**DPR** ("Dense Passage Retriever"; [Karpukhin et al., 2020](https://arxiv.org/abs/2004.04906), [code](https://github.com/facebookresearch/DPR)) argues that ICT pre-training could be too computationally expensive and the ORQA's context encoder might be sub-optimal because it is not fine-tuned with question-answer pairs. DPR aims to resolve these two issues by only training a dense dual-encoder architecture for retrieval only from a small number of Q/A pairs, without any pre-training.
 
-Same as previous work, DPR uses two BERT models to encode the question and the passage independently and computes the dot-product (L2 distance or cosine similarity also works) of these embedding vectors as the retrieval score. The loss function for training the dual-encoder is the negative log-likelihood of the positive passage, which essentially takes the same formulation as ICT loss of ORQA. Note that both of them consider other passages in the same batch as the negative samples, named *in-batch negative sampling*. The main difference is that DPR relies on supervised QA data, while ORQA trains with ICT on unsupervised corpus. At the inference time, DPR uses [FAISS](https://github.com/facebookresearch/faiss) to run fast MIPS.
+Same as previous work, DPR uses the dot-product (L2 distance or cosine similarity also works) of BERT representations as retrieval score. The loss function for training the dual-encoder is the NLL of the positive passage, which essentially takes the same formulation as [ICT loss](#ICT-loss) of ORQA. Note that both of them consider other passages in the same batch as the negative samples, named *in-batch negative sampling*. The main difference is that DPR relies on supervised QA data, while ORQA trains with ICT on unsupervised corpus. At the inference time, DPR uses [FAISS](https://github.com/facebookresearch/faiss) to run fast MIPS.
 
 DPR did a set of comparison experiments involving several different types of negatives:
 1. Random: any random passage from the corpus;
 2. BM25: top passages returned by BM25 which don't contain the answer but match most question tokens;
 3. In-batch negative sampling ("gold"): positive passages paired with other questions which appear in the training set.
 
-Using gold passages from the same mini-batch and one negative passage with high BM25 score was shown to work the best.
-
-To further improve the retrieval results, DPR also explored a setting where a BM25 score and a dense embedding retrieval score are linearly combined to serve as a new ranking function.
-
-
-## Closed-book QA: Generative Language Model
-
-Big language models have been pre-trained on a large collection of unsupervised textual corpus. Given enough parameters, these models are able to memorize some factual knowledge within parameter weights. Therefore, we can use these models to do question-answering without explicit context, just like in a closed-book exam. The pre-trained language models produce free text to respond to questions, no explicit reading comprehension.
-
-
-![LM compute]({{ '/assets/images/LM-compute.png' | relative_url }})
-{: style="width: 100%;" class="center"}
-*Fig. 9. The amount of computation used for training big language models of different sizes. (Image source: [Brown, et al., 2020](https://arxiv.org/abs/2005.14165)).*
-
-[Roberts, et al. (2020)](https://arxiv.org/abs/2002.08910) measured the practical utility of a language model by fine-tuning a pre-trained model to answer questions without access to any external context or knowledge. They fine-tuned the T5 language model (which implements the same architecture as the original Transformer to answer questions without inputting any additional information or context. Such setup enforces the language model to answer questions based on "knowledge" that it internalized during pre-training.
-
-
-![T5+SSM]({{ '/assets/images/T5_SSM.png' | relative_url }})
-{: style="width: 100%;" class="center"}
-*Fig. 10. T5 is first pre-trained with salient span masking and then fine-tuned for each QA dataset to produce answers in free text. (Image source: [Roberts, et al. 2020](https://arxiv.org/abs/2002.08910))*
-
-The original T5 models were pre-trained on a multi-task mixture including an unsupervised "masked language modeling" (MLM) tasks on the C4 ("Colossal Clean Crawled Corpus") dataset as well as fine-tuned altogether with supervised translation, summarization, classification, and reading comprehension tasks. [Roberts, et al. (2020)](https://arxiv.org/abs/2002.08910)  took a pre-trained T5 model and continued pre-training with [salient span masking](#ssm) over Wikipedia corpus, which has been found to substantially boost the performance for ODQA. Then they fine-tuned the model for each QA datasets independently.
-
-With a pre-trained T5 language model +  continue pre-training with salient spans masking + fine-tuning for each QA dataset, 
-- It can attain competitive results in open-domain question-answering without access to external knowledge. 
-- A larger model can obtain better performance. For example, a T5 with 11B parameters is able to match the performance with DPR with 3 BERT-base models, each with 330M parameters.
-
-Interestingly, fine-tuning is not strictly necessary. GPT3 has been evaluated on the closed book question answering task *without any gradient updates or fine-tuning*. The few-shot, one-shot, zero-shot settings here only refer to how many demonstrations are provided as context in the text input.
-1. "few-shot learning": GPT3 is allowed to take as many demonstrations as will fit into the model’s context window (typically 10 to 100). 
-2. "one-shot learning": only one demonstration is provided.
-3. "zero-shot" learning, no demonstrations are allowed and only an instruction in natural language is given to the model. 
-
-The performance grows with the model size. On the TriviaQA dataset, GPT3 evaluation with demonstrations can match or exceed the performance of SOTA baseline with fine-tuning.
-
-
-![GPT3 on TriviaQA]({{ '/assets/images/GPT3-triviaqa.png' | relative_url }})
-{: style="width: 80%;" class="center"}
-*Fig. 11. GPT3’s performance on TriviaQA grows smoothly with the model size. More demonstrations lead to better performance. (Image source: [Brown, et al., 2020](https://arxiv.org/abs/2005.14165)).*
+DPR found that using gold passages from the same mini-batch and one negative passage with high BM25 score works the best. To further improve the retrieval results, DPR also explored a setting where a BM25 score and a dense embedding retrieval score are linearly combined to serve as a new ranking function.
 
 
 
@@ -485,27 +453,26 @@ Compared to the retriever-reader approach, the retriever-generator also has 2 st
 
 ![retriever + text generator]({{ '/assets/images/QA-retiever-generator.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 12. The retriever + generator QA framework combines a document retrieval system with a general language model.*
+*Fig. 11. The retriever + generator QA framework combines a document retrieval system with a general language model.*
 
 A pretrained LM has a great capacity of memorizing knowledge in its parameters, as shown above. However, they cannot easily modify or expand their memory, cannot straightforwardly provide insights into their predictions, and may produce non-existent illusion.
 
 
-[Petroni, et al., 2020](https://arxiv.org/abs/2005.04611) studies how the retrieved relevant context can help a generative language model produce better answers. They found:
+[Petroni et al. (2020)](https://arxiv.org/abs/2005.04611) studied how the retrieved relevant context can help a generative language model produce better answers. They found:
 1. Augmenting queries with relevant contexts dramatically improves the pretrained LM on unsupervised machine reading capabilities.
-2. An off-the-shelf IR system is sufficient for BERT to match the performance of a supervised open-domain QA baseline;
+2. An off-the-shelf IR system is sufficient for BERT to match the performance of a supervised ODQA baseline;
 3. BERT's [NSP]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}#pre-training-tasks) pre-training strategy is a highly effective unsupervised mechanism in dealing with noisy and irrelevant contexts.
 
-They pair the BERT model with different types of context, including (1) adversarial (unrelated context), (2) retrieved (by BM25), and (3) generative (by an autoregressive language model of 1.4N parameters, trained on CC-NEWS). The model is found to be robust to adversarial context, but only when the question and the context are provided as two segments (e.g. separated by `[SEP]`). One hypothesis is related to NSP task: "BERT might learn to not condition across segments for masked token prediction if the NSP score is low, thereby implicitly detecting irrelevant and noisy contexts."
+They pair the BERT model with different types of context, including adversarial (unrelated context), retrieved (by BM25), and generative (by an autoregressive language model of 1.4N parameters, trained on CC-NEWS). The model is found to be robust to adversarial context, but only when the question and the context are provided as two segments (e.g. separated by `[SEP]`). One hypothesis is related to NSP task: "BERT might learn to not condition across segments for masked token prediction if the NSP score is low, thereby implicitly detecting irrelevant and noisy contexts."
 
 
-**RAG** ("Retrieval-Augmented Generation"; [Lewis et al., 2020](https://arxiv.org/abs/2005.11401)) combines pre-trained parametric (language model) and non-parametric memory (external knowledge index) together for language generation. RAG can be fine-tuned on any seq2seq task, whereby both the sequence generator and retriever are jointly learned. They found that unconstrained generation outperforms previous extractive approaches.
+**RAG** ("Retrieval-Augmented Generation"; [Lewis et al., 2020](https://arxiv.org/abs/2005.11401)) combines pre-trained parametric (language model) and non-parametric memory (external knowledge index) together for language generation. RAG can be fine-tuned on any seq2seq task, whereby both the retriever and the sequence generator are jointly learned. They found that unconstrained generation outperforms previous extractive approaches.
 
-RAG consists of a retriever model $$p_\eta(c \vert q)$$ and a generator model $$p_\theta(a_i \vert q, c, a_{1:i-1})$$:
-- The retriever uses the input sequence $$q$$ to retrieve text passages $$p$$, implemented as a [DPR](#DPR) retriever. $$\log p_\eta(p \vert q) \propto E_p(p)^\top E_q(q)$$.
-- The generator uses $$p$$ as additional context when generating the target sequence $$a$$. The context and the question are simply concatenated.
+RAG consists of a retriever model $$p_\eta(z \vert x)$$ and a generator model $$p_\theta(y_i \vert x, z, y_{1:i-1})$$:
+- The retriever uses the input sequence $$x$$ to retrieve text passages $$z$$, implemented as a [DPR](#DPR) retriever. $$\log p_\eta(z \vert x) \propto E_z(z)^\top E_x(x)$$.
+- The generator uses $$z$$ as additional context when generating the target sequence $$y$$, where the context and the question are simply concatenated.
 
-Depending whether using the same or different retrieved documents for each token generation, there are two versions of RAG:
-
+Depending on whether using the same or different retrieved documents for each token generation, there are two versions of RAG:
 
 $$
 \begin{aligned}
@@ -514,37 +481,74 @@ p_\text{RAG-token}(y \vert x) &= \prod_i^N \sum_{z \in \text{TOP}_k(p_\eta(.\ver
 \end{aligned}
 $$
 
-The retriever+generator in RAG is jointly trained to minimize the NLL loss, $$\mathcal{L}_\text{RAG} = \sum_j -\log p(y_j \vert x_j)$$.
+The retriever + generator in RAG is jointly trained to minimize the NLL loss, $$\mathcal{L}_\text{RAG} = \sum_j -\log p(y_j \vert x_j)$$. Updating the passage encoder $$E_z(.)$$ is expensive as it requires the model to re-index the documents for fast MIPS. RAG does not find fine-tuning $$E_z(.)$$ necessary (like in [ORQA](#ORQA)) and only updates the query encoder + generator.
 
 
 
 ![RAG]({{ '/assets/images/RAG.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 13. An illustration of retrieval-augmented generation (RAG). (Image source: [Lewis et al., 2020](https://arxiv.org/abs/2005.11401))*
+*Fig. 12. An illustration of retrieval-augmented generation (RAG) architecture. (Image source: [Lewis et al., 2020](https://arxiv.org/abs/2005.11401))*
 
-Updating the passage encoder $$E_z(.)$$ is expensive as it requires the model to re-index the documents fast MIPS via FAISS. RAG does not find fine-tuning $$E_z(.)$$ necessary (like in ORQA) and only updates the query encoder + generator.
 
 At decoding/test time, RAG-token can be evaluated via a [beam search](https://d2l.ai/chapter_recurrent-modern/beam-search.html#id1). RAG-seq cannot be broken down into a set of per-token likelihood, so it runs beam search for each candidate document $$z$$ and picks the one with optimal $$p_\theta(y_i \vert x, z, y_{1:i-1})$$.
 
-[Izacard & Grave, 2020](https://arxiv.org/abs/2007.01282) proposed the *Fusion-in-Decoder* approach based on a pre-trained T5:
+The *Fusion-in-Decoder* approach, proposed by [Izacard & Grave (2020)](https://arxiv.org/abs/2007.01282) is also based on a pre-trained T5. It works similar to RAG but differently for how the context is integrated into the decoder.
 1. Retrieve top $$k$$ related passage of 100 words each, using BM25 or DPR.
-2. Each retrieved passage and its title are concatenated with the question. Special tokens, `question:`, `title:` and `context:`, to indicate the content differences.
+2. Each retrieved passage and its title are concatenated with the question using special tokens like `question:`, `title:` and `context:` to indicate the content differences.
 3. Each retrieved passage is processed independently and later combined in the decoder. Processing passages independently in the encoder allows us to parallelize the computation. OTOH, processing them jointly encourages better aggregation of multiple pieces of evidence. The aggregation part is missing in extractive approaches.
 
 Note that they did fine-tune the pretrained LM independently for each dataset.
 
 
+
+## Closed-book QA: Generative Language Model
+
+Big language models have been pre-trained on a large collection of unsupervised textual corpus. Given enough parameters, these models are able to memorize some factual knowledge within parameter weights. Therefore, we can use these models to do question-answering without explicit context, just like in a closed-book exam. The pre-trained language models produce *free text* to respond to questions, no explicit reading comprehension.
+
+
+![LM compute]({{ '/assets/images/LM-compute.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 13. The amount of computation used for training big language models of different sizes is getting big. (Image source: [Brown et al., 2020](https://arxiv.org/abs/2005.14165)).*
+
+
+[Roberts et al. (2020)](https://arxiv.org/abs/2002.08910) measured the practical utility of a language model by fine-tuning a pre-trained model to answer questions without access to any external context or knowledge. They fine-tuned the [T5](https://arxiv.org/abs/1910.10683) language model (same architecture as the original Transformer) to answer questions without inputting any additional information or context. Such setup enforces the language model to answer questions based on "knowledge" that it internalized during pre-training.
+
+
+![T5+SSM]({{ '/assets/images/T5_SSM.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 14. T5 is first pre-trained with salient span masking and then fine-tuned for each QA dataset to produce answers in free text. (Image source: [Roberts et al. 2020](https://arxiv.org/abs/2002.08910))*
+
+The original T5 models were pre-trained on a multi-task mixture including an unsupervised ["masked language modeling"]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models %}#use-bert-in-downstream-tasks) (MLM) tasks on the C4 ("Colossal Clean Crawled Corpus") dataset as well as fine-tuned altogether with supervised translation, summarization, classification, and reading comprehension tasks. [Roberts, et al. (2020)](https://arxiv.org/abs/2002.08910)  took a pre-trained T5 model and continued pre-training with [salient span masking](#ssm) over Wikipedia corpus, which has been found to substantially boost the performance for ODQA. Then they fine-tuned the model for each QA datasets independently.
+
+With a pre-trained T5 language model +  continue pre-training with salient spans masking + fine-tuning for each QA dataset, 
+- It can attain competitive results in open-domain question answering without access to external knowledge. 
+- A larger model can obtain better performance. For example, a T5 with 11B parameters is able to match the performance with [DPR](#DPR) with 3 BERT-base models, each with 330M parameters.
+
+Interestingly, fine-tuning is not strictly necessary. GPT3 ([Brown et al., 2020](https://arxiv.org/abs/2005.14165)) has been evaluated on the closed book question answering task *without any gradient updates or fine-tuning*. During evaluation, the few-shot, one-shot and zero-shot settings here only refer to how many demonstrations are provided as context in the text input:
+1. "few-shot learning": GPT3 is allowed to take as many demonstrations as what can fit into the model's context window (typically 10 to 100). 
+2. "one-shot learning": only one demonstration is provided.
+3. "zero-shot learning": no demonstrations are allowed and only an instruction in natural language is given to the model. 
+
+The performance grows with the model size. On the TriviaQA dataset, GPT3 evaluation with demonstrations can match or exceed the performance of SOTA baseline with fine-tuning.
+
+
+![GPT3 on TriviaQA]({{ '/assets/images/GPT3-triviaqa.png' | relative_url }})
+{: style="width: 75%;" class="center"}
+*Fig. 15. GPT3's performance on TriviaQA grows smoothly with the model size. More demonstrations lead to better performance. (Image source: [Brown et al., 2020](https://arxiv.org/abs/2005.14165)).*
+
+
+
 ## Related Techniques
 
-
 ### Fast Maximum Inner Product Search (MIPS)
-MIPS (maximum inner product search) is a crucial component in many ODQA models. When a large number of passages from the knowledge corpus are encoded and stored in a memory, a retrieval model can query the memory to identify the top relevant passages which have the maximum inner product with the question encoding vector.
+MIPS (maximum inner product search) is a crucial component in many open-domain question answering models. In retriever + reader/generator framework, a large number of passages from the knowledge source are encoded and stored in a memory. A retrieval model is able to query the memory to identify the top relevant passages which have the maximum inner product with the question's embedding.
 
-We need fast MIPS because the number of precomputed passage embeddings can be gigantic. There are several ways to achieve fast MIPS at run time, such as [asymmetric LSH](https://papers.nips.cc/paper/5329-asymmetric-lsh-alsh-for-sublinear-time-maximum-inner-product-search-mips.pdf), [data-dependent hashing](https://arxiv.org/abs/1501.01062),  and [FAISS](https://github.com/facebookresearch/faiss).
+We need fast MIPS because the number of precomputed passage representations can be gigantic. There are several ways to achieve fast MIPS at run time, such as [asymmetric LSH](https://papers.nips.cc/paper/5329-asymmetric-lsh-alsh-for-sublinear-time-maximum-inner-product-search-mips.pdf), [data-dependent hashing](https://arxiv.org/abs/1501.01062),  and [FAISS](https://github.com/facebookresearch/faiss).
 
 
 ### Language Model Pre-training
-There are two pre-training tasks that are especially helpful for QA tasks.
+
+Two pre-training tasks are especially helpful for QA tasks, as we have discussed above.
 
 - **Inverse Cloze Task**  (proposed by [ORQA](#ORQA)): The goal of [Cloze Task](https://en.wikipedia.org/wiki/Cloze_test) is to predict masked-out text based on its context. The prediction of Inverse Cloze Task (ICT) is in the reverse direction, aiming to predict the context given a sentence. In the context of QA tasks, a random sentence can be treated as a pseudo-question, and its context can be treated as pseudo-evidence.
 
@@ -556,23 +560,23 @@ There are two pre-training tasks that are especially helpful for QA tasks.
 {: class="info"}
 | Model | Retriever | Reader / Generator | Pre-training / Fine-tuning | End2end |
 | --- | --- | --- | --- | --- |
-| DrQA | TF-IDF | | | No |
-| R^3 | Classic IR + Match-LSTM | Match-LSTM | | Yes |
+| DrQA | TF-IDF | Bi-directional LSTM | -- | No |
 | BERTserini | Aserini + BM25 | BERT without softmax layer | Fine-tune with SQuAD | No |
 | Multi-passage BERT | ElasticSearch + BM25 | Multi-passage BERT + Passage ranker | | No |
-| ORQA | Dot-product of BERT embeddings | BERT-RC | Inverse cloze task | Yes |
-| REALM | Dot-product of BERT embeddings | BERT-RC | Salient span masking | Yes |
-| DPR | Dot-product of BERT embeddings; supervised trained with QA pairs | BERT-RC | | Yes |
+| R^3 | Classic IR + Match-LSTM | Match-LSTM | | Yes |
+| ORQA | Dot product of BERT embeddings | BERT-RC | Inverse cloze task | Yes |
+| REALM | Dot product of BERT embeddings | BERT-RC | Salient span masking | Yes |
+| DPR | Dot product of BERT embeddings | BERT-RC | supervised training with QA pairs | Yes |
 | DenSPI | Classic + Neural IR | -- | | Yes |
-| T5 + SSM pre-training | -- | Tranformer | SSM on CommonCrawl data + Fine-tuning on QA data | Yes |
-| GPT3 | -- | Transformer decoder | Autoregressive prediction; CommonCrawl data | Yes |
-| RAG | DPR retriever | Generative LM | | Yes |
+| T5 + SSM | -- | T5 | SSM on [CommonCrawl](https://commoncrawl.org/the-data/get-started/) data + Fine-tuning on QA data | Yes |
+| GPT3 | -- | GPT3 | NSP on [CommonCrawl](https://commoncrawl.org/the-data/get-started/) data | Yes |
+| RAG | DPR retriever | [BART](https://arxiv.org/abs/1910.13461) | | Yes |
 | Fusion-in-Decoder | BM25 / DPR retriever | Tranformer | | No |
 
 
 ![SOTA-comparison]({{ '/assets/images/QA-results.png' | relative_url }})
-{: style="width: 100%;" class="center"}
-*Fig. 14. A comparison of performance of several QA models on common QA datasets. On TriviaQA, two columns of results are reported, on the open domain test set (left) and on the hidden test set (right). (Image source: [Izacard & Grave, 2020](https://arxiv.org/abs/2007.01282)).*
+{: style="width: 90%;" class="center"}
+*Fig. 16. A comparison of performance of several QA models on common QA datasets. On TriviaQA, two columns of results are reported, on the open domain test set (left) and on the hidden test set (right). (Image source: [Izacard & Grave, 2020](https://arxiv.org/abs/2007.01282)).*
 
 
 ## Appendix: QA Datasets
@@ -580,19 +584,19 @@ There are two pre-training tasks that are especially helpful for QA tasks.
 - [SQuAD 2.0](https://rajpurkar.github.io/SQuAD-explorer/): the Stanford QA dataset.
 - [RACE](http://www.qizhexie.com/data/RACE_leaderboard): a reading comprehension dataset collected from English Examinations that are created for middle school and high school students.
 - [TREC QA](https://trec.nist.gov/data/qa.html): the TREC QA collections.
-- [MS MARCO](https://microsoft.github.io/msmarco/): a QA dataset featuring $$100,000$$ real Bing questions and a human generated answer.
+- [MS MARCO](https://microsoft.github.io/msmarco/): a QA dataset featuring 100,000 real Bing questions and a human generated answer.
 - [CuratedTREC](https://github.com/brmson/dataset-factoid-curated): based on the benchmarks from the TREC QA tasks that have been curated by [Baudis & Sedivy (2015)](https://link.springer.com/chapter/10.1007%2F978-3-319-24027-5_20).
 - [Google Natural Questions](https://ai.google.com/research/NaturalQuestions/dataset):  contains real user questions issued to Google search, and answers found from Wikipedia by annotators.
-- [WebQuestions](https://github.com/brmson/dataset-factoid-webquestions): designed for knowledge-base QA with answers restricted to Freebase en- tities
+- [WebQuestions](https://github.com/brmson/dataset-factoid-webquestions): designed for knowledge-base QA with answers restricted to Freebase entities.
 - [WikiQA](https://www.microsoft.com/en-us/research/publication/wikiqa-a-challenge-dataset-for-open-domain-question-answering/): Bing query logs were used as the source of questions. Each question is then linked to a Wikipedia page that potentially contains the answer.
 - [WikiMovies](https://research.fb.com/downloads/babi/): contains movie-related questions from the OMDb and MovieLens databases and where the questions can be answered using Wikipedia pages.
 - [WikiReading](https://github.com/google-research-datasets/wiki-reading): to predict textual values from the structured knowledge base Wikidata by reading the text of the corresponding Wikipedia articles.
 - [TriviaQA](https://nlp.cs.washington.edu/triviaqa/): a reading comprehension dataset containing 95K question-answer pairs authored by trivia enthusiasts and independently gathered multiple evidence documents per question.
 - [ Jeopardy! Questions](https://www.kaggle.com/tunguz/200000-jeopardy-questions): contains 200,000+ [Jeopardy!](https://en.wikipedia.org/wiki/Jeopardy!) questions.
+- [DeepMind Q&A Dataset](https://cs.nyu.edu/~kcho/DMQA/): question/answer pairs from CNN and Daily Mail articles.
 - [bAbi](https://research.fb.com/downloads/babi/): a rich collection of datasets for text understanding by Facebook.
-- [FEVER](https://fever.ai/data.html):  for fact extraction and verification
+- [FEVER](https://fever.ai/data.html): for fact extraction and verification.
 - [SearchQA](https://github.com/nyu-dl/dl4ir-searchQA): question-answer pairs were crawled from from [ J! Archive](https://j-archive.com/), and then augmented with text snippets from Google.
-- [LAMA](https://github.com/facebookresearch/LAMA)
 - [Quasar-T](https://github.com/bdhingra/quasar): a collection of open-domain trivia questions and their answers obtained from various internet sources.
 - [Quiz bowl](https://people.cs.umass.edu/~miyyer/qblearn/index.html): contains data from a trivia competition called quiz bowl.
 - [AmbigNQ](https://nlp.cs.washington.edu/ambigqa/): ambiguous questions selected from NQ-OPEN dataset.
@@ -611,9 +615,9 @@ There are two pre-training tasks that are especially helpful for QA tasks.
 
 [5] Wei Yang, et al. ["End-to-End Open-Domain Question Answering with BERTserini"](https://arxiv.org/abs/1902.01718) NAACL 2019.
 
-[6] Christopher Clark & Matt Gardner. ["Simple and Effective Multi-Paragraph Reading Comprehension."](https://arxiv.org/abs/1710.10723) arXiv preprint arXiv:1710.10723 (2017).
+[6] Christopher Clark & Matt Gardner. ["Simple and Effective Multi-Paragraph Reading Comprehension."](https://arxiv.org/abs/1710.10723) arXiv:1710.10723 (2017).
 
-[7] Rodrigo Nogueira & Kyunghyun Cho. ["Passage Re-ranking with BERT."](https://arxiv.org/abs/1901.04085) arXiv preprint arXiv:1901.04085 (2019). | [code](https://github.com/nyu-dl/dl4marco-bert)
+[7] Rodrigo Nogueira & Kyunghyun Cho. ["Passage Re-ranking with BERT."](https://arxiv.org/abs/1901.04085) arXiv preprint arXiv:1901.04085 (2019). \| [code](https://github.com/nyu-dl/dl4marco-bert)
 
 [8] Zhiguo Wang, et al. ["Multi-passage BERT: A globally normalized BERT model for open-domain question answering."](https://arxiv.org/abs/1908.08167) EMNLP 2019.
 
@@ -621,23 +625,23 @@ There are two pre-training tasks that are especially helpful for QA tasks.
 
 [10] Kenton Lee, et al. ["Latent Retrieval for Weakly Supervised Open Domain Question Answering"](https://arxiv.org/abs/1906.00300) ACL 2019.
 
-[11] Kelvin Guu, et al. ["REALM: Retrieval-Augmented Language Model Pre-Training"](https://arxiv.org/abs/2002.08909) arXiv preprint arXiv:2002.08909 (2020).
+[11] Kelvin Guu, et al. ["REALM: Retrieval-Augmented Language Model Pre-Training"](https://arxiv.org/abs/2002.08909) arXiv:2002.08909 (2020).
 
-[12] Vladimir Karpukhin et al. ["Dense passage retrieval for open-domain question answering."](https://arxiv.org/abs/2004.04906). EMNLP 2020. | [code](https://github.com/facebookresearch/DPR)
+[12] Vladimir Karpukhin et al. ["Dense passage retrieval for open-domain question answering."](https://arxiv.org/abs/2004.04906). EMNLP 2020. \| [code](https://github.com/facebookresearch/DPR)
 
-[13] Patrick Lewis et al. ["Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"](https://arxiv.org/abs/2005.11401) arXiv preprint arXiv:2005.11401 (2020).
+[13] Patrick Lewis et al. ["Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"](https://arxiv.org/abs/2005.11401) arXiv:2005.11401 (2020).
 
 [14] Adam Roberts, et al. ["How Much Knowledge Can You Pack Into the Parameters of a Language Model?"](https://arxiv.org/abs/2002.08910) EMNLP 2020.
 
-[15] Tom Brown, et al. ["Language models are few-shot learners."](https://arxiv.org/abs/2005.14165) arXiv preprint arXiv:2005.14165 (2020).
+[15] Tom Brown, et al. ["Language models are few-shot learners."](https://arxiv.org/abs/2005.14165) arXiv:2005.14165 (2020).
 
 [16] Fabio Petroni, et al. ["How Context Affects Language Models' Factual Predictions"](https://arxiv.org/abs/2005.04611) AKBC 2020.
 
-[17] Gautier Izacard & Edouard Grave. ["Leveraging passage retrieval with generative models for open domain question answering."](https://arxiv.org/abs/2007.01282) arXiv preprint arXiv:2007.01282 (2020).
+[17] Gautier Izacard & Edouard Grave. ["Leveraging passage retrieval with generative models for open domain question answering."](https://arxiv.org/abs/2007.01282) arXiv:2007.01282 (2020).
 
 [18] ["Dive into deep learning: Beam search"](https://d2l.ai/chapter_recurrent-modern/beam-search.html)
 
-[19] Patrick Lewis, et al. ["Question and Answer Test-Train Overlap in Open-Domain Question Answering Datasets"](https://arxiv.org/abs/2008.02637) arXiv preprint arXiv:2008.02637 (2020). | [data](https://github.com/facebookresearch/QA-Overlap)
+[19] Patrick Lewis, et al. ["Question and Answer Test-Train Overlap in Open-Domain Question Answering Datasets"](https://arxiv.org/abs/2008.02637) arXiv:2008.02637 (2020). \| [data](https://github.com/facebookresearch/QA-Overlap)
 
 [20] Hervé Jegou, et al. ["Faiss: A library for efficient similarity search"](https://engineering.fb.com/2017/03/29/data-infrastructure/faiss-a-library-for-efficient-similarity-search/) Mar 2017.
 

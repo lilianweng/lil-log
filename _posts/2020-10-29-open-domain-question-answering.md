@@ -578,6 +578,19 @@ Two pre-training tasks are especially helpful for QA tasks, as we have discussed
 *Fig. 16. A comparison of performance of several QA models on common QA datasets. On TriviaQA, two columns of results are reported, on the open domain test set (left) and on the hidden test set (right). (Image source: [Izacard & Grave, 2020](https://arxiv.org/abs/2007.01282)).*
 
 
+---
+Cited as:
+```
+@article{weng2020odqa,
+  title   = "How to Build an Open-Domain Question Answering System?",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2020",
+  url     = "https://lilianweng.github.io/lil-log/2020/10/29/open-domain-question-answering.html"
+}
+```
+
+
 ## Appendix: QA Datasets
 
 - [SQuAD 2.0](https://rajpurkar.github.io/SQuAD-explorer/): the Stanford QA dataset.

@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Learning Word Embedding"
 date: 2017-10-15 23:00:00
-tags: nlp
+tags: nlp language-model
 image: "word2vec-skip-gram.png"
 ---
 

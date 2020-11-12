@@ -9,8 +9,10 @@ tags: nlp language-model attention transformer
 
 > A model that is capable of answering any question with regard to factual knowledge can enable many useful applications. This post delves into how we can build an Open-Domain Question Answering (ODQA) system, assuming we have access to a powerful pretrained language model. Both closed-book and open-book approachs are discussed. 
 
-
 <!--more-->
+
+
+<span style="color: #286ee0;">[Updated on 2020-11-12: add [an example](#openai-api-example) on closed-book factual QA using OpenAI API (beta).</span>
 
 
 A model that can answer any question with regard to factual knowledge can lead to many useful and practical applications, such as working as a chatbot or an AI assistant🤖. In this post, we will review several common approaches for building such an open-domain question answering system.
@@ -535,6 +537,47 @@ The performance grows with the model size. On the TriviaQA dataset, GPT3 evaluat
 {: style="width: 75%;" class="center"}
 *Fig. 15. GPT3's performance on TriviaQA grows smoothly with the model size. More demonstrations lead to better performance. (Image source: [Brown et al., 2020](https://arxiv.org/abs/2005.14165)).*
 
+<a name="openai-api-example" />Check out this cool example in OpenAI API [playground viewer](https://beta.openai.com/playground/p/HMoho4552EHXrPLbmOIxpX4X). The model is able to answer factal questions in short answer and not to make up things when the model does not know the answer. I added the last two questions and asked the model to respond with `A:`. The API is still in beta version, so you might need to [apply](https://beta.openai.com/) to get on the wait list.
+```
+Q: Who is Batman?
+A: Batman is a fictional comic book character.
+###
+Q: What is torsalplexity?
+A: ?
+###
+Q: What is Devz9?
+A: ?
+###
+Q: Who is George Lucas?
+A: George Lucas is American film director and producer famous for creating Star Wars.
+###
+Q: What is the capital of California?
+A: Sacramento.
+###
+Q: What orbits the Earth?
+A: The Moon.
+###
+Q: Who is Fred Rickerson?
+A: ?
+###
+Q: What is an atom?
+A: An atom is a tiny particle that makes up everything.
+###
+Q: Who is Alvan Muntz?
+A: ?
+###
+Q: What is Kozar-09?
+A: ?
+###
+Q: How many moons does Mars have?
+A: Two, Phobos and Deimos.
+###
+Q: What is COVID-19?
+A: ?
+###
+Q: What is H1N1?
+A: H1N1 is a strain of influenza.
+```
 
 
 ## Related Techniques

@@ -422,12 +422,18 @@ In the GoT word embedding space, the top similar words to "king" and "queen" are
 {: .info}
 
 
+
 ---
-
-*If you notice mistakes and errors in this post, don't hesitate to contact me at [lilian dot wengweng at gmail dot com] and I would be super happy to correct them right away!*
-
-See you in the next post :D
-
+Cited as:
+```
+@article{weng2017wordembedding,
+  title   = "Learning word embedding",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2017",
+  url     = "https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html"
+}
+```
 
 ## References
 

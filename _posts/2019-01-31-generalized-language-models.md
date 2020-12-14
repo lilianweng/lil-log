@@ -13,7 +13,8 @@ image: "elmo-and-bert.png"
 
 <span style="color: #286ee0;">[Updated on 2019-02-14: add [ULMFiT](#ulmfit) and [OpenAI GPT-2](#openai-gpt-2).]</span><br/>
 <span style="color: #286ee0;">[Updated on 2020-02-29: add [ALBERT](#albert).]</span><br/>
-<span style="color: #286ee0;">[Updated on 2020-10-25: add [RoBERTa](#roberta).]</span>
+<span style="color: #286ee0;">[Updated on 2020-10-25: add [RoBERTa](#roberta).]</span><br/>
+<span style="color: #286ee0;">[Updated on 2020-12-13: add [T5](#t5).]</span>
 
 
 <br />
@@ -266,6 +267,78 @@ ULMFiT follows three steps to achieve good transfer learning results on downstre
 *Fig. 6. Three training stages of ULMFiT. (Image source: [original paper](https://arxiv.org/abs/1801.06146))*
 
 
+## OpenAI GPT
+
+Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
+1. The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
+2. The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT fine-tunes the same base model for all end tasks.
+
+
+### Transformer Decoder as Language Model
+
+Compared to the [original transformer](https://arxiv.org/abs/1706.03762) architecture, the [transformer decoder](https://arxiv.org/abs/1801.10198) model discards the encoder part, so there is only one single input sentence rather than two separate source and target sequences.
+            
+This model applies multiple transformer blocks over the embeddings of input sequences. Each block contains a masked *multi-headed self-attention* layer and a *pointwise feed-forward* layer. The final output produces a distribution over target tokens after softmax normalization.
+
+
+![OpenAI GPT transformer decoder]({{ '/assets/images/OpenAI-GPT-transformer-decoder.png' | relative_url }})
+{: style="width: 85%;" class="center"}
+*Fig. 7. The transformer decoder model architecture in OpenAI GPT.*
+
+The loss is the negative log-likelihood, same as [ELMo](#elmo), but without backward computation. Let’s say, the context window of the size $$k$$ is located before the target word and the loss would look like:
+
+
+$$
+\mathcal{L}_\text{LM} = -\sum_{i} \log p(x_i\mid x_{i-k}, \dots, x_{i-1})
+$$
+
+
+### Byte Pair Encoding
+
+**Byte Pair Encoding** ([**BPE**](https://arxiv.org/abs/1508.07909)) is used to encode the input sequences. BPE was originally proposed as a data compression algorithm in 1990s and then was adopted to solve the open-vocabulary issue in machine translation, as we can easily run into rare and unknown words when translating into a new language. Motivated by the intuition that rare and unknown words can often be decomposed into multiple subwords, BPE finds the best word segmentation by iteratively and greedily merging frequent pairs of characters.
+
+
+### Supervised Fine-Tuning
+
+The most substantial upgrade that OpenAI GPT proposed is to get rid of the task-specific model and use the pre-trained language model directly!
+
+Let’s take classification as an example. Say, in the labeled dataset, each input has $$n$$ tokens, $$\mathbf{x} = (x_1, \dots, x_n)$$, and one label $$y$$. GPT first processes the input sequence $$\mathbf{x}$$ through the pre-trained transformer decoder and the last layer output for the last token $$x_n$$ is $$\mathbf{h}_L^{(n)}$$. Then with only one new trainable weight matrix $$\mathbf{W}_y$$, it can predict a distribution over class labels.
+
+
+![GPT classification]({{ '/assets/images/GPT-classification.png' | relative_url }})
+{: style="width: 90%;" class="center"}
+
+$$
+P(y\mid x_1, \dots, x_n) = \text{softmax}(\mathbf{h}_L^{(n)}\mathbf{W}_y)
+$$
+
+The loss is to minimize the negative log-likelihood for true labels. In addition, adding the LM loss as an auxiliary loss is found to be beneficial, because:
+- (1) it helps accelerate convergence during training and 
+- (2) it is expected to improve the generalization of the supervised model.
+
+$$
+\begin{aligned}
+\mathcal{L}_\text{cls} &= \sum_{(\mathbf{x}, y) \in \mathcal{D}} \log P(y\mid x_1, \dots, x_n) = \sum_{(\mathbf{x}, y) \in \mathcal{D}} \log \text{softmax}(\mathbf{h}_L^{(n)}(\mathbf{x})\mathbf{W}_y) \\
+\mathcal{L}_\text{LM} &= -\sum_{i} \log p(x_i\mid x_{i-k}, \dots, x_{i-1}) \\
+\mathcal{L} &= \mathcal{L}_\text{cls} + \lambda \mathcal{L}_\text{LM}
+\end{aligned}
+$$
+
+With similar designs, no customized model structure is needed for other end tasks (see Fig. 7). If the task input contains multiple sentences, a special delimiter token (`$`) is added between each pair of sentences. The embedding for this delimiter token is a new parameter we need to learn, but it should be pretty minimal. 
+
+For the sentence similarity task, because the ordering does not matter, both orderings are included. For the multiple choice task, the context is paired with every answer candidate.
+
+
+![GPT downstream tasks]({{ '/assets/images/GPT-downstream-tasks.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 8. Training objects in slightly modified GPT transformer models for downstream tasks. (Image source: [original paper](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf))*
+
+
+**Summary**: It is super neat and encouraging to see that such a general framework is capable to beat SOTA on most language tasks at that time (June 2018). At the first stage, generative pre-training of a language model can absorb as much free text as possible. Then at the second stage, the model is fine-tuned on specific tasks with a small labeled dataset and a minimal set of new parameters to learn. 
+
+One limitation of GPT is its uni-directional nature --- the model is only trained to predict the future left-to-right context.
+
+
 
 ## BERT
 
@@ -383,92 +456,6 @@ For the NSP task, the model can make reasonable predictions if it is able to det
 
 
 
-## RoBERTa
-
-**RoBERTa** (short for **R**obustly **o**ptimized **BERT** **a**pproach; [Liu, et al. 2019](https://arxiv.org/abs/1907.11692)) refers to a new receipt for training BERT to achieve better results, as they found that the original BERT model is significantly undertrained. The receipt contains the following learnings:
-1. Train for longer with bigger batch size.
-2. Remove the [next sentence prediction (NSP)](#nsp) task.
-3. Use longer sequences in training data format. The paper found that using individual sentences as inputs hurts downstream performance. Instead we should use multiple sentences sampled contiguously to form longer segments.
-4. Change the masking pattern dynamically. The original BERT applies masking once during the data preprocessing stage, resulting in a static mask across training epochs. RoBERTa applies masks in 10 different ways across 40 epochs.
-
-RoBERTa also added a new dataset [CommonCrawl News](https://commoncrawl.org/2016/10/news-dataset-available/) and further confirmed that pretraining with *more data helps* improve the performance on downstream tasks. It was trained with the [BPE on byte sequences](#bpe-on-byte-sequences), same as in [GPT-2](#openai-gpt-2). They also found that choices of hyperparameters have a big impact on the model performance. 
-
-
-
-## OpenAI GPT
-
-Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
-1. The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
-2. The use of contextualized embeddings in downstream tasks are different: ELMo feeds embeddings into models customized for specific tasks as additional features, while GPT fine-tunes the same base model for all end tasks.
-
-
-### Transformer Decoder as Language Model
-
-Compared to the [original transformer](https://arxiv.org/abs/1706.03762) architecture, the [transformer decoder](https://arxiv.org/abs/1801.10198) model discards the encoder part, so there is only one single input sentence rather than two separate source and target sequences.
-            
-This model applies multiple transformer blocks over the embeddings of input sequences. Each block contains a masked *multi-headed self-attention* layer and a *pointwise feed-forward* layer. The final output produces a distribution over target tokens after softmax normalization.
-
-
-![OpenAI GPT transformer decoder]({{ '/assets/images/OpenAI-GPT-transformer-decoder.png' | relative_url }})
-{: style="width: 85%;" class="center"}
-*Fig. 7. The transformer decoder model architecture in OpenAI GPT.*
-
-The loss is the negative log-likelihood, same as [ELMo](#elmo), but without backward computation. Let’s say, the context window of the size $$k$$ is located before the target word and the loss would look like:
-
-
-$$
-\mathcal{L}_\text{LM} = -\sum_{i} \log p(x_i\mid x_{i-k}, \dots, x_{i-1})
-$$
-
-
-### Byte Pair Encoding
-
-**Byte Pair Encoding** ([**BPE**](https://arxiv.org/abs/1508.07909)) is used to encode the input sequences. BPE was originally proposed as a data compression algorithm in 1990s and then was adopted to solve the open-vocabulary issue in machine translation, as we can easily run into rare and unknown words when translating into a new language. Motivated by the intuition that rare and unknown words can often be decomposed into multiple subwords, BPE finds the best word segmentation by iteratively and greedily merging frequent pairs of characters.
-
-
-### Supervised Fine-Tuning
-
-The most substantial upgrade that OpenAI GPT proposed is to get rid of the task-specific model and use the pre-trained language model directly!
-
-Let’s take classification as an example. Say, in the labeled dataset, each input has $$n$$ tokens, $$\mathbf{x} = (x_1, \dots, x_n)$$, and one label $$y$$. GPT first processes the input sequence $$\mathbf{x}$$ through the pre-trained transformer decoder and the last layer output for the last token $$x_n$$ is $$\mathbf{h}_L^{(n)}$$. Then with only one new trainable weight matrix $$\mathbf{W}_y$$, it can predict a distribution over class labels.
-
-
-![GPT classification]({{ '/assets/images/GPT-classification.png' | relative_url }})
-{: style="width: 90%;" class="center"}
-
-
-
-$$
-P(y\mid x_1, \dots, x_n) = \text{softmax}(\mathbf{h}_L^{(n)}\mathbf{W}_y)
-$$
-
-The loss is to minimize the negative log-likelihood for true labels. In addition, adding the LM loss as an auxiliary loss is found to be beneficial, because:
-- (1) it helps accelerate convergence during training and 
-- (2) it is expected to improve the generalization of the supervised model.
-
-$$
-\begin{aligned}
-\mathcal{L}_\text{cls} &= \sum_{(\mathbf{x}, y) \in \mathcal{D}} \log P(y\mid x_1, \dots, x_n) = \sum_{(\mathbf{x}, y) \in \mathcal{D}} \log \text{softmax}(\mathbf{h}_L^{(n)}(\mathbf{x})\mathbf{W}_y) \\
-\mathcal{L}_\text{LM} &= -\sum_{i} \log p(x_i\mid x_{i-k}, \dots, x_{i-1}) \\
-\mathcal{L} &= \mathcal{L}_\text{cls} + \lambda \mathcal{L}_\text{LM}
-\end{aligned}
-$$
-
-With similar designs, no customized model structure is needed for other end tasks (see Fig. 7). If the task input contains multiple sentences, a special delimiter token (`$`) is added between each pair of sentences. The embedding for this delimiter token is a new parameter we need to learn, but it should be pretty minimal. 
-
-For the sentence similarity task, because the ordering does not matter, both orderings are included. For the multiple choice task, the context is paired with every answer candidate.
-
-
-![GPT downstream tasks]({{ '/assets/images/GPT-downstream-tasks.png' | relative_url }})
-{: style="width: 100%;" class="center"}
-*Fig. 8. Training objects in slightly modified GPT transformer models for downstream tasks. (Image source: [original paper](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf))*
-
-
-**Summary**: It is super neat and encouraging to see that such a general framework is capable to beat SOTA on most language tasks at that time (June 2018). At the first stage, generative pre-training of a language model can absorb as much free text as possible. Then at the second stage, the model is fine-tuned on specific tasks with a small labeled dataset and a minimal set of new parameters to learn. 
-
-One limitation of GPT is its uni-directional nature --- the model is only trained to predict the future left-to-right context.
-
-
 ## OpenAI GPT-2
 
 The [OpenAI](https://blog.openai.com/better-language-models/) [GPT-2](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) language model is a direct successor to [GPT](#openai-gpt). GPT-2 has 1.5B parameters, 10x more than the original GPT, and it achieves SOTA results on 7 out of 8 tested language modeling datasets in a *zero-shot transfer setting* without any task-specific fine-tuning. The pre-training dataset contains 8 million Web pages collected by crawling qualified outbound links from [Reddit](https://www.reddit.com/). Large improvements by OpenAI GPT-2 are specially noticeable on small datasets and datasets used for measuring *long-term dependency*.
@@ -503,6 +490,30 @@ Compared to GPT, other than having many more transformer layers and parameters, 
 - A modified initialization was constructed as a function of the model depth.
 - The weights of residual layers were initially scaled by a factor of $$1/ \sqrt{N}$$ where N is the number of residual layers.
 - Use larger vocabulary size and context size.
+
+
+## RoBERTa
+
+**RoBERTa** (short for **R**obustly **o**ptimized **BERT** **a**pproach; [Liu, et al. 2019](https://arxiv.org/abs/1907.11692)) refers to a new receipt for training BERT to achieve better results, as they found that the original BERT model is significantly undertrained. The receipt contains the following learnings:
+1. Train for longer with bigger batch size.
+2. Remove the [next sentence prediction (NSP)](#nsp) task.
+3. Use longer sequences in training data format. The paper found that using individual sentences as inputs hurts downstream performance. Instead we should use multiple sentences sampled contiguously to form longer segments.
+4. Change the masking pattern dynamically. The original BERT applies masking once during the data preprocessing stage, resulting in a static mask across training epochs. RoBERTa applies masks in 10 different ways across 40 epochs.
+
+RoBERTa also added a new dataset [CommonCrawl News](https://commoncrawl.org/2016/10/news-dataset-available/) and further confirmed that pretraining with *more data helps* improve the performance on downstream tasks. It was trained with the [BPE on byte sequences](#bpe-on-byte-sequences), same as in [GPT-2](#openai-gpt-2). They also found that choices of hyperparameters have a big impact on the model performance. 
+
+
+## T5
+The language model **T5** is short for **"Text-to-Text Transfer Transformer"** ([Colin et al., 2020](https://arxiv.org/abs/1910.10683)). The encoder-decoder implementation follows the [original Transformer](https://arxiv.org/abs/1706.03762) architecture: tokens → embedding → encoder → decoder → output. T5 adopts the framework “Natural Language Decathlon” ([McCann et al., 2018](https://arxiv.org/abs/1806.08730)), where many common NLP tasks are translated into question-answering over a context. Instead of an explicit QA format, T5 uses short task prefixes to distinguish task intentions and separately fine-tunes the model on every individual task. The text-to-text framework enables easier transfer learning evaluation with the same model on a diverse set of tasks.
+
+
+![T5 text-to-text evaluation framework]({{ '/assets/images/T5.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 13. A diagram of T5 task evaluation. The text-to-text framework casts every task into a generic form: feeding input text to predict some target text. (Image source: [Colin et al., 2020](https://arxiv.org/abs/1910.10683))*
+
+The model is trained on Web corpus extracted from Apr 2019 with various filters applied. The model is fine-tuned for each downstream task separately via "adapter layers" (add an extra layer for training) or "gradual unfreezing" (see [ULMFiT](#ulmfit)). Both fine-tuning approaches only update partial parameters while keeping the majority of the model parameters unchanged. T5-11B achieved SOTA results on many NLP tasks.
+
+As the authors mentioned in the paper "...our goal is not to propose new methods but instead to provide a comprehensive perspective on where the field stands", the T5 long paper described a lot of training setup and evaluation processes in detail, a good read for people who are interested in training a LM from scratch.
 
 
 

@@ -11,10 +11,11 @@ image: "elmo-and-bert.png"
 
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2019-02-14: add [ULMFiT](#ulmfit) and [OpenAI GPT-2](#openai-gpt-2).]</span><br/>
+<span style="color: #286ee0;">[Updated on 2019-02-14: add [ULMFiT](#ulmfit) and [GPT-2](#gpt-2).]</span><br/>
 <span style="color: #286ee0;">[Updated on 2020-02-29: add [ALBERT](#albert).]</span><br/>
 <span style="color: #286ee0;">[Updated on 2020-10-25: add [RoBERTa](#roberta).]</span><br/>
-<span style="color: #286ee0;">[Updated on 2020-12-13: add [T5](#t5).]</span>
+<span style="color: #286ee0;">[Updated on 2020-12-13: add [T5](#t5).]</span><br/>
+<span style="color: #286ee0;">[Updated on 2020-12-30: add [GPT-3](#gpt-3).]</span>
 
 
 <br />
@@ -267,7 +268,7 @@ ULMFiT follows three steps to achieve good transfer learning results on downstre
 *Fig. 6. Three training stages of ULMFiT. (Image source: [original paper](https://arxiv.org/abs/1801.06146))*
 
 
-## OpenAI GPT
+## GPT
 
 Following the similar idea of ELMo, OpenAI **GPT**, short for **Generative Pre-training Transformer** ([Radford et al., 2018](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)), expands the unsupervised language model to a much larger scale by training on a giant collection of free text corpora. Despite of the similarity, GPT has two major differences from ELMo.
 1. The model architectures are different: ELMo uses a shallow concatenation of independently trained left-to-right and right-to-left multi-layer LSTMs, while GPT is a multi-layer transformer decoder.
@@ -419,7 +420,7 @@ Overall the add-on part for end task fine-tuning is very minimal --- one or two 
 *Fig. 12. Training objects in slightly modified BERT models for downstream tasks.  (Image source: [original paper](https://arxiv.org/abs/1810.04805))*
 
 
-A summary table compares differences between fine-tuning of [OpenAI GPT](#openai-gpt) and BERT.
+A summary table compares differences between fine-tuning of [OpenAI GPT](#gpt) and BERT.
 
 {: class="info"}
 |              | **OpenAI GPT** | **BERT** |
@@ -456,9 +457,9 @@ For the NSP task, the model can make reasonable predictions if it is able to det
 
 
 
-## OpenAI GPT-2
+## GPT-2
 
-The [OpenAI](https://blog.openai.com/better-language-models/) [GPT-2](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) language model is a direct successor to [GPT](#openai-gpt). GPT-2 has 1.5B parameters, 10x more than the original GPT, and it achieves SOTA results on 7 out of 8 tested language modeling datasets in a *zero-shot transfer setting* without any task-specific fine-tuning. The pre-training dataset contains 8 million Web pages collected by crawling qualified outbound links from [Reddit](https://www.reddit.com/). Large improvements by OpenAI GPT-2 are specially noticeable on small datasets and datasets used for measuring *long-term dependency*.
+The [OpenAI](https://blog.openai.com/better-language-models/) [GPT-2](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) language model is a direct successor to [GPT](#gpt). GPT-2 has 1.5B parameters, 10x more than the original GPT, and it achieves SOTA results on 7 out of 8 tested language modeling datasets in a *zero-shot transfer setting* without any task-specific fine-tuning. The pre-training dataset contains 8 million Web pages collected by crawling qualified outbound links from [Reddit](https://www.reddit.com/). Large improvements by OpenAI GPT-2 are specially noticeable on small datasets and datasets used for measuring *long-term dependency*.
 
 
 ### Zero-Shot Transfer
@@ -500,7 +501,7 @@ Compared to GPT, other than having many more transformer layers and parameters, 
 3. Use longer sequences in training data format. The paper found that using individual sentences as inputs hurts downstream performance. Instead we should use multiple sentences sampled contiguously to form longer segments.
 4. Change the masking pattern dynamically. The original BERT applies masking once during the data preprocessing stage, resulting in a static mask across training epochs. RoBERTa applies masks in 10 different ways across 40 epochs.
 
-RoBERTa also added a new dataset [CommonCrawl News](https://commoncrawl.org/2016/10/news-dataset-available/) and further confirmed that pretraining with *more data helps* improve the performance on downstream tasks. It was trained with the [BPE on byte sequences](#bpe-on-byte-sequences), same as in [GPT-2](#openai-gpt-2). They also found that choices of hyperparameters have a big impact on the model performance. 
+RoBERTa also added a new dataset [CommonCrawl News](https://commoncrawl.org/2016/10/news-dataset-available/) and further confirmed that pretraining with *more data helps* improve the performance on downstream tasks. It was trained with the [BPE on byte sequences](#bpe-on-byte-sequences), same as in [GPT-2](#gpt-2). They also found that choices of hyperparameters have a big impact on the model performance. 
 
 
 ## T5
@@ -516,6 +517,22 @@ The model is trained on Web corpus extracted from Apr 2019 with various filters 
 As the authors mentioned in the paper "...our goal is not to propose new methods but instead to provide a comprehensive perspective on where the field stands", the T5 long paper described a lot of training setup and evaluation processes in detail, a good read for people who are interested in training a LM from scratch.
 
 
+## GPT-3
+
+**GPT-3** ([Brown et al., 2020](https://arxiv.org/abs/2005.14165)) has the same architecture as [GPT-2](#gpt-2) but contains 175B parameters, 10x larger than GPT-2 (1.5B). In addition, GPT-3 uses alternating dense and locally banded sparse attention patterns, same as in [sparse transformer]({{ site.baseurl }}{% post_url 2020-04-07-the-transformer-family %}#sparse-attention-matrix-factorization-sparse-transformers). In order to fit such a huge model across multiple GPUs, GPT-3 is trained with partitions along both width and depth dimension. The training data is a filtered version of Common Crawl mixed with a few other high-quality curated datasets. To avoid the contamination that downstream tasks might appear in the training data, the authors attempted to remove all the overlaps with all the studied benchmark dataset from the training dataset. Unfortunately the filtering process is not perfect due to a bug.
+
+
+![GPT-3 training datasets]({{ '/assets/images/GPT3-train-data.png' | relative_url }})
+{: style="width: 80%;" class="center"}
+*Fig. 14. Training datasets for GPT-3. Note that the occurrence of each dataset during training is not proportional to the dataset size.  (Table source: [Brown et al., 2020](https://arxiv.org/abs/2005.14165))*
+
+For all the downstream evaluation, GPT-3 is tested in the few-shot setting without any gradient-based fine-tuning. Here the few-shot examples are provided as part of the prompt. GPT-3 achieves strong performance on many NLP datasets, comparable with fine-tuned BERT models.
+
+![GPT-3 superGLUE performance]({{ '/assets/images/GPT3-eval.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 15. The evaluation performance increases with the model size and the number of examples. (Image source: [Brown et al., 2020](https://papers.nips.cc/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html))*
+
+
 
 ## Summary
 
@@ -529,7 +546,8 @@ As the authors mentioned in the paper "...our goal is not to propose new methods
 | GPT | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
 | BERT | Transformer encoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
 | GPT-2 | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
-
+| T5 | Transformer | unsupervised | model-based | task-agnostic | fine-tuned for each downstream task separately |
+| GPT-3 | Transformer decoder | unsupervised | model-based | task-agnostic | No fine-tuning |
 
 
 ## Metric: Perplexity
@@ -691,4 +709,6 @@ Cited as:
 [16] Zhenzhong Lan, et al. ["ALBERT: A Lite BERT for Self-supervised Learning of Language Representations."](https://arxiv.org/abs/1909.11942) arXiv Preprint arXiv:1909.11942 (2019).
 
 [17] Yinhan Liu, et al. ["RoBERTa: A Robustly Optimized BERT Pretraining Approach."](https://arxiv.org/abs/1907.11692) arXiv Preprint arXiv:1907.11692 (2019).
+
+[18] Tom B Brown, et al. ["Language Models are Few-Shot Learners"](https://arxiv.org/abs/2005.14165) NeuriPS 2020.
 

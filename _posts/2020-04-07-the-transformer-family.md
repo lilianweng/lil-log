@@ -88,6 +88,7 @@ where $$[.;.]$$ is a concatenation operation. $$\mathbf{W}^q_i, \mathbf{W}^k_i \
 ![Multi-head scaled dot-product attention]({{ '/assets/images/multi-head-attention.png' | relative_url }})
 {: style="width: 30%;" class="center"}
 *Fig. 1. Illustration of the multi-head scaled dot-product attention mechanism. (Image source: Figure 2 in [Vaswani, et al., 2017](https://arxiv.org/abs/1706.03762))*
+{:.image-caption}
 
 
 ## Transformer
@@ -105,6 +106,7 @@ The function of Transformer **decoder** is to retrieve information from the enco
 ![Transformer]({{ '/assets/images/transformer.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 2. The architecture of the vanilla Transformer model. (Image source: [Figure 17]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}#full-architecture))*
+{:.image-caption}
 
 
 **Positional Encoding**
@@ -127,6 +129,7 @@ In this way each dimension of the positional encoding corresponds to a sinusoid 
 ![Transformer]({{ '/assets/images/sinoidual-positional-encoding.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 3. Sinusoidal positional encoding with $$L=32$$ and $$d=128$$. The value is between -1 (black) and 1 (white) and the value 0 is in gray.*
+{:.image-caption}
 
 
 (2) *Learned positional encoding*, as its name suggested, assigns each element with a learned column vector which encodes its *absolute* position ([Gehring, et al. 2017](https://arxiv.org/abs/1705.03122)).
@@ -142,7 +145,7 @@ Following the vanilla Transformer, [Al-Rfou et al. (2018)](https://arxiv.org/abs
 ![Transformer]({{ '/assets/images/transformer-aux-losses.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 4. Auxiliary prediction tasks used in deep Transformer for character-level language modeling. (Image source: [Al-Rfou et al. (2018)](https://arxiv.org/abs/1808.04444))*
-
+{:.image-caption}
 
 
 ## Adaptive Computation Time (ACT)
@@ -197,6 +200,8 @@ $$
 ![ACT computation graph]({{ '/assets/images/ACT-computation-graph.png' | relative_url }})
 {: style="width: 85%;" class="center"}
 *Fig. 5. The computation graph of a RNN with ACT mechanism. (Image source: [Graves, 2016](https://arxiv.org/abs/1603.08983))*
+{:.image-caption}
+
 
 To avoid unnecessary pondering over each input, ACT adds a *ponder cost* $$\mathcal{P}(x) = \sum_{t=1}^L N(t) + R(t) $$  in the loss function to encourage a smaller number of intermediate computational steps.
 
@@ -229,6 +234,7 @@ The recurrent connection between segments is introduced into the model by contin
 ![Training phrase of Transformer-XL]({{ '/assets/images/transformer-XL-training.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 6. A comparison between the training phrase of vanilla Transformer & Transformer-XL with a segment length 4. (Image source: left part of Figure 2 in [Dai et al., 2019](https://arxiv.org/abs/1901.02860)).*
+{:.image-caption}
 
 
 Let's label the hidden state of the $$n$$-th layer for the $$(\tau + 1)$$-th segment in the model as $$\mathbf{h}_{\tau+1}^{(n)} \in \mathbb{R}^{L \times d}$$. In addition to the hidden state of the last layer for the same segment $$\mathbf{h}_{\tau+1}^{(n-1)}$$, it also depends on the hidden state of the same layer for the previous segment $$\mathbf{h}_{\tau}^{(n)}$$.  By incorporating information from the previous hidden states, the model extends the attention span much longer in the past, over multiple segments. 
@@ -290,6 +296,8 @@ This is the motivation for **Adaptive Attention Span**. [Sukhbaatar, et al., (20
 ![Attention per head]({{ '/assets/images/attention-per-head.png' | relative_url }})
 {: style="width: 70%;" class="center"}
 *Fig. 7. Two attention heads in the same model, A & B, assign attention differently within the same context window. Head A attends more to the recent tokens, while head B look further back into the past uniformly. (Image source: [Sukhbaatar, et al. 2019](https://arxiv.org/abs/1905.07799))*
+{:.image-caption}
+
 
 Given the $$i$$-th token, we need to compute the attention weights between this token and other keys at positions $$j \in S_i$$, where $$S_i$$ defineds the $$i$$-th token's context window.
 
@@ -314,6 +322,7 @@ where $$R$$ is a hyper-parameter which defines the softness of $$m_z$$.
 ![Soft masking function]({{ '/assets/images/soft-masking-function.png' | relative_url }})
 {: style="width: 55%;" class="center"}
 *Fig. 8. The soft masking function used in the adaptive attention span. (Image source: [Sukhbaatar, et al. 2019](https://arxiv.org/abs/1905.07799).)*
+{:.image-caption}
 
 
 The soft mask function is applied to the softmax elements in the attention weights:
@@ -350,6 +359,7 @@ Image Transformer introduced two types of localized $$\mathbf{M}$$, as illustrat
 ![Attention patterns in Image Transformer]({{ '/assets/images/image-transformer-attention.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 9. Illustration of 1D and 2D attention span for visual inputs in Image Transformer. The black line marks a query block and the cyan outlines the actual attention span for pixel q. (Image source: Figure 2 in [Parmer et al, 2018](https://arxiv.org/abs/1802.05751))*
+{:.image-caption}
 
 
 (1) *1D Local Attention*: The input image is flattened in the [raster scanning](https://en.wikipedia.org/wiki/Raster_scan#Scanning_pattern) order, that is, from left to right and top to bottom. The linearized image is then partitioned into non-overlapping query blocks. The context window consists of pixels in the same query block as $$\mathbf{q}$$ and a fixed number of additional pixels generated before this query block.
@@ -396,6 +406,7 @@ Sparse Transformer proposed two types of fractorized attention. It is easier to 
 ![Sparse attention]({{ '/assets/images/sparse-attention.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 10. The top row illustrates the attention connectivity patterns in (a) Transformer, (b) Sparse Transformer with strided attention, and (c) Sparse Transformer with fixed attention. The bottom row contains corresponding self-attention connectivity matrices. Note that the top and bottom rows are not in the same scale. (Image source: [Child et al., 2019](https://arxiv.org/abs/1904.10509) + a few of extra annotations.)*
+{:.image-caption}
 
 
 (1) *Strided* attention with stride $$\ell \sim \sqrt{n}$$. This works well with image data as the structure is aligned with strides. In the image case, each pixel would attend to all the previous $$\ell$$ pixels in the raster scanning order (naturally cover the entire width of the image) and then those pixels attend to others in the same column (defined by another attention connectivity subset).
@@ -461,6 +472,7 @@ $$
 ![LSH attention matrix]({{ '/assets/images/LSH-attention-matrix.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 11. Illustration of Locality-Sensitive Hashing (LSH) attention. (Image source: right part of Figure 1 in [Kitaev, et al. 2020](https://arxiv.org/abs/2001.04451)).*
+{:.image-caption}
 
 
 In LSH attention, a query can only attend to positions in the same hashing bucket, $$S_i = \{j: h(\mathbf{q}_i) = h(\mathbf{k}_j)\}$$. It is carried out in the following process, as illustrated in Fig. 11:
@@ -474,6 +486,7 @@ In LSH attention, a query can only attend to positions in the same hashing bucke
 ![LSH attention]({{ '/assets/images/LSH-attention.png' | relative_url }})
 {: style="width: 75%;" class="center"}
 *Fig. 12. The LSH attention consists of 4 steps: bucketing, sorting, chunking, and attention computation. (Image source: left part of Figure 1 in [Kitaev, et al. 2020](https://arxiv.org/abs/2001.04451)).*
+{:.image-caption}
 
 
 **Reversible Residual Network**
@@ -520,6 +533,8 @@ On a high level, the universal transformer can be viewed as a recurrent function
 ![Universal Transformer Recurrent Step]({{ '/assets/images/universal-transformer-loop.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 13. How the Universal Transformer refines a set of hidden state representations repeatedly for every position in parallel. (Image source: Figure 1 in [Dehghani, et al. 2019](https://arxiv.org/abs/1807.03819)).*
+{:.image-caption}
+
 
 Given an input sequence of length $$L$$, Universal Transformer iteratively updates the representation $$\mathbf{H}^t \in \mathbb{R}^{L \times d}$$ at step $$t$$ for an adjustable number of steps. At step 0, $$\mathbf{H}^0$$ is initialized to be same as the input embedding matrix. All the positions are processed in parallel in the multi-head self-attention mechanism and then go through a recurrent transition function.
 
@@ -548,6 +563,7 @@ $$
 ![Universal Transformer]({{ '/assets/images/universal-transformer.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 14. A simplified illustration of Universal Transformer. The encoder and decoder share the same basic recurrent structure. But the decoder also attends to final encoder representation $$\mathbf{H}^T$$. (Image source: Figure 2 in [Dehghani, et al. 2019](https://arxiv.org/abs/1807.03819))*
+{:.image-caption}
 
 
 In the adaptive version of Universal Transformer, the number of recurrent steps $$T$$ is dynamically determined by [ACT](#adaptive-computation-time-act). Each position is equipped with a dynamic ACT halting mechanism. Once a per-token recurrent block halts, it stops taking more recurrent updates but simply copies the current value to the next step until all the blocks halt or until the model reaches a maximum step limit. 
@@ -577,6 +593,8 @@ The gating function parameters are explicitly initialized to be close to an iden
 ![GTrXL]({{ '/assets/images/gated-transformer-XL.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 15. Comparison of the model architecture of Transformer-XL, Transformer-XL with the layer norm reordered, and Gated Transformer-XL. (Image source: Figure 1 in [Parisotto, et al. 2019](https://arxiv.org/abs/1910.06764))*
+{:.image-caption}
+
 
 ---
 Cited as:

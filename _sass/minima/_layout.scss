@@ -21,7 +21,7 @@
 
   &,
   &:visited {
-    color: #ffffff; // $crimson-color-dark;
+    color: #ffffff;
   }
 
   &:hover {
@@ -139,10 +139,9 @@
 
 .post-link {
   display: block;
-  @include relative-font-size(1.6);
-  font-weight: 600;
-
-  font-color: #000000;
+  @include relative-font-size(1.5);
+  font-weight: 700;
+  color: #000000;
 
   &:hover {
     color: $crimson-color-light;
@@ -236,4 +235,13 @@ div.qa {
     }
   }
 
+}
+
+.image-caption {
+    text-align: center;
+    width: 85%;
+    margin: 10px auto 35px;
+    line-height: 1.35;
+    color: $grey-color;
+    font-style: italic;
 }

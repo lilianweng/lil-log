@@ -28,7 +28,8 @@ As I started looking into NAS, I found this nice survey very helpful by [Elsken,
 
 ![High-level categorization of NAS]({{ '/assets/images/NAS-high-level.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Figure 1. Three main components of Neural Architecture Search (NAS) models.  (Image source: [Elsken, et al. 2019](https://arxiv.org/abs/1808.05377) with customized annotation in red)*
+*Fig. 1. Three main components of Neural Architecture Search (NAS) models.  (Image source: [Elsken, et al. 2019](https://arxiv.org/abs/1808.05377) with customized annotation in red)*
+{:.image-caption}
 
 
 {: class="table-of-content"}
@@ -49,7 +50,8 @@ The most naive way to design the search space for neural network architectures i
 
 ![The sequential layer-wise operation search space]({{ '/assets/images/NAS-search-space.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 2. (Top) A sequential representation of CNN. (Bottom) A sequential representation of the tree structure of a recurrent cell. (Image source: [Zoph & Le 2017](https://arxiv.org/abs/1611.01578))*
+*Fig. 2. (Top) A sequential representation of CNN. (Bottom) A sequential representation of the tree structure of a recurrent cell. (Image source: [Zoph & Le 2017](https://arxiv.org/abs/1611.01578))*
+{:.image-caption}
 
 
 To make sure the generated architecture is valid, additional rules might be needed ([Zoph & Le 2017](https://arxiv.org/abs/1611.01578)):
@@ -80,14 +82,17 @@ Precisely, the NASNet search space learns two types of cells for network constru
 
 ![NASNet search space]({{ '/assets/images/NASNet-search-space.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Figure 3. The NASNet search space constrains the architecture as a repeated stack of cells. The cell architecture is optimized via NAS algorithms. (Image source: [Zoph et al. 2018](https://arxiv.org/abs/1707.07012))*
+*Fig. 3. The NASNet search space constrains the architecture as a repeated stack of cells. The cell architecture is optimized via NAS algorithms. (Image source: [Zoph et al. 2018](https://arxiv.org/abs/1707.07012))*
+{:.image-caption}
+
 
 The predictions for each cell are grouped into $$B$$ blocks ($$B=5$$ in the NASNet paper), where each block has 5 prediction steps made by 5 distinct softmax classifiers corresponding to discrete choices of the elements of a block. Note that the NASNet search space does not have residual connections between cells and the model only learns skip connections on their own within blocks.
 
 
 ![5 prediction steps in one block]({{ '/assets/images/cell-prediction-steps.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 4. (a) Each cell consists of $$B$$ blocks and each block is predicted by 5 discrete decisions. (b) An concrete example of what operations can be chosen in each decision step.*
+*Fig. 4. (a) Each cell consists of $$B$$ blocks and each block is predicted by 5 discrete decisions. (b) An concrete example of what operations can be chosen in each decision step.*
+{:.image-caption}
 
 
 <a name="ScheduledDropPath"></a>During the experiments, they discovered that a modified version of [*DropPath*](https://arxiv.org/abs/1605.07648), named *ScheduledDropPath*, significantly improves the final performance of NASNet experiments. DropPath stochastically drops out paths (i.e. edges with operations attached in NASNet) with a fixed probability. ScheduledDropPath is DropPath with a linearly increasing probability of path dropping during training time.
@@ -112,7 +117,8 @@ A computation motif at level $$\ell=1, \dots, L$$ can be represented by $$(G^{(\
 
 ![Hierarchical search space]({{ '/assets/images/hierarchical-NAS-search-space.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 5. (Top) Three level-1 primitive operations are composed into a level-2 motif. (Bottom) Three level-2 motifs are plugged into a base network structure and assembled into a level-3 motif. (Image source: [Liu et al 2017](https://arxiv.org/abs/1711.00436))*
+*Fig. 5. (Top) Three level-1 primitive operations are composed into a level-2 motif. (Bottom) Three level-2 motifs are plugged into a base network structure and assembled into a level-3 motif. (Image source: [Liu et al 2017](https://arxiv.org/abs/1711.00436))*
+{:.image-caption}
 
 
 To build a network according to the hierarchical structure, we start from the lowest level $$\ell=1$$ and recursively define the $$m$$-th motif operation at level $$\ell$$ as 
@@ -139,8 +145,8 @@ Same as NASNet, experiments in [Liu et al (2017)](https://arxiv.org/abs/1711.004
 
 ![Path-level network transformation]({{ '/assets/images/path-level-network-transformations.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 6. An illustration of transforming a single layer to a tree-structured motif via path-level transformation operations. (Image source: [Cai et al. 2018b](https://arxiv.org/abs/1806.02639))*
-
+*Fig. 6. An illustration of transforming a single layer to a tree-structured motif via path-level transformation operations. (Image source: [Cai et al. 2018b](https://arxiv.org/abs/1806.02639))*
+{:.image-caption}
 
 
 ### Memory-bank Representation
@@ -150,8 +156,8 @@ A memory-bank representation of feed-forward networks is proposed by [Brock et a
 
 ![Memory-bank representation]({{ '/assets/images/NAS-memory-bank-view-representation.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Figure 7. Memory-bank representation of several popular network architecture blocks. (Image source: [Brock et al. 2017](https://arxiv.org/abs/1708.05344))*
-
+*Fig. 7. Memory-bank representation of several popular network architecture blocks. (Image source: [Brock et al. 2017](https://arxiv.org/abs/1708.05344))*
+{:.image-caption}
 
 
 ## Search Algorithms
@@ -171,7 +177,8 @@ The initial design of **NAS** ([Zoph & Le 2017](https://arxiv.org/abs/1611.01578
 
 ![NAS]({{ '/assets/images/NAS.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Figure 8. A high level overview of NAS, containing a RNN controller and a pipeline for evaluating child models. (Image source: [Zoph & Le 2017](https://arxiv.org/abs/1611.01578))*
+*Fig. 8. A high level overview of NAS, containing a RNN controller and a pipeline for evaluating child models. (Image source: [Zoph & Le 2017](https://arxiv.org/abs/1611.01578))*
+{:.image-caption}
 
 
 The controller is trained as a *RL task* using [REINFORCE]({{ site.baseurl}}{% post_url 2018-04-08-policy-gradient-algorithms %}#reinforce).
@@ -194,8 +201,8 @@ where a state $$s_t$$ is a tuple of layer operation and related parameters. An a
 
 ![MetaQNN]({{ '/assets/images/MetaQNN.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 9. Overview of MetaQNN - designing CNN models with Q-Learning. (Image source: [Baker et al. 2017](https://arxiv.org/abs/1611.02167))*
-
+*Fig. 9. Overview of MetaQNN - designing CNN models with Q-Learning. (Image source: [Baker et al. 2017](https://arxiv.org/abs/1611.02167))*
+{:.image-caption}
 
 
 ### Evolutionary Algorithms
@@ -205,7 +212,8 @@ where a state $$s_t$$ is a tuple of layer operation and related parameters. An a
 
 ![Mutation operations in NEAT]({{ '/assets/images/NEAT-mutations.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 10. Mutations in the NEAT algorithm. (Image source: Fig 3 & 4 in [Stanley & Miikkulainen, 2002](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf))*
+*Fig. 10. Mutations in the NEAT algorithm. (Image source: Fig 3 & 4 in [Stanley & Miikkulainen, 2002](http://nn.cs.utexas.edu/downloads/papers/stanley.ec02.pdf))*
+{:.image-caption}
 
 
 [Real et al. (2018)](https://arxiv.org/abs/1802.01548) adopt the evolutionary algorithms (EA) as a way to search for high-performance network architectures, named **AmoebaNet**. They apply the [tournament selection](https://en.wikipedia.org/wiki/Tournament_selection) method, which at each iteration picks a best candidate out of a random set of samples and places its mutated offspring back into the population. When the tournament size is $$1$$, it is equivalent to random selection.
@@ -221,7 +229,8 @@ Precisely, in every cycle of the tournament selection with aging regularization 
 
 ![Aging evolution algorithm]({{ '/assets/images/aging-evolution-algorithm.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Figure 11. The algorithm of aging evolution. (Image source: [Real et al. 2018](https://arxiv.org/abs/1802.01548))*
+*Fig. 11. The algorithm of aging evolution. (Image source: [Real et al. 2018](https://arxiv.org/abs/1802.01548))*
+{:.image-caption}
 
 
 Two types of mutations are applied:
@@ -231,7 +240,9 @@ Two types of mutations are applied:
 
 ![Mutations in AmoebaNet]({{ '/assets/images/AmoebaNet-mutations.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 12. Two types of mutations in AmoebaNet. (Image source: [Real et al. 2018](https://arxiv.org/abs/1802.01548))*
+*Fig. 12. Two types of mutations in AmoebaNet. (Image source: [Real et al. 2018](https://arxiv.org/abs/1802.01548))*
+{:.image-caption}
+
 
 In their experiments, EA and RL work equally well in terms of the final validation accuracy, but EA has better anytime performance and is able to find smaller models. Here using EA in NAS is still expensive in terms of computation, as each experiment took 7 days with 450 GPUs.
 
@@ -254,8 +265,8 @@ The performance on a validation set is used as feedback to train a *surrogate* m
 
 ![Progressive NAS]({{ '/assets/images/progressive-NAS-algorithm.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Figure 13. The algorithm of Progressive NAS. (Image source: [Liu, et al 2018](https://arxiv.org/abs/1712.00559))*
-
+*Fig. 13. The algorithm of Progressive NAS. (Image source: [Liu, et al 2018](https://arxiv.org/abs/1712.00559))*
+{:.image-caption}
 
 
 ### Gradient descent
@@ -296,15 +307,16 @@ A meta-controller learns to generate *network transformation actions* given the 
 
 ![EAS meta-controller]({{ '/assets/images/EAS-meta-controller.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 14. Overview of the RL based meta-controller in Efficient Architecture Search (NAS). After encoding the architecture configuration, it outputs net2net transformation actions through two separate actor networks. (Image source: [Cai et al 2017](https://arxiv.org/abs/1707.04873))*
- 
+*Fig. 14. Overview of the RL based meta-controller in Efficient Architecture Search (NAS). After encoding the architecture configuration, it outputs net2net transformation actions through two separate actor networks. (Image source: [Cai et al 2017](https://arxiv.org/abs/1707.04873))*
+{:.image-caption}
 
 <a name="ENAS"></a>With similar motivation, *Efficient NAS* (**ENAS**; [Pham et al. 2018](https://arxiv.org/abs/1802.03268)) speeds up NAS (i.e. 1000x less) by aggressively sharing parameters among child models. The core motivation behind ENAS is the observation that all of the sampled architecture graphs can be viewed as *sub-graphs* of a larger *supergraph*. All the child networks are sharing weights of this supergraph.
 
 
 ![ENAS example]({{ '/assets/images/ENAS-example.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 15. (Left) The graph represents the entire search space for a 4-node recurrent cell, but only connections in red are active. (Middle) An example of how the left active sub-graph can be translated into a child model architecture. (Right) The network parameters produced by an RNN controller for the architecture in the middle. (Image source: [Pham et al. 2018](https://arxiv.org/abs/1802.03268))*
+*Fig. 15. (Left) The graph represents the entire search space for a 4-node recurrent cell, but only connections in red are active. (Middle) An example of how the left active sub-graph can be translated into a child model architecture. (Right) The network parameters produced by an RNN controller for the architecture in the middle. (Image source: [Pham et al. 2018](https://arxiv.org/abs/1802.03268))*
+{:.image-caption}
 
 
 ENAS alternates between training the shared model weights $$\omega$$ and training the controller $$\theta$$:
@@ -321,14 +333,17 @@ They employ a [HyperNet](https://blog.otoro.net/2016/09/28/hyper-networks/) ([Ha
 
 ![SMASH algorithm]({{ '/assets/images/SMASH-algorithm.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 16. The algorithm of SMASH. (Image source: [Brock et al. 2017](https://arxiv.org/abs/1708.05344))*
+*Fig. 16. The algorithm of SMASH. (Image source: [Brock et al. 2017](https://arxiv.org/abs/1708.05344))*
+{:.image-caption}
+
 
 The correlation between model performance with SMASH-generated weights and true validation errors suggests that predicted weights can be used for model comparison, to some extent. We do need a HyperNet of large enough capacity, as the correlation would be corrupted if the HyperNet model is too small compared to the child model size.
 
 
 ![SMASH error correlation]({{ '/assets/images/SMASH-error-correlation.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 17. The algorithm of SMASH. (Image source: [Brock et al. 2017](https://arxiv.org/abs/1708.05344))*
+*Fig. 17. The algorithm of SMASH. (Image source: [Brock et al. 2017](https://arxiv.org/abs/1708.05344))*
+{:.image-caption}
 
 
 SMASH can be viewed as another way to implement the idea of [parameter sharing](#parameter-sharing). One problem of SMASH as pointed out by [Pham et al. (2018)](https://arxiv.org/abs/1802.03268) is: The usage of HyperNet restricts the weights of SMASH child models to a *low-rank space*, because weights are generated via tensor products. In comparison, [ENAS](#ENAS) has no such restrictions.
@@ -346,7 +361,8 @@ The **one-shot** architecture search extends the idea of weight sharing and furt
 
 ![One-Shot model architecture]({{ '/assets/images/one-shot-model-architecture.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 18. The architecture of the One-Shot model in [Bender et al 2018](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf). Each cell has $$N$$ choice blocks and each choice block can select up to 2 operations. Solid edges are used in every architecture, where dash lines are optional. (Image source: [Bender et al 2018](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf))*
+*Fig. 18. The architecture of the One-Shot model in [Bender et al 2018](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf). Each cell has $$N$$ choice blocks and each choice block can select up to 2 operations. Solid edges are used in every architecture, where dash lines are optional. (Image source: [Bender et al 2018](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf))*
+{:.image-caption}
 
 
 Once the one-shot model is trained, it is used for evaluating the performance of many different architectures sampled at random by zeroing out or removing some operations. This sampling process can be replaced by RL or evolution.
@@ -356,7 +372,8 @@ They observed that the difference between the accuracy measured with the one-sho
 
 ![One-shot accuracy]({{ '/assets/images/one-shot-model-accuracy-correlation.png' | relative_url }})
 {: style="width: 50%;" class="center"}
-*Figure 19. A stratified sample of models with different one-shot model accuracy versus their true validation accuracy as stand-alone models. (Image source: [Bender et al 2018](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf))*
+*Fig. 19. A stratified sample of models with different one-shot model accuracy versus their true validation accuracy as stand-alone models. (Image source: [Bender et al 2018](http://proceedings.mlr.press/v80/bender18a/bender18a.pdf))*
+{:.image-caption}
 
 
 Clearly designing such a search graph is not a trivial task, but it demonstrates a strong potential with the one-shot approach. It works well with only gradient descent and no additional algorithm like RL or EA is a must.
@@ -404,7 +421,8 @@ The motivation here is that we want to find an architecture with a low validatio
 
 ![DARTS]({{ '/assets/images/DARTS-illustration.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 20. An illustration of how DARTS applies continuous relaxation on edges in DAG supergraph and identifies the final model. (Image source: [Liu et al 2019](https://arxiv.org/abs/1806.09055))*
+*Fig. 20. An illustration of how DARTS applies continuous relaxation on edges in DAG supergraph and identifies the final model. (Image source: [Liu et al 2019](https://arxiv.org/abs/1806.09055))*
+{:.image-caption}
 
 
 $$
@@ -424,7 +442,8 @@ where the red part is using numerical differentiation approximation where $$w_k^
 
 ![DARTS algorithm]({{ '/assets/images/DARTS-algorithm.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 21. The algorithm overview of DARTS. (Image source: [Liu et al 2019](https://arxiv.org/abs/1806.09055))*
+*Fig. 21. The algorithm overview of DARTS. (Image source: [Liu et al 2019](https://arxiv.org/abs/1806.09055))*
+{:.image-caption}
 
 
 As another idea similar to DARTS, Stochastic NAS ([Xie et al., 2019](https://arxiv.org/abs/1812.09926)) applies a continuous relaxation by employing the concrete distribution (CONCRETE = CONtinuous relaxations of disCRETE random variables; [Maddison et al 2017](https://arxiv.org/abs/1611.00712)) and reparametrization tricks. The goal is same as DARTS, to make the discrete distribution differentiable and thus enable optimization by gradient descent. 
@@ -461,7 +480,8 @@ $$
 
 ![Training steps of ProxylessNAS]({{ '/assets/images/proxylessNAS-training.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 22. ProxylessNAS has two training steps running alternatively. (Image source: [Cai et al., 2019](https://arxiv.org/abs/1812.00332))*
+*Fig. 22. ProxylessNAS has two training steps running alternatively. (Image source: [Cai et al., 2019](https://arxiv.org/abs/1812.00332))*
+{:.image-caption}
 
 
 ProxylessNAS runs two training steps alternatively:
@@ -488,7 +508,8 @@ Besides accuracy, ProxylessNAS also considers *latency* as an important metric t
 
 ![proxylessNAS latency]({{ '/assets/images/proxylessNAS-latency.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 23. Add a differentiable latency loss into the training of ProxylessNAS.  (Image source: [Cai et al., 2019](https://arxiv.org/abs/1812.00332))*
+*Fig. 23. Add a differentiable latency loss into the training of ProxylessNAS.  (Image source: [Cai et al., 2019](https://arxiv.org/abs/1812.00332))*
+{:.image-caption}
 
 
 
@@ -524,8 +545,10 @@ It learns three component functions. Each function only adopts very basic operat
 
 ![AutoML-zero evaluation]({{ '/assets/images/AutoML-zero-evaluation.png' | relative_url }})
 {: style="width: 70%;" class="center"}
-*Figure 23. Algorithm evaluation on one task (Image source: [Real et al 2020](https://arxiv.org/abs/2003.03384))*
- 
+*Fig. 24. Algorithm evaluation on one task (Image source: [Real et al 2020](https://arxiv.org/abs/2003.03384))*
+{:.image-caption}
+
+
 Three types of operations are considered when mutating a parent genotype:
 1. Insert a random instruction or remove an instruction at a random location in a component function;
 2. Randomize all the instructions in a component function;
@@ -534,7 +557,8 @@ Three types of operations are considered when mutating a parent genotype:
 
 ![Progress of AutoML-zero experiment]({{ '/assets/images/AutoML-zero-progress.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Figure 24. An illustration of evolutionary progress on projected binary CIFAR-10 with example code. (Image source: [Real et al 2020](https://arxiv.org/abs/2003.03384))*
+*Fig. 25. An illustration of evolutionary progress on projected binary CIFAR-10 with example code. (Image source: [Real et al 2020](https://arxiv.org/abs/2003.03384))*
+{:.image-caption}
 
 
 ---

@@ -27,6 +27,7 @@ Next, we will look into several categories of curriculum learning, as illustrate
 ![Types of curriculum]({{ '/assets/images/types-of-curriculum-2.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 1. Five types of curriculum for reinforcement learning.*
+{:.image-caption}
 
 
 In "The importance of starting small" paper ([Elman 1993](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.128.4487&rep=rep1&type=pdf)), I especially like the starting sentences and find them both inspiring and affecting:
@@ -56,6 +57,8 @@ If our naive curriculum is to train the model on samples with a gradually increa
 ![Curriculum by transfer learning]({{ '/assets/images/curriculum-by-transfer-learning.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 2. Image classification accuracy on test image set (5 member classes of "small mammals" in CIFAR100). There are 4 experimental groups, (a) `curriculum`: sort the labels by the confidence of another trained classifier (e.g. the margin of an SVM); (b) `control-curriculum`: sort the labels randomly; (c) `anti-curriculum`: sort the labels reversely; (d) `None`: no curriculum. (Image source: [Weinshall, et al. 2018](https://arxiv.org/abs/1802.03796))*
+{:.image-caption}
+
 
 [Zaremba & Sutskever (2014)](https://arxiv.org/abs/1410.4615) did an interesting experiment on training LSTM to predict the output of a short Python program for mathematical ops without actually executing the code. They found curriculum is necessary for learning. The program's complexity is controlled by two parameters, `length` ∈ [1, a] and `nesting`∈ [1, b]. Three strategies are considered:
 1. Naive curriculum: increase `length` first until reaching `a`; then increase `nesting` and reset `length` to 1; repeat this process until both reach maximum.
@@ -88,6 +91,7 @@ Two categories of learning signals have been considered in the paper:
 ![Teacher-student curriculum]({{ '/assets/images/teacher-student-curriculum.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 3. The setup of teacher-student curriculum learning. (Image source: [Matiisen, et al. 2017](https://arxiv.org/abs/1707.00183) + my annotation in red.)*
+{:.image-caption}
 
 
 In the process, the student should learn tasks which: 
@@ -121,7 +125,7 @@ On top of the task parameter space, a Gaussian mixture model is trained to fit t
 ![ALP-GMM]({{ '/assets/images/ALP-GMM-algorithm.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 4. The algorithm of ALP-GMM (absolute learning progress Gaussian mixture model). (Image source: [Portelas, et al., 2019](https://arxiv.org/abs/1910.07224))*
-
+{:.image-caption}
 
 
 ## Curriculum through Self-Play
@@ -134,6 +138,7 @@ Different from the teacher-student framework, two agents are doing very differen
 ![Self-play experiments in MazeBase]({{ '/assets/images/self-play-maze.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 5. Illustration of the self-play setup when training two agents. The example task is [MazeBase](https://github.com/facebook/MazeBase): An agent is asked to reach a goal flag in a maze with a light switch, a key and a wall with a door. Toggling the key switch can open or close the door and Turning off the light makes only the glowing light switch available to the agent. (Image source: [Sukhbaatar, et al. 2017](https://arxiv.org/abs/1703.05407))*
+{:.image-caption}
 
 
 Let us consider Alice and Bob as two separate copies for one RL agent trained in the same environment but with different brains. Each of them has independent parameters and loss objective. The self-play-driven training consists of two types of episodes:
@@ -212,6 +217,7 @@ $$
 ![Generative goal learning]({{ '/assets/images/generative-goal-learning-algorithm.png' | relative_url }})
 {: style="width: 60%;" class="center"}
 *Fig. 6. The algorithm of Generative Goal Learning. (Image source: ([Florensa, et al. 2018](https://arxiv.org/abs/1705.06366))*
+{:.image-caption}
 
 
 Following the same idea, [Racaniere & Lampinen, et al. (2019)](https://arxiv.org/abs/1909.12892) designs a method to make the objectives of goal generator more sophisticated. Their method contains three components, same as generative goal learning above: 
@@ -260,7 +266,7 @@ Their experiments showed complex environments require all three losses above. Wh
 ![Goal setter and judge models]({{ '/assets/images/setter-judge-goal-generation.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 7. Training schematic for the (a) solver/policy, (b) judge/discriminator, and (c) setter/goal generator models. (Image source: [Racaniere & Lampinen, et al., 2019](https://arxiv.org/abs/1909.12892))*
-
+{:.image-caption}
 
 
 ## Skill-Based Curriculum
@@ -273,6 +279,7 @@ Another view is to decompose what an agent is able to complete into a variety of
 ![CARML]({{ '/assets/images/CARML.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 8. An illustration of CARML, containing two steps: (1) organizing experiential data into the latent skill space; (2) meta-training the policy with the reward function constructed from the learned skills. (Image source: [Jabri, et al 2019](https://arxiv.org/abs/1912.04226))*
+{:.image-caption}
 
 
 CARML is framed as a [variational Expectation-Maximization (EM)](https://chrischoy.github.io/research/Expectation-Maximization-and-Variational-Inference/).
@@ -327,6 +334,7 @@ $$
 ![CARML algorithm]({{ '/assets/images/CARML-algorithm.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 9. The algorithm of CARML. (Image source: [Jabri, et al 2019](https://arxiv.org/abs/1912.04226))*
+{:.image-caption}
 
 
 Learning a latent skill space can be done in different ways, such as in [Hausman, et al. 2018](https://openreview.net/forum?id=rk07ZXZRb). The goal of their approach is to learn a task-conditioned policy, $$\pi(a \vert s, t^{(i)})$$, where $$t^{(i)}$$ is from a discrete list of $$N$$ tasks, $$\mathcal{T} = [t^{(1)}, \dots, t^{(N)}]$$. However, rather than learning $$N$$ separate solutions, one per task, it would be nice to learn a latent skill space so that each task could be represented in a distribution over skills and thus skills are *reused between tasks*. The policy is defined as $$\pi_\theta(a \vert s,t) = \int \pi_\theta(a \vert z,s,t) p_\phi(z \vert t)\mathrm{d}z$$, where $$\pi_\theta$$ and $$p_\phi$$ are policy and embedding networks to learn, respectively. If $$z$$ is discrete, i.e. drawn from a set of $$K$$ skills, then the policy becomes a mixture of $$K$$ sub-policies. The policy training uses [SAC](http://127.0.0.1:4000/lil-log/2018/04/07/policy-gradient-algorithms.html#sac) and the dependency on $$z$$ is introduced in the entropy term.
@@ -354,6 +362,7 @@ A progressive network has the following structure:
 ![Progressive networks]({{ '/assets/images/progressive-networks.png' | relative_url }})
 {: style="width: 85%;" class="center"}
 *Fig. 10. The progressive neural network architecture. (Image source: [Rusu, et al. 2017](https://arxiv.org/abs/1610.04286))*
+{:.image-caption}
 
 
 The paper experimented with Atari games by training a progressive network on multiple games to check whether features learned in one game can transfer to another. That is indeed the case. Though interestingly, learning a high dependency on features in the previous columns does not always indicate good transfer performance on the new task. One hypothesis is that features learned from the old task might introduce biases into the new task, leading to policy getting trapped in a sub-optimal solution. Overall, the progressive network works better than only fine-tuning the top layer and can achieve similar transfer performance as fine-tuning the entire network.
@@ -373,6 +382,8 @@ To encourage cooperation rather than competition among policies, besides the RL 
 ![Mix & Match]({{ '/assets/images/mix-and-match.png' | relative_url }})
 {: style="width: 60%;" class="center"}
 *Fig. 11. The Mix & Match architecture for training a mixture of policies.  (Image source: [Czarnecki, et al., 2018](https://arxiv.org/abs/1806.01780))*
+{:.image-caption}
+
 
 ---
 Cited as:

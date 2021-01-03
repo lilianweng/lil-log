@@ -53,7 +53,7 @@ However, maximization-based decoding does not guarantee high-quality generation.
 ![Beam search probability]({{ '/assets/images/beam_search_less_surprising.png' | relative_url }})
 {: style="width: 65%;" class="center"}
 *Fig. 1. The probability assigned to the next token by beam search versus by humans. The human selected tokens have much higher variance in predicted probability and thus more surprising. (Image source: [Holtzman et al. 2019](https://arxiv.org/abs/1904.09751))*
-
+{:.image-caption}
 
 **Top-k sampling** ([Fan et al., 2018](https://arxiv.org/abs/1805.04833)): At each sampling step, only the top $$k$$ most likely tokens are selected and the probability mass is redistributed among them. In [Fan et al., 2018](https://arxiv.org/abs/1805.04833), the authors proposed to use *top-k random sampling* where the next token is randomly selected among the top $$k$$ most likely candidates and they argued that this approach can generate more novel and less repetitive content than beam search.
 
@@ -78,10 +78,10 @@ All the above standard decoding strategies sample tokens according to the predic
 [Ghazvininejad et al. (2017)](https://www.aclweb.org/anthology/P17-4008/) built a system called "Hafez" for generating poetry in desired style by adjusting sampling weights in beam search at decoding steps. The likelihood of sampling for the next token $$x_{t+1}$$ at step $$t$$ is augmented by a scoring function:
 
 $$
-\text{score}(x_{t+1}, b_t) = \text{score}(b_t) + \log p(x_{t+1}) + \color{red}{\sum_i \alpha_i f_i(x_{t+1})}
+\text{score}(x_{t+1}, b_t) = \text{score}(b_t) + \log p(x_{t+1}) + \color{green}{\sum_i \alpha_i f_i(x_{t+1})}
 $$
 
-where $$\log p(x_{t+1})$$ is the log-likelihood predicted by LM. $$\text{score}(b_t)$$ is the accumulated score of the already-generated words in the current beam state $$b_t$$. The red part can incorporate many different features for steerting the style of the output. A set of feature functions $$f_i(.)$$ define the preferences and the associated weights $$alpha_i$$ work like "control knobs" that can be easily customized at decoding time. Features can measure a variety of attributes and can be easily combined; for example,
+where $$\log p(x_{t+1})$$ is the log-likelihood predicted by LM. $$\text{score}(b_t)$$ is the accumulated score of the already-generated words in the current beam state $$b_t$$. The green part can incorporate many different features for steerting the style of the output. A set of feature functions $$f_i(.)$$ define the preferences and the associated weights $$alpha_i$$ work like "control knobs" that can be easily customized at decoding time. Features can measure a variety of attributes and can be easily combined; for example,
 - whether $$x_{t+1}$$ exists in a bag of desired or banned topical words.
 - whether $$x_{t+1}$$ indicates certain sentiments.
 - whether $$x_{t+1}$$ is a repeated token (and thus $$f_i$$ needs to take the history as input too).
@@ -112,6 +112,7 @@ Large language models have been shown to be very powerful on many NLP tasks, eve
 ![AutoPrompt]({{ '/assets/images/autoprompt.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 2. The overview of AutoPrompt. The trigger tokens are retrieved to optimize for the target outputs across all inputs. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
+{:.image-caption}
 
 
 The universal trigger tokens are identified using a gradient-guided search strategy same as in [Wallace et al., 2019](https://arxiv.org/abs/1908.07125). The *universal* setting means that the trigger tokens $$x_\text{trig}$$ can optimize for the target output $$\tilde{y}$$ for all inputs from a dataset:
@@ -132,6 +133,7 @@ where $$\mathcal{V}$$ refers to the embedding metrix of all the tokens. $$\nabla
 ![Universal adversarial trigger]({{ '/assets/images/universal-adv-triggers.png' | relative_url }})
 {: style="width: 62%;" class="center"}
 *Fig. 3. We search for trigger tokens by updating their embeddings with the gradient of the task loss per batch. (Image source: [Wallace et al., 2019](https://arxiv.org/abs/1908.07125))*
+{:.image-caption}
 
 
 The above token replacement method can be augmented with beam search. When looking for the optimal token embedding $$e$$, we can pick top-$$k$$ candidates instead of a single one, searching from left to right and score each beam by $$\mathcal{L}$$ on the current data batch.
@@ -140,7 +142,7 @@ The above token replacement method can be augmented with beam search. When looki
 ![AutoPrompt examples]({{ '/assets/images/autoprompt-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 4. Example prompts discover by AutoPrompt for different tasks. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
-
+{:.image-caption}
 
 Fine-tuned models achieve better task performance but they can fail in the low data regime. AutoPrompt was found to outperform fine-tuning in the regime where there are $$10^2-10^3$$ training samples. As an alternative to fine-tuning, prompt design is much cheaper. AutoPrompt improves the accuracy for sentiment classification a lot more than manual prompts and achieves similar performance as linear probing. For NLI task, AutoPrompt obtains higher accuracy than linear probing. It is able to retrieve facts more accurately than manual prompts too.
 
@@ -164,9 +166,11 @@ The rules extracted from SEA are considered as "bugs" in the model. Applying tho
 
 Interestingly some small modifications in the prompts may lead to big gain, as shown in Fig. X. 
 
+
 ![Small modifications]({{ '/assets/images/prompt-small-modifications.png' | relative_url }})
 {: style="width: 52%;" class="center"}
 *Fig. 5. Small modifications in prompt templates can lead to big performance gains: replacement in blue, insertion in green, deletion in red. (Image source: [Jiang et al., 2020](https://arxiv.org/abs/1911.12543))*
+{:.image-caption}
 
 
 ## Fine-tuning
@@ -186,13 +190,17 @@ Conditional training aims to learn a generative model conditioned on a control v
 ![CTRL examples]({{ '/assets/images/CTRL-control-code.png' | relative_url }})
 {: style="width: 90%;" class="center"}
 *Fig. 6. Datasets used for training CTRL and associated control codes. (Image source: Edited from Table 7 in [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
+{:.image-caption}
 
 
 The control code also can be used for *domain annotation* given tokens, because $$p(z \vert x) \propto p(x \vert z) p(z)$$, assuming the prior over domains is uniform. One limitation of CTRL is the lack of control for *what not to generate* (e.g. avoid toxicity).
 
-![CTRL examples]({{ '/assets/images/CTRL-example.png' | relative_url }})
+
+![CTRL examples]({{ '/assets/images/CTRL-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 7. The examples of conditioned sample generation by CTRL. (Image source: [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
+{:.image-caption}
+
 
 Note that CTRL trains a transformer model from scratch. However, labelling all the text within the same dataset with the same control code (e.g. All the wikipedia articles have "wikipedia" as control code) feels quite constrained. Considering that often we need highly customized control codes but only have a limited amount of labelled data, I would expect fine-tuning an unconditional LM with a small labelled dataset in the same way as CTRL to work out well too. Although how much data is needed and how good the sample quality might be are subject to experimentation. 
 
@@ -254,6 +262,8 @@ Their experiments showed that the *preference loss* achieves the best performanc
 ![Human feedback fine-tuning]({{ '/assets/images/finetune-human-feedback.png' | relative_url }})
 {: style="width: 80%;" class="center"}
 *Fig. 8. The overview of training framework for fine-tuning a language model policy with reward learned from human feedback. (Image source: [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593))*
+{:.image-caption}
+
 
 The reward model is implemented by a pretrained language model with an extra random linear layer of the final embedding output. It it trained to minimize the loss: 
 
@@ -281,6 +291,7 @@ $$
 ![Human feedback fine-tuning 2]({{ '/assets/images/summarize-human-feedback.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 9. The overview of fine-tuning the language model policy from human feedback for summarization, including (1) human feedback collection, (2) reward model training, and (3) policy training. (Image source: [Stiennon et al., 2020](https://arxiv.org/abs/2009.01325))*
+{:.image-caption}
 
 
 ### Guided Fine-tuning with Steerable Layer
@@ -307,6 +318,7 @@ where $$\gamma$$ is a normalization scaling coefficient, set per layer. $$\alpha
 ![PPLM]({{ '/assets/images/PPLM.png' | relative_url }})
 {: style="width: 80%;" class="center"}
 *Fig. 10. The overview of how PPLM runs three passes to update the model output to increase the likelihood of a desired attribute. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
+{:.image-caption}
 
 
 Multiple attribute models can be mix-and-matched during generation with customized weights, acting as a set of "control knobs". The PPLM paper explored two types of attribute models:
@@ -326,7 +338,9 @@ To ensure the fluency in language, PPLM applied two additional designs:
 ![PPLM examples]({{ '/assets/images/PPLM-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 11. Examples of controllable text generation by PPLM. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
- 
+{:.image-caption}
+
+
 Interestingly, they found a large variance in the extent of controllability across topics. Some topics (religion, science, politics) are easier to control for compared to others (computers, space).
 
 One obvious drawback of PPLM is that during to multiple passes at every decoding step, the test time computation becomes much more expensive.
@@ -338,6 +352,8 @@ One obvious drawback of PPLM is that during to multiple passes at every decoding
 ![Side-tuning]({{ '/assets/images/side-tuning.png' | relative_url }})
 {: style="width: 60%;" class="center"}
 *Fig. 12. Comparison of fixed weights, fine-tuning and side-tuning. (Image source: [Zhang et al., 2019](https://arxiv.org/abs/1912.13503))*
+{:.image-caption}
+
 
 The paper explored different strategies of fusing predictions from the base and side models: `product` is the worst while `sum` ($$\alpha$$-blending), MLP, and [FiLM](https://arxiv.org/abs/1709.07871) are comparable. Side-tuning is able to achieve better performance, when it is trained with intermediate amount of data and when the base network is large.
 
@@ -366,6 +382,7 @@ And therefore the auxiliary model $$\text{logits}_\text{aux}(x_t \vert x_{<t}, z
 ![Side auxiliary]({{ '/assets/images/side-auxiliary.png' | relative_url }})
 {: style="width: 75%;" class="center"}
 *Fig. 13. The auxiliary model is trained by reusing features extracted from multiple layers of the base model. (Image source: [Zeldes et al., 2020](https://arxiv.org/abs/2006.16823))*
+{:.image-caption}
 
 
 **GeDi** ([Kruse et al., 2020](https://arxiv.org/abs/2009.06367)) guides the text generation by *Generative Discriminator*. The discriminator is implemented as a class conditional language model (CC-LM), $$p_\theta(x_{1:t} \vert z)$$. The descriminator guides generation at each decoding step by computing classification probabilities for all possible next tokens via Bayes rule by normalizing over *two* contrastive class-conditional distributions:
@@ -390,6 +407,8 @@ where $$p(z) = \exp(b_z) / \sum_{z'} \exp(b_{z'})$$ and $$b_z$$ is a learned cla
 ![GeDi]({{ '/assets/images/GeDi.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 14. An illustration of how GeDi works via Bayesian rule. (Image source: [Kruse et al., 2020](https://arxiv.org/abs/2009.06367))*
+{:.image-caption}
+
 
 They finetuned a GPT2-medium model with control code similar to how [CTRL](#ctrl) is trained to form a CC-LM using a linear combination of descriminative loss and generative loss. This descriminator model is then used as GiDe to guide generation by a larger language model like GPT2-XL.
 

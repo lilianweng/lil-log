@@ -8,7 +8,6 @@ ul, figure {
   padding: 0;
 }
 
-
 hr {
     display: block;
     height: 1px;
@@ -166,7 +165,7 @@ table.info {
  * Headings
  */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: $base-font-weight;
+  font-weight: 700;
 }
 
 
@@ -206,8 +205,9 @@ blockquote {
   padding: 10px;
   margin: 10px;
   padding-left: 25px;
-  @include relative-font-size(0.9);
+  @include relative-font-size(0.95);
   background: #f0f0f0;
+  font-weight: $base-font-weight;
 
   > :last-child {
     margin-bottom: 0;

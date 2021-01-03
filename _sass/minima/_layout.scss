@@ -11,7 +11,8 @@
 
 .site-title {
   @include relative-font-size(1.625);
-  font-weight: 600;
+  font-family: 'Open Sans';
+  font-weight: 700;
   color: #ffffff; // $crimson-color;
   line-height: $base-line-height * $base-font-size * 2.25;
   letter-spacing: -1px;
@@ -47,6 +48,8 @@
   .page-link {
     color: #ffffff; // $text-color;
     line-height: $base-line-height;
+    font-family: 'Open Sans';
+    font-weight: 400;
 
     // Gaps between nav items, but not on the last one
     &:not(:last-child) {
@@ -193,28 +196,22 @@ div.qa {
   margin-bottom: $spacing-unit;
 
   h2 {
-    @include relative-font-size(1.8);
-
+    @include relative-font-size(1.95);
+    margin-top: $spacing-unit * 1.55;
+    font-weight: 700;
     @include media-query($on-laptop) {
       @include relative-font-size(1.75);
-    }
-
-    font-weight: $base-font-weight * 1.5;
-    margin-top: $spacing-unit * 1.55;
-
-    blockquote: {
-        line-height: 1.5;
     }
   }
 
   h3 {
-    @include relative-font-size(1.3);
-
+    @include relative-font-size(1.5);
+    margin-top: $spacing-unit * 1.1;
+    line-height: 1.25;
+    font-weight: 600;
     @include media-query($on-laptop) {
       @include relative-font-size(1.375);
     }
-    font-weight: $base-font-weight * 1.35;
-    margin-top: $spacing-unit * 1.1;
   }
 
   h4 {

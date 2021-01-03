@@ -104,7 +104,7 @@ Given a trained language model, [Gu et al (2017)](https://arxiv.org/abs/1702.024
 Large language models have been shown to be very powerful on many NLP tasks, even with only *prompting* and no task-specific fine-tuning ([GPT2]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models%}#gpt-2), [GPT3]({{ site.baseurl }}{% post_url 2019-01-31-generalized-language-models%}#gpt-3)). The prompt design has a big impact on the performance on downstream tasks and often requires time-consuming manual crafting. For example, factual questions can gain a big boost with smart prompt design in "closed-book exam" ([Shin et al., 2020](https://arxiv.org/abs/2010.15980), [Jiang et al., 2020)](https://arxiv.org/abs/1911.12543)). I’m expecting to see an increasing amount of literature on automatic smart prompt design.
 
 
-### Gradient based search
+### Gradient-based Search
 
 **AutoPrompt** ([Shin et al., 2020](https://arxiv.org/abs/2010.15980); [code](http://ucinlp.github.io/autoprompt)) is a method to automatically create prompts for various tasks via gradient-based search. AutoPrompt constructs a prompt by combining the original task inputs $$x$$ with a collection of trigger tokens $$x_\text{trig}$$ according to a template $$\lambda$$. The trigger tokens are shared across all inputs and thus *universally* effective.
 
@@ -145,7 +145,7 @@ The above token replacement method can be augmented with beam search. When looki
 Fine-tuned models achieve better task performance but they can fail in the low data regime. AutoPrompt was found to outperform fine-tuning in the regime where there are $$10^2-10^3$$ training samples. As an alternative to fine-tuning, prompt design is much cheaper. AutoPrompt improves the accuracy for sentiment classification a lot more than manual prompts and achieves similar performance as linear probing. For NLI task, AutoPrompt obtains higher accuracy than linear probing. It is able to retrieve facts more accurately than manual prompts too.
 
 
-### Heuristic based search
+### Heuristic-based Search
 
 Paraphrasing is a quick way to explore more prompts similar to the known version, which can be done via *back-translation*.  Using back-translation, the initial prompt is translated into $$B$$ candidates in another language and then each is translated back into $$B$$ candidates in the original language. The resulting total $$B^2$$ candidates are scored and ranked by their round-trip probabilities. 
 

@@ -160,7 +160,7 @@ $$
 
 The rules extracted from SEA are considered as "bugs" in the model. Applying those rules as data augmentation in model training helps robustify the model and fix bugs.
 
-[Jiang et al (2020)](https://arxiv.org/abs/1911.12543) attempts to validate whether a trained language model knows certain knowledge by automatically discovering better prompts to query. Within the scope of knowledge retrieval where factual knowledge is represented in the form of a triple $$\langle x, r, y \rangel$$ (subject, relation, object). The prompts can be mined from training sentences (e.g. Wikipedia description) or expanded by paraphrase.
+[Jiang et al (2020)](https://arxiv.org/abs/1911.12543) attempts to validate whether a trained language model knows certain knowledge by automatically discovering better prompts to query. Within the scope of knowledge retrieval where factual knowledge is represented in the form of a triple $$\langle x, r, y \rangle$$ (subject, relation, object). The prompts can be mined from training sentences (e.g. Wikipedia description) or expanded by paraphrase.
 
 Interestingly some small modifications in the prompts may lead to big gain, as shown in Fig. X. 
 
@@ -300,7 +300,7 @@ Then a backward pass updates the LM hidden states using normalized gradients fro
 $$
 \Delta H_t \leftarrow \Delta H_t + \alpha \frac{\nabla_{\Delta H_t} \log p(a|H_t + \Delta H_t)}{\| \nabla_{\Delta H_t} \log p(a|H_t + \Delta H_t) \|^\gamma}
 $$
-where $$\gamma$$ is a normalization scaling coefficient, set per layer. $\alpha$ is step size. This update can be repeated $$m \in [3, 10]$$ times
+where $$\gamma$$ is a normalization scaling coefficient, set per layer. $$\alpha$$ is step size. This update can be repeated $$m \in [3, 10]$$ times
 3. The final forward pass recomputes a new distribution over the vocabulary, generated from the updated latents $$\tilde{H}_t = H_t + \Delta H_t$$. The next token is sampled from the updated distribution.
 
 
@@ -370,7 +370,7 @@ And therefore the auxiliary model $$\text{logits}_\text{aux}(x_t \vert x_{<t}, z
 
 **GeDi** ([Kruse et al., 2020](https://arxiv.org/abs/2009.06367)) guides the text generation by *Generative Discriminator*. The discriminator is implemented as a class conditional language model (CC-LM), $$p_\theta(x_{1:t} \vert z)$$. The descriminator guides generation at each decoding step by computing classification probabilities for all possible next tokens via Bayes rule by normalizing over *two* contrastive class-conditional distributions:
 1. One conditioned on the control code $$z$$ for desired attribute.
-2. The other conditioned on the anti-control code $\bar{z}$ for undesired attribute.
+2. The other conditioned on the anti-control code $$\bar{z}$$ for undesired attribute.
 
 GeDi relies on the contract between $$p_\theta(x_{1:t} \vert z)$$ and $$p_\theta(x_{1:t} \vert \bar{z})$$ to compute the probability of the sequence belonging to the desired class. The descriminator loss is to maximize the probability of desired attribute $$z$$:
 

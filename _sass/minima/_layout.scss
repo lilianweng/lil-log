@@ -119,6 +119,7 @@
 }
 
 .post-meta {
+  font-family: 'Open Sans';
   font-size: $small-font-size;
   color: $grey-color;
 
@@ -156,6 +157,9 @@
 
 .other-pages {
     margin-top: $spacing-unit * 0.5;
+    h1 {
+      font-family: 'Open Sans';
+    }
 }
 
 div.qa {

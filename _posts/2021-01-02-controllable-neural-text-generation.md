@@ -11,6 +11,9 @@ tags: nlp language-model reinforcement-learning
  
 <!--more-->
 
+<span style="color: #286ee0;">Note: As I'm missing some interesting work, I plan to improve this in version 2.0 very soon. Stay tuned.</span>
+
+
 There is a gigantic amount of free text on the Web, several magnitude more than labelled benchmark datasets. The state-of-the-art language models (LM) are trained with unsupervised Web data in large scale. When generating samples from LM by iteratively sampling the next token, we do not have much control over attributes of the output text, such as the topic, the style, the sentiment, etc. Many applications would demand a good control over the model output. For example, if we plan to use LM to generate reading materials for kids, we would like to guide the output stories to be safe, educational and easily understood by children.
 
 How to steer a powerful unconditioned language model? In this post, we will delve into several approaches for controlled content generation with an unconditioned langage model. 

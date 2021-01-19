@@ -606,7 +606,7 @@ A good language model should predict high word probabilities. Therefore, the sma
 **Question-Answering**
 - [SQuAD](https://rajpurkar.github.io/SQuAD-explorer/) (Stanford Question Answering Dataset): A reading comprehension dataset, consisting of questions posed on a set of Wikipedia articles, where the answer to every question is a span of text.
 - [RACE](http://www.qizhexie.com/data/RACE_leaderboard) (ReAding Comprehension from Examinations): A large-scale reading comprehension dataset with more than 28,000 passages and nearly 100,000 questions. The dataset is collected from English examinations in China, which are designed for middle school and high school students.
-
+- See [more QA datasets in a later post]({{ site.baseurl }}{% post_url 2020-10-29-open-domain-question-answering %}#appendix-qa-datasets).
 
 **Commonsense Reasoning**
 - [Story Cloze Test](http://cs.rochester.edu/nlp/rocstories/): A commonsense reasoning framework for evaluating story understanding and generation. The test requires a system to choose the correct ending to multi-sentence stories from two options.

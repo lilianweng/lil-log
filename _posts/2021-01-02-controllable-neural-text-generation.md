@@ -99,7 +99,7 @@ Guided decoding essentially runs a more expensive beam search where the sampling
 
 ### Trainable Decoding
 
-Given a trained language model, [Gu et al (2017)](https://arxiv.org/abs/1702.02429) proposed a **trainable greedy decoding** algorithm to maximize an arbitrary objective for sampling sequences. The idea is based on the *noisy, parallel approximate decoding* ([NPAD](https://arxiv.org/abs/1605.03835)). NPAD injects unstructured noise into the model hidden states and runs noisy decoding multiple times in paralle to avoid potential degradation. To take a step further, trainable greedy decoding replaces the unstructed noise with a learnable random variable, predicted by a RL agent that takes the previous hidden state, the previous decoded token and the context as input. In other words, the decoding algorithm learns a RL actor to manipulate the model hidden states for better outcomes.
+Given a trained language model, [Gu et al (2017)](https://arxiv.org/abs/1702.02429) proposed a **trainable greedy decoding** algorithm to maximize an arbitrary objective for sampling sequences. The idea is based on the *noisy, parallel approximate decoding* ([NPAD](https://arxiv.org/abs/1605.03835)). NPAD injects unstructured noise into the model hidden states and runs noisy decoding multiple times in parallel to avoid potential degradation. To take a step further, trainable greedy decoding replaces the unstructured noise with a learnable random variable, predicted by a RL agent that takes the previous hidden state, the previous decoded token and the context as input. In other words, the decoding algorithm learns a RL actor to manipulate the model hidden states for better outcomes.
 
 
 ## Smart Prompt Design

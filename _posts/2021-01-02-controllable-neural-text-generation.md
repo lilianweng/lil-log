@@ -7,11 +7,11 @@ tags: nlp language-model reinforcement-learning long-read
 ---
 
 
-> The modern langage model with SOTA results on many NLP tasks is trained on large scale free text on the Internet. It is challenging to steer such a model to generate content with desired attributes. Although still not perfect, there are several approaches for controllable text generation, such as guided or learned decoding strategy, smart prompt design, or fine-tuning the model with various methods.
+> The modern language model with SOTA results on many NLP tasks is trained on large scale free text on the Internet. It is challenging to steer such a model to generate content with desired attributes. Although still not perfect, there are several approaches for controllable text generation, such as guided or learned decoding strategy, smart prompt design, or fine-tuning the model with various methods.
  
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2021-02-01: Improved the post to version 2.0 with several missing work added.]</span>
+<span style="color: #286ee0;">[Updated on 2021-02-01: Improved the post to version 2.0 with several missing work added and fixed many typos.]</span>
 
 
 There is a gigantic amount of free text on the Web, several magnitude more than labelled benchmark datasets. The state-of-the-art language models (LM) are trained with unsupervised Web data in large scale. When generating samples from LM by iteratively sampling the next token, we do not have much control over attributes of the output text, such as the topic, the style, the sentiment, etc. Many applications would demand a good control over the model output. For example, if we plan to use LM to generate reading materials for kids, we would like to guide the output stories to be safe, educational and easily understood by children.
@@ -60,11 +60,11 @@ However, maximization-based decoding does not guarantee high-quality generation.
 
 **Top-k sampling** ([Fan et al., 2018](https://arxiv.org/abs/1805.04833)): At each sampling step, only the top $$k$$ most likely tokens are selected and the probability mass is redistributed among them. In [Fan et al., 2018](https://arxiv.org/abs/1805.04833), the authors proposed to use *top-k random sampling* where the next token is randomly selected among the top $$k$$ most likely candidates and they argued that this approach can generate more novel and less repetitive content than beam search.
 
-**Nucleus sampling** ([Holtzman et al. 2019](https://arxiv.org/abs/1904.09751)): Also known as "Top-p sampling". One drawback of top-k sampling is that the predefined number $$k$$ does not take into consideration how *skewed* the probability distribution might be. The nucleus sampling selects the smallest set of top candidates with the cumulative probability exceeds a threshold (e.g. 0.95) and then the distribution is rescaled among selected candidates.
+**Nucleus sampling** ([Holtzman et al. 2019](https://arxiv.org/abs/1904.09751)): Also known as "Top-p sampling". One drawback of top-k sampling is that the predefined number $$k$$ does not take into consideration how *skewed* the probability distribution might be. The nucleus sampling selects the smallest set of top candidates with the cumulative probability exceeding a threshold (e.g. 0.95) and then the distribution is rescaled among selected candidates.
 
 Both top-k and nucleus sampling have less repetitions with a proper set of hyperparameters.
 
-**Penalized sampling** ([Keskar et al. 2019](https://arxiv.org/abs/1909.05858)): To avoid the common failure case of generating duplicated substrings, the [CTRL](https://arxiv.org/abs/1909.05858) paper proposed a new sampling method to penalize repetitions by discounting the scores of previously generated tokens. The probability distribution for the next token with repetition penalty is defined as:
+**Penalized sampling** ([Keskar et al. 2019](https://arxiv.org/abs/1909.05858)): To avoid the common failure case of generating duplicate substrings, the [CTRL](https://arxiv.org/abs/1909.05858) paper proposed a new sampling method to penalize repetitions by discounting the scores of previously generated tokens. The probability distribution for the next token with repetition penalty is defined as:
 
 $$
 p_i = \frac{\exp(o_i / (T \cdot \mathbb{1}(i \in g)))}{\sum_j \exp(o_j / (T \cdot \mathbb{1}(j \in g)))} \quad
@@ -84,7 +84,7 @@ $$
 \text{score}(x_{t+1}, b_t) = \text{score}(b_t) + \log p(x_{t+1}) + \color{green}{\sum_i \alpha_i f_i(x_{t+1})}
 $$
 
-where $$\log p(x_{t+1})$$ is the log-likelihood predicted by LM. $$\text{score}(b_t)$$ is the accumulated score of the already-generated words in the current beam state $$b_t$$. The green part can incorporate many different features for steerting the style of the output. A set of feature functions $$f_i(.)$$ define the preferences and the associated weights $$alpha_i$$ work like "control knobs" that can be easily customized at decoding time. Features can measure a variety of attributes and can be easily combined; for example,
+where $$\log p(x_{t+1})$$ is the log-likelihood predicted by LM. $$\text{score}(b_t)$$ is the accumulated score of the already-generated words in the current beam state $$b_t$$. The green part can incorporate many different features for steering the style of the output. A set of feature functions $$f_i(.)$$ define the preferences and the associated weights $$alpha_i$$ work like "control knobs" that can be easily customized at decoding time. Features can measure a variety of attributes and can be easily combined; for example,
 - whether $$x_{t+1}$$ exists in a bag of desired or banned topical words.
 - whether $$x_{t+1}$$ indicates certain sentiments.
 - whether $$x_{t+1}$$ is a repeated token (and thus $$f_i$$ needs to take the history as input too).
@@ -246,7 +246,7 @@ $$
 e^{(t+1)}_\text{trig} = \arg\min_{e\in\mathcal{V}} [e - e^{(t)}_{\text{trig}_i}]^\top \nabla_{e^{(t)}_{\text{trig}_i}} \mathcal{L}
 $$
 
-where $$\mathcal{V}$$ refers to the embedding metrix of all the tokens. $$\nabla_{e^{(t)}_{\text{trig}_i}} \mathcal{L}$$ is the average gradient of the task loss over a batch at iteration $$t$$. We can brute-force the optimal $$e$$ by a $$\vert \mathcal{V} \vert d$$-dimensional dot product, which is cheap and can be computed in parallel.
+where $$\mathcal{V}$$ refers to the embedding matrix of all the tokens. $$\nabla_{e^{(t)}_{\text{trig}_i}} \mathcal{L}$$ is the average gradient of the task loss over a batch at iteration $$t$$. We can brute-force the optimal $$e$$ by a $$\vert \mathcal{V} \vert d$$-dimensional dot product, which is cheap and can be computed in parallel.
 
 
 ![Universal adversarial trigger]({{ '/assets/images/universal-adv-triggers.png' | relative_url }})
@@ -260,7 +260,7 @@ The above token replacement method can be augmented with beam search. When looki
 
 ![AutoPrompt examples]({{ '/assets/images/autoprompt-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 8. Example prompts discover by AutoPrompt for different tasks. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
+*Fig. 8. Example prompts discovered by AutoPrompt for different tasks. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
 {:.image-caption}
 
 
@@ -336,7 +336,7 @@ Fine-tuning is an intuitive way to guide a LM to output desired content, commonl
 
 Conditional training aims to learn a generative model conditioned on a control variable $$z$$, $$p(y \vert x, z)$$.
 
-[Fan et al (2018)](https://arxiv.org/abs/1805.04833) trained a conditional language model for 2-step story generation. First, a model outputs the story sketch and then a story writing model creates a story following that sketch. The mechanism of conditioning on the sketch is implemented by a *fusion* model architecture. The fusion model enforces a form of *residual learning* that allows the story writing model to focus on learning what the first sketch generation model is missing. Also for story generation, [Peng et al (2018)](https://www.aclweb.org/anthology/W18-1505/) experimented with an ending valence-conditioned story generator LM, $$p(x_t \vert x_{<t}, z)$$ where $$z$$ is the label of the story ending (sad, happy or neutral). Their language model is a bidirectional LSTM and the label is mapped into a learned embedding which then blends into LSTM cell.
+[Fan et al (2018)](https://arxiv.org/abs/1805.04833) trained a conditional language model for 2-step story generation. First, a model outputs the story sketch and then a story writing model creates a story following that sketch. The mechanism of conditioning on the sketch is implemented by a *fusion* model architecture. The fusion model enforces a form of *residual learning* that allows the story writing model to focus on learning what the first sketch generation model is missing. Also for story generation, [Peng et al (2018)](https://www.aclweb.org/anthology/W18-1505/) experimented with an ending valence-conditioned story generator LM, $$p(x_t \vert x_{<t}, z)$$ where $$z$$ is the label of the story ending (sad, happy or neutral). Their language model is a bidirectional LSTM and the label is mapped into a learned embedding which then blends into the LSTM cell.
 
 <a name="ctrl" />**CTRL** ([Keskar et al., 2019](https://arxiv.org/abs/1909.05858); [code](https://github.com/salesforce/ctrl)) aims to train a language model conditioned control code $$z$$ using controllable datasets. CTRL learns the conditioned distribution $$p(x \vert z)$$ by training on raw text sequences with *control code prefixes*, such as `[horror]`, `[legal]`, etc. Then the learned model is able to generate text with respect to the prompt prefix. The training data contains Wikipedia, OpenWebText, books, Amazon reviews, reddit corpus and many more, where each dataset is assigned with a control code and subreddit in the reddit corpus has its own topic as control code. 
 
@@ -361,7 +361,7 @@ Note that CTRL trains a transformer model from scratch. However, labelling all t
 
 ### RL Fine-tuning
 
-Fine-tuning a sequential model with RL regarding any arbitrary and possibly non-differentiable reward function has been proved to work well years ago ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732)). RL fine-tuning can resolve several problems with *teacher forcing* method. With teacher forcing, the model only minimizes a maximum-likelihood loss at each individual decoding step during training but it is asked to predict the entire sequences from scratch at test time. Such a discrepancy between train and test could lead to exposure bias and accumulated error. In contrast, RL fine-tuning is able to directly optimize task-specific metrics on the sequence level, such as BLEU for translation ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Wu et al., 2016](https://arxiv.org/abs/1609.08144), [Nguyen et al., 2017](https://arxiv.org/abs/1707.07402)), ROUGE for summarization ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Paulus et al., 2017](https://arxiv.org/abs/1705.04304), [Wu and Hu, 2018](https://arxiv.org/abs/1804.07036)) and customized metric for story generation ([Tambwekar et al., 2018](https://arxiv.org/abs/1809.10736)).
+Fine-tuning a sequential model with RL regarding any arbitrary and possibly non-differentiable reward function has been proved to work well years ago ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732)). RL fine-tuning can resolve several problems with *teacher forcing* method. With teacher forcing, the model only minimizes a maximum-likelihood loss at each individual decoding step during training but it is asked to predict the entire sequence from scratch at test time. Such a discrepancy between train and test could lead to exposure bias and accumulated error. In contrast, RL fine-tuning is able to directly optimize task-specific metrics on the sequence level, such as BLEU for translation ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Wu et al., 2016](https://arxiv.org/abs/1609.08144), [Nguyen et al., 2017](https://arxiv.org/abs/1707.07402)), ROUGE for summarization ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Paulus et al., 2017](https://arxiv.org/abs/1705.04304), [Wu and Hu, 2018](https://arxiv.org/abs/1804.07036)) and customized metric for story generation ([Tambwekar et al., 2018](https://arxiv.org/abs/1809.10736)).
 
 [Ranzato et al (2015)](https://arxiv.org/abs/1511.06732) applied REINFORCE to train RNN models for sequence generation tasks. The model is first trained to predict the next token using cross-entropy loss (ML loss) and then fine-tuned alternatively by both ML loss and REINFORCE (RL loss). At the second fine-tuning stage, the number of training steps for next-token prediction is gradually decreasing until none and eventually only RL loss is used. This sequence-level RL fine-tuning was shown by experiments to lead to great improvements over several supervised learning baselines back then. 
 
@@ -410,12 +410,12 @@ $$
 
 Their experiments showed that the *preference loss* achieves the best performance, where the reward model is a thin MLP layer on top of BERT sentence embedding.
 
-[Ziegler et al (2019)](https://arxiv.org/abs/1909.08593) collected human labels by asking humans to select the best candidate $$y_b$$ out of a few options $$\{y_i\}$$ given the input $$x \sim \mathcal{D}$$. The candidates are sampled by $$y_0, y_1 \sim p(.\vert x), y_2, y_3 \sim \pi(.\vert x)$$. We should be aware that human labeling might have very high disagreement when the groud truth is fuzzy.
+[Ziegler et al (2019)](https://arxiv.org/abs/1909.08593) collected human labels by asking humans to select the best candidate $$y_b$$ out of a few options $$\{y_i\}$$ given the input $$x \sim \mathcal{D}$$. The candidates are sampled by $$y_0, y_1 \sim p(.\vert x), y_2, y_3 \sim \pi(.\vert x)$$. We should be aware that human labeling might have very high disagreement when the ground truth is fuzzy.
 
 
 ![Human feedback fine-tuning]({{ '/assets/images/finetune-human-feedback.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 14. The overview of training framework for fine-tuning a language model policy with reward learned from human feedback. (Image source: [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593))*
+*Fig. 14. The overview of the training framework for fine-tuning a language model policy with reward learned from human feedback. (Image source: [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593))*
 {:.image-caption}
 
 
@@ -427,13 +427,13 @@ $$
 
 To keep the scale consistent during training, the reward model is normalized to have mean 0 and variance 1. 
 
-<a name="kl-penalty" />During RL fine-tuning, the policy $$\pi$$, initialized by a pretrained language model $$p$$, is optimized via [PPO]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#ppo) with the above learned reward model. To avoid the policy's deviating from its original behavior too much, a **KL penality** is added:
+<a name="kl-penalty" />During RL fine-tuning, the policy $$\pi$$, initialized by a pretrained language model $$p$$, is optimized via [PPO]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#ppo) with the above learned reward model. To avoid the policy's deviating from its original behavior too much, a **KL penalty** is added:
 
 $$
 R(x, y) = R_\psi(x, y) - \beta\log\frac{\pi(y \vert x)}{p(y \vert x)}
 $$
 
-If running online data collection, human label collection process is continued during RL fine-tuning and thus the human labelers can review results generated by the latest policy. The number of human labels are evenly spread out during the training process. Meanwhile the reward model is also retrained periodicially. Online data collection turns out to be important for summarization task but not for text continuation task. In their experiments, jointly training the reward model and the policy with shared parameters did not work well and can lead to overfitting due to the big imbalance between dataset sizes.
+If running online data collection, human label collection process is continued during RL fine-tuning and thus the human labelers can review results generated by the latest policy. The number of human labels are evenly spread out during the training process. Meanwhile the reward model is also retrained periodically. Online data collection turns out to be important for the summarization task but not for the text continuation task. In their experiments, jointly training the reward model and the policy with shared parameters did not work well and can lead to overfitting due to the big imbalance between dataset sizes.
 
 In the following work ([Stiennon et al., 2020](https://arxiv.org/abs/2009.01325)), the human label collection was further simplified to select the best option between a pair of summaries, $$y_b \in\{y_0, y_1\}$$ The reward model loss was updated to optimize the log odds of the selected summary:
 
@@ -460,7 +460,7 @@ Given an attribute $$a$$ and the generated sample $$x$$, let an attribute model 
 
 To shift the output, at decoding time, PPLM runs one forward → one backward → one forward, three passes in total:
 1. First a forward pass is performed to compute the likelihood of attribute $$a$$ by $$p(a\vert x)$$;
-2. Let $$\Delta H_t$$ be a step-wise update to the hidden state $$H_t$$ such that $$(H_t + \Delta H_t)$$ shifts the distribution of generated text closer to having the attribute $$a$$. $$\Delta H_t$$ is initialized at zero.
+2. Let $$\Delta H_t$$ be a stepwise update to the hidden state $$H_t$$ such that $$(H_t + \Delta H_t)$$ shifts the distribution of generated text closer to having the attribute $$a$$. $$\Delta H_t$$ is initialized at zero.
 Then a backward pass updates the LM hidden states using normalized gradients from the attribute model $$\nabla_{\Delta H_t} \log p(a \vert H_t + \Delta H_t)$$ as 
 $$
 \Delta H_t \leftarrow \Delta H_t + \alpha \frac{\nabla_{\Delta H_t} \log p(a|H_t + \Delta H_t)}{\| \nabla_{\Delta H_t} \log p(a|H_t + \Delta H_t) \|^\gamma}
@@ -480,7 +480,7 @@ Multiple attribute models can be mix-and-matched during generation with customiz
 $$
 \log p(a \vert x) = \log\big( \sum_{i=1}^k p_{t+1} [w_i] \big)
 $$
-<br/>To encourage the model outputs the desired words at least once but not at every step, they normalize the gradient by the maximum gradient norm. 
+<br/>To encourage the model to output the desired words at least once but not at every step, they normalize the gradient by the maximum gradient norm. 
 <br/>Interestingly, they found that increasing the probability of generating words in the bag also increases the probability of generating *related* but not identical words about the same topic.
 2. The discriminator attribute models are based on learned classifiers which define preferences by a distribution instead of hard samples.
 
@@ -497,7 +497,7 @@ To ensure the fluency in language, PPLM applied two additional designs:
 
 Interestingly, they found a large variance in the extent of controllability across topics. Some topics (religion, science, politics) are easier to control for compared to others (computers, space).
 
-One obvious drawback of PPLM is that during to multiple passes at every decoding step, the test time computation becomes much more expensive.
+One obvious drawback of PPLM is that due to multiple passes at every decoding step, the test time computation becomes much more expensive.
 
 
 Similar to PPLM, **DELOREAN** (DEcoding for nonmonotonic LOgical REAsoNing; [Qin et al., 2020](https://arxiv.org/abs/2010.05906)) incorporates the future context by back-propagation. Given input text $$\mathbf{x}$$, DELOREAN aims to generate continuation completion $$\mathbf{y} = [y_1, \dots, y_N]$$ such that $$y$$ satisfies certain constraints defined by a context $$z$$. To keep the generation differentiable, a soft representation of $$y$$ is tracked, $$\tilde{\mathbf{y}}=(\tilde{y}_1, \dots, \tilde{y}_N)$$ where $$\tilde{y}_i \in \mathbb{R}^V$$ are logits over the vocabulary. $$\tilde{\mathbf{y}}^{(t)}$$ is the soft representation at iteration $$t$$.
@@ -519,7 +519,7 @@ Given the representation $$\tilde{y}^{(t-1)}$$ at iteration $$t$$, it runs the f
 {:.image-caption}
 
 
-The paper explored different strategies of fusing predictions from the base and side models: `product` is the worst while `sum` ($$\alpha$$-blending), MLP, and [FiLM](https://arxiv.org/abs/1709.07871) are comparable. Side-tuning is able to achieve better performance, when it is trained with intermediate amount of data and when the base network is large.
+The paper explored different strategies of fusing predictions from the base and side models: `product` is the worst while `sum` ($$\alpha$$-blending), MLP, and [FiLM](https://arxiv.org/abs/1709.07871) are comparable. Side-tuning is able to achieve better performance, when it is trained with intermediate amounts of data and when the base network is large.
 
 **Auxiliary tuning** ([Zeldes et al., 2020](https://arxiv.org/abs/2006.16823)) supplements the original pre-trained model with an *auxiliary* model that shifts the output distribution according to the target task. The base and auxiliary model outputs are merged on the logits level. The combined model is trained to maximize the likelihood $$p(x_t\vert x_{<t}, z)$$ of target output.
 
@@ -549,11 +549,11 @@ And therefore the auxiliary model $$\text{logits}_\text{aux}(x_t \vert x_{<t}, z
 {:.image-caption}
 
 
-**GeDi** ([Kruse et al., 2020](https://arxiv.org/abs/2009.06367)) guides the text generation by *Generative Discriminator*. The discriminator is implemented as a class conditional language model (CC-LM), $$p_\theta(x_{1:t} \vert z)$$. The descriminator guides generation at each decoding step by computing classification probabilities for all possible next tokens via Bayes rule by normalizing over *two* contrastive class-conditional distributions:
+**GeDi** ([Kruse et al., 2020](https://arxiv.org/abs/2009.06367)) guides the text generation by *Generative Discriminator*. The discriminator is implemented as a class conditional language model (CC-LM), $$p_\theta(x_{1:t} \vert z)$$. The discriminator guides generation at each decoding step by computing classification probabilities for all possible next tokens via Bayes rule by normalizing over *two* contrastive class-conditional distributions:
 1. One conditioned on the control code $$z$$ for desired attribute.
-2. The other conditioned on the anti-control code $$\bar{z}$$ for undesired attribute.
+2. The other conditioned on the anti-control code $$\bar{z}$$ for undesired attributes.
 
-GeDi relies on the contract between $$p_\theta(x_{1:t} \vert z)$$ and $$p_\theta(x_{1:t} \vert \bar{z})$$ to compute the probability of the sequence belonging to the desired class. The descriminator loss is to maximize the probability of desired attribute $$z$$:
+GeDi relies on the contract between $$p_\theta(x_{1:t} \vert z)$$ and $$p_\theta(x_{1:t} \vert \bar{z})$$ to compute the probability of the sequence belonging to the desired class. The discriminator loss is to maximize the probability of desired attribute $$z$$:
 
 
 $$
@@ -574,7 +574,7 @@ where $$p(z) = \exp(b_z) / \sum_{z'} \exp(b_{z'})$$ and $$b_z$$ is a learned cla
 {:.image-caption}
 
 
-They finetuned a GPT2-medium model with control code similar to how [CTRL](#ctrl) is trained to form a CC-LM using a linear combination of descriminative loss and generative loss. This descriminator model is then used as GiDe to guide generation by a larger language model like GPT2-XL.
+They finetuned a GPT2-medium model with control code similar to how [CTRL](#ctrl) is trained to form a CC-LM using a linear combination of discriminative loss and generative loss. This discriminator model is then used as GiDe to guide generation by a larger language model like GPT2-XL.
 
 One way of decoding from GeDi is to sample from a weighted posterior $$p^w(x_{t+1}\vert x_{1:t}, z) \propto p(z \vert x_{1:t+1})^w p(x_{t+1} \vert x_{1:t})$$ where $$w>1$$ applies additional bias toward the desired class $$z$$. In the sampling process, only tokens with the class or next-token probability larger than a certain threshold are selected.
 
@@ -658,7 +658,7 @@ This approach can be used to model various constraints in controllable text gene
 {:.image-caption}
 
 
-Comparing to other baselines, GDC using pointwise constraints diverges less from the base model $$a$$ and produces smoother curves.
+Compared to other baselines, GDC using pointwise constraints diverges less from the base model $$a$$ and produces smoother curves.
 
 
 ![GDC debiasing]({{ '/assets/images/GDC-ablation.png' | relative_url }})

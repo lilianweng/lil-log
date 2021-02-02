@@ -14,11 +14,11 @@ tags: representation-learning long-read generative-model object-recognition rein
 
 <span style="color: #286ee0;">[Updated on 2020-01-09: add a new section on [Contrastive Predictive Coding](#contrastive-predictive-coding)].</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2020-04-13: add a ["Momentum Contrast"](#momentum-contrast) section on MoCo, SimCLR and CURL.</span>
+<span style="color: #286ee0;">[Updated on 2020-04-13: add a ["Momentum Contrast"](#momentum-contrast) section on MoCo, SimCLR and CURL.]</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2020-07-08: add a ["Bisimulation"](#bisimulation) section on DeepMDP and DBC.</span>
+<span style="color: #286ee0;">[Updated on 2020-07-08: add a ["Bisimulation"](#bisimulation) section on DeepMDP and DBC.]</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2020-09-12: add [MoCo V2](#mocov2) and [BYOL](#BYOL) in the ["Momentum Contrast"](#momentum-contrast) section.</span>
+<span style="color: #286ee0;">[Updated on 2020-09-12: add [MoCo V2](#mocov2) and [BYOL](#BYOL) in the ["Momentum Contrast"](#momentum-contrast) section.]</span>
 
 
 Given a task and enough labels, supervised learning can solve it really well. Good performance usually requires a decent amount of labels, but collecting manual labels is expensive (i.e. ImageNet) and hard to be scaled up. Considering the amount of unlabelled data (e.g. free text, all the images on the Internet) is substantially more than a limited number of human curated labelled datasets, it is kinda wasteful not to use them. However, unsupervised learning is not easy and usually works much less efficiently than supervised learning.

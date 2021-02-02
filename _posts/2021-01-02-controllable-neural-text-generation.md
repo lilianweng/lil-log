@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Controllable Neural Text Generation"
 date: 2021-01-02 12:00:00
-tags: nlp language-model reinforcement-learning
+tags: nlp language-model reinforcement-learning long-read
 ---
 
 
@@ -11,7 +11,7 @@ tags: nlp language-model reinforcement-learning
  
 <!--more-->
 
-<span style="color: #286ee0;">Note: As I'm missing some interesting work, I plan to improve this in version 2.0 very soon. Stay tuned.</span>
+<span style="color: #286ee0;">[Updated on 2021-02-01: Improved the post to version 2.0 with several missing work added.]</span>
 
 
 There is a gigantic amount of free text on the Web, several magnitude more than labelled benchmark datasets. The state-of-the-art language models (LM) are trained with unsupervised Web data in large scale. When generating samples from LM by iteratively sampling the next token, we do not have much control over attributes of the output text, such as the topic, the style, the sentiment, etc. Many applications would demand a good control over the model output. For example, if we plan to use LM to generate reading materials for kids, we would like to guide the output stories to be safe, educational and easily understood by children.
@@ -48,7 +48,7 @@ A low temperature would make the distribution sharper and a high value makes it 
 
 **Greedy search**: Always pick the next token with the *highest* probability, equivalent to setting temperature $$T=0$$. However, it tends to create repetitions of phrases, even for well-trained models.
 
-**Beam search**: It essentially does breadth-first search, one token per tree level, but with a limited bandwith. At each level of the search tree, beam search keeps track of $$n$$ (named "beam width") best candidates and expands all the successors of these candidates in the next level. Beam search could stop expanding a node if it hits the EOS (end-of-sentence) token. 
+**Beam search**: It essentially does breadth-first search, one token per tree level, but with a limited bandwidth. At each level of the search tree, beam search keeps track of $$n$$ (named "beam width") best candidates and expands all the successors of these candidates in the next level. Beam search could stop expanding a node if it hits the EOS (end-of-sentence) token. 
 
 However, maximization-based decoding does not guarantee high-quality generation.
 
@@ -92,7 +92,56 @@ where $$\log p(x_{t+1})$$ is the log-likelihood predicted by LM. $$\text{score}(
 
 Similar to Hafez, [Baheti et al. (2018)](https://arxiv.org/abs/1809.01215) manually designed features for ranking and altered the sampling distribution by appending similarity scores between topic distribution or embeddings of the context and the completion. 
 
-[Holtzman et al. (2018)](https://arxiv.org/abs/1805.06087) adopted a set of learned discrminators, each specializing in a different principle of communication guided by [Grice’s maxims](https://en.wikipedia.org/wiki/Cooperative_principle): quality, quantity, relation and manner. The discriminators learn to encode these desired principles by measuring repetition, entailment, relevance, and lexical diversity, respectively. Given some ground truth completion, all the discrminator models are trained to minimize the ranking log-likelihood, $$\log\sigma(f_i(y_g) - f_i(y))$$, because the gold continuation $$y_g$$ is expected to obtain a higher score than the generated one $$y$$. Here the weight coefficients $$\alpha_i$$ are also learned to minimize the score difference between the golden standard and the generated completion.
+[Holtzman et al. (2018)](https://arxiv.org/abs/1805.06087) adopted a set of learned discriminators, each specializing in a different principle of communication guided by [Grice’s maxims](https://en.wikipedia.org/wiki/Cooperative_principle): quality, quantity, relation and manner. The discriminators learn to encode these desired principles by measuring repetition, entailment, relevance, and lexical diversity, respectively. Given some ground truth completion, all the discriminator models are trained to minimize the ranking log-likelihood, $$\log\sigma(f_i(y_g) - f_i(y))$$, because the gold continuation $$y_g$$ is expected to obtain a higher score than the generated one $$y$$. Here the weight coefficients $$\alpha_i$$ are also learned to minimize the score difference between the golden standard and the generated completion.  Discriminative Adversarial Search (DAS; [Scialom et al., 2020](https://arxiv.org/abs/2002.10375)) is inspired by GAN and trains the discriminator to tell apart human created text from machine generated text. The discriminator predicts a label for each token instead of for the entire sequence. The discriminator logprob is added to the score to guide sampling towards the human-written style.
+
+[Meister et al. (2020)](https://arxiv.org/abs/2010.02650) studied beam search in a regularized decoding framework:
+
+$$
+\mathbf{y}^* = \arg\max_{\mathbf{y}\in\mathcal{Y}} \big( \underbrace{\log p_\theta(\mathbf{y}\vert\mathbf{x})}_\text{MAP} - \underbrace{\lambda\mathcal{R}(\mathbf{y})}_\text{regularizer} \big)
+$$
+
+Since we expect maximum probability to have minimum surprise, the surprisal of a LM at time step $$t$$ can be defined as follows:
+
+$$
+\begin{aligned}
+u_0(\texttt{BOS}) &= 0 \text{  ; BOS is a placeholder token for the beginning of a sentence.}\\
+u_t(y) &= -\log P_\theta(y \vert \mathbf{x}, \mathbf{y}_{<t}) \text{ for }t \geq 1
+\end{aligned}
+$$
+
+The MAP (maximum a posteriori) part demands for sequences with maximum probability given context, while the regularizer introduces other constraints. It is possible a global optimal strategy may need to have a high-surprisal step occasionally so that it can shorten the output length or produce more low-surprisal steps afterwards.
+
+Beam search has gone through the test of time in the field of NLP. The question is: *If we want to model beam search as exact search in a regularized decoding framework, how should $$\mathcal{R}(\mathbf{y})$$ be modeled?* The paper proposed a connection between beam search and the *uniform information density* (UID) hypothesis. 
+
+> "The uniform information density hypothesis (UID; Levy and Jaeger, 2007)  states that—subject to the constraints of the grammar—humans prefer sentences that distribute information (in the sense of information theory) equally across the linguistic signal, e.g., a sentence."
+
+In other words, it hypothesizes that humans prefer text with evenly distributed surprisal. Popular decoding methods like top-k sampling or nuclear sampling actually filter out high-surprisal options, thus implicitly encouraging the UID property in output sequences.
+
+The paper experimented with several forms of regularizers:
+
+1. *Greedy*: $$\mathcal{R}_\text{greedy}(\mathbf{y}) = \sum_{t=1}^{\vert\mathbf{y}\vert} \big(u_t(y_t) - \min_{y' \in \mathcal{V}} u_t(y') \big)^2$$; if set $$\lambda \to \infty$$, we have greedy search. Note that being greedy at each individual step does not guarantee global optimality.
+2. *Variance regularizer*: $$\mathcal{R}_\text{var}(\mathbf{y}) = \frac{1}{\vert\mathbf{y}\vert}\sum_{t=1}^{\vert\mathbf{y}\vert} \big(u_t(y_t) - \bar{u} \big)^2$$ , where $$\bar{u}$$ is the average surprisal over all timesteps. It directly encodes the UID hypothesis.
+3. *Local consistency*: $$\mathcal{R}_\text{local}(\mathbf{y}) = \frac{1}{\vert\mathbf{y}\vert}\sum_{t=1}^{\vert\mathbf{y}\vert} \big(u_t(y_t) - u_{t-1}(y_{t-1}) \big)^2$$; this decoding regularizer encourages adjacent tokens to have similar surprisal.
+4. *Max regularizer*: $$\mathcal{R}_\text{max}(\mathbf{y}) = \max_t u_t(y_t)$$ penalizes the maximum compensation of surprisal.
+5. *Squared regularizer*: $$\mathcal{R}_\text{square}(\mathbf{y}) = \sum_{t=1}^{\vert\mathbf{y}\vert} u_t(y_t)^2$$ encourages all the tokens to have surprisal close to 0.
+
+An experiment with greedy regularizers showed that larger $$\lambda$$ results in better performance (e.g. measured by BLEU for NMT task) and lower std dev of surprisal.
+
+
+![Greedy regularizer]({{ '/assets/images/beam-search-greedy-regularizer.png' | relative_url }})
+{: style="width: 65%;" class="center"}
+*Fig. 2. The plot of BLEU and std. dev of surprisals as functions of the strength of the regularizer $$\lambda$$. The subgraph in grey shows the relationship between BLEU and surprisal std. dev. (Image source: [Meister et al. 2020](https://arxiv.org/abs/2010.02650))*
+{:.image-caption}
+
+
+A default beam search would have text generation of decreased quality when beam size increases. Regularized beam search greatly helps alleviate this issue. A combined regularizer further improves the performance. In their experiments for NMT, they found $$\lambda=5$$ for greedy and $$\lambda=2$$ for squared work out as the optimal combined regularizer.
+
+
+![Beam search size]({{ '/assets/images/beam-search-size-regularized.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 3. The plot of BLEU of a function of beam size (left) and BLEU scores for translations created by different regularized decoding strategies. (Image source: [Meister et al. 2020](https://arxiv.org/abs/2010.02650))*
+{:.image-caption}
+
 
 Guided decoding essentially runs a more expensive beam search where the sampling probability distribution is altered by side information about human preferences.
 
@@ -100,6 +149,73 @@ Guided decoding essentially runs a more expensive beam search where the sampling
 ### Trainable Decoding
 
 Given a trained language model, [Gu et al (2017)](https://arxiv.org/abs/1702.02429) proposed a **trainable greedy decoding** algorithm to maximize an arbitrary objective for sampling sequences. The idea is based on the *noisy, parallel approximate decoding* ([NPAD](https://arxiv.org/abs/1605.03835)). NPAD injects unstructured noise into the model hidden states and runs noisy decoding multiple times in parallel to avoid potential degradation. To take a step further, trainable greedy decoding replaces the unstructured noise with a learnable random variable, predicted by a RL agent that takes the previous hidden state, the previous decoded token and the context as input. In other words, the decoding algorithm learns a RL actor to manipulate the model hidden states for better outcomes.
+
+
+[Grover et al. (2019)](https://arxiv.org/abs/1906.09531) trained a binary classifier to distinguish samples from data distribution and samples from the generative model. This classifier is used to estimate *importance weights* for constructing a new unnormalized distribution. The proposed strategy is called **likelihood-free importance weighting (LFIW)**. 
+
+Let $$p$$ be the real data distribution and $$p_\theta$$ be a learned generative model. A classical approach for evaluating the expectation of a given function $$f$$ under $$p$$ using samples from $$p_\theta$$ is to use importance sampling.  
+
+$$
+\mathbb{E}_{\mathbf{x}\sim p} [f(\mathbf{x})] 
+= \mathbb{E}_{\mathbf{x}\sim p_\theta} \Big[\frac{p(\mathbf{x})}{p_\theta(\mathbf{x})} f(\mathbf{x})\Big]
+\approx \frac{1}{N} \sum_{i=1}^N w(\mathbf{x}_i)f(\mathbf{x}_i)
+$$
+
+However, $$p(\mathbf{x})$$ can only be estimated via finite datasets. Let $$c_\phi: \mathcal{X} \to [0,1]$$ be a probabilistic binary classifier for predicting whether a sample $$\mathbf{x}$$ is from the true data distribution ($$y=1$$). The joint distribution over $$\mathcal{X}\times\mathcal{Y}$$ is denoted as $$q(\mathbf{x}, y)$$. 
+
+$$
+q(\mathbf{x}\vert y) = \begin{cases}
+p_\theta(\mathbf{x}) & \text{ if }y=0\text{; predicted to be generated data} \\
+p(\mathbf{x}) & \text{ otherwise; from the true data distribution}
+\end{cases}
+$$
+
+Then if $$c_\phi$$ is [Bayes optimal](https://svivek.com/teaching/lectures/slides/prob-learning/bayes-optimal-classifier.pdf), the importance weight can be estimated by:
+
+$$
+w_\phi(\mathbf{x}) 
+= \frac{p(\mathbf{x})}{p_\theta(\mathbf{x})}
+= \frac{q(\mathbf{x} \vert y=1)}{q(\mathbf{x} \vert y=0)}
+= \frac{q(y=0)}{q(y=1)} \frac{q(y=1 \vert \mathbf{x})}{q(y=0 \vert \mathbf{x})}
+= \gamma \frac{c_\phi(\mathbf{x})}{1 - c_\phi(\mathbf{x})}
+$$
+
+where $$\gamma = \frac{q(y=0)}{q(y=1)} > 0$$ is a fixed odd ratio.
+
+Since we cannot learn a perfect optimal classifier, the importance weight would be an estimation $$\hat{w}_\phi$$. A couple of practical tricks can be applied to offset cases when the classifier exploits artifacts in the generated samples to make very confident predictions (i.e. very small importance weights):
+
+1. Self-normalization: normalize the weight by the sum $$\hat{w}_\phi(\mathbf{x}_i) / \sum_{j=1}^N \hat{w}_\phi(\mathbf{x}_j)$$.
+2. Flattening: add a power scaling parameter $$\alpha > 0$$, $$\hat{w}_\phi(\mathbf{x}_i)^\alpha$$.
+3. Clipping: specify a lower bound $$\max(\hat{w}_\phi(\mathbf{x}_i), \beta)$$.
+
+
+To sample from an importance resampled generative model, $$\mathbf{x}\sim p_{\theta, \phi}(\mathbf{x}) \propto p_\theta(\mathbf{x})\hat{w}_\phi(\mathbf{x})$$, they adopt SIR (Sampling-Importance-Resampling),
+
+
+![SIR importance resampling]({{ '/assets/images/SIR-importance-resampling.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 4. The algorithm for sampling from a generative model according to importance weights $$\hat{w}(\mathbf{x}_i)$$ using SIR. (Image source: [Grover et al., 2019)](https://arxiv.org/abs/1906.09531))* 
+{:.image-caption}
+
+
+[Deng et al., 2020](https://arxiv.org/abs/2004.11714) proposed to learn a EBM to steer a LM in the [residual space](https://arxiv.org/abs/1906.03351), $$P_\theta(x) \propto P_\text{LM}(x)\exp(-E_\theta(x))$$, where $$P_\theta$$ is the joint model; $$E_\theta$$ is the residual energy function to be learned. If we know the partition function $$Z$$, we can model the generative model for generative a sequence $$x_{p+1}, \dots, x_T$$ as:
+
+$$
+P_\theta(x_{p+1:T}\vert x_{1:p}) = \frac{P_\text{LM}(x_{p+1:T}\vert x_{1:p}) \exp(-E_\theta(x_{1:T}))}{Z_\theta(x_{1:p})}
+$$
+
+The goal is to learn the parameters of the energy function $$E_\theta$$ such that the joint model $$P_\theta$$ gets closer to the desired data distribution. The residual energy function is trained by noise contrastive estimation ([NCE](https://www.kdnuggets.com/2019/07/introduction-noise-contrastive-estimation.html)), considering $$P_\theta$$ as the model distribution and $$P_\text{LM}$$ as the noise distribution:
+
+$$
+\theta = \arg\max_{\theta} \mathbb{E}_{x^+ \sim P_\text{data}} \log\frac{1}{1+\exp(E_\theta(x^+))} + \mathbb{E}_{x^- \sim P_\text{LM}} \log\frac{1}{1+\exp(-E_\theta(x^-))}
+$$
+
+However, the partition function is intractable in practice. The paper proposed a simple way to first sample from the original LM and then to resample from them according to the energy function. This is unfortunately quite expensive.
+
+![Top k joint sampling]({{ '/assets/images/top-k-joint-sampling.png' | relative_url }})
+{: style="width: 80%;" class="center"}
+*Fig. 5. Top k samples from the base LM are resampled according to the residual energy function. (Image source: [Deng et al., 2020](https://arxiv.org/abs/2004.11714))*
+{:.image-caption}
 
 
 ## Smart Prompt Design
@@ -114,7 +230,7 @@ Large language models have been shown to be very powerful on many NLP tasks, eve
 
 ![AutoPrompt]({{ '/assets/images/autoprompt.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 2. The overview of AutoPrompt. The trigger tokens are retrieved to optimize for the target outputs across all inputs. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
+*Fig. 6. The overview of AutoPrompt. The trigger tokens are retrieved to optimize for the target outputs across all inputs. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
 {:.image-caption}
 
 
@@ -135,7 +251,7 @@ where $$\mathcal{V}$$ refers to the embedding metrix of all the tokens. $$\nabla
 
 ![Universal adversarial trigger]({{ '/assets/images/universal-adv-triggers.png' | relative_url }})
 {: style="width: 62%;" class="center"}
-*Fig. 3. We search for trigger tokens by updating their embeddings with the gradient of the task loss per batch. (Image source: [Wallace et al., 2019](https://arxiv.org/abs/1908.07125))*
+*Fig. 7. We search for trigger tokens by updating their embeddings with the gradient of the task loss per batch. (Image source: [Wallace et al., 2019](https://arxiv.org/abs/1908.07125))*
 {:.image-caption}
 
 
@@ -144,10 +260,45 @@ The above token replacement method can be augmented with beam search. When looki
 
 ![AutoPrompt examples]({{ '/assets/images/autoprompt-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 4. Example prompts discover by AutoPrompt for different tasks. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
+*Fig. 8. Example prompts discover by AutoPrompt for different tasks. (Image source: [Shin et al., 2020](https://arxiv.org/abs/2010.15980))*
 {:.image-caption}
 
-Fine-tuned models achieve better task performance but they can fail in the low data regime. AutoPrompt was found to outperform fine-tuning in the regime where there are $$10^2-10^3$$ training samples. As an alternative to fine-tuning, prompt design is much cheaper. AutoPrompt improves the accuracy for sentiment classification a lot more than manual prompts and achieves similar performance as linear probing. For NLI task, AutoPrompt obtains higher accuracy than linear probing. It is able to retrieve facts more accurately than manual prompts too.
+
+Smart prompt design essentially produces efficient context that can lead to desired completion. Motivated by this observation, [Li & Liang (2021)](https://arxiv.org/abs/2101.00190) proposed **Prefix-Tuning** which assigns a small number of trainable parameters at the beginning of an input sequence (named "prefix") to steer a LM, $$[\text{PREFIX}; x; y]$$. Let $$\mathcal{P}_\text{idx}$$ be a set of prefix indices and $$\text{dim}(h_i)$$ be the embedding size. The prefix parameters $$P_\theta$$ has the dimension $$\vert\mathcal{P}_\text{idx}\vert \times \text{dim}(h_i) $$ and the hidden state takes the form:
+
+$$
+h_i = \begin{cases}
+P_\theta[i,:], & \text{if }i \in \mathcal{P}_\text{idx}\\
+\text{LM}_\phi(z_i, h_{<i}), & \text{otherwise}
+\end{cases}
+$$
+
+Note that only $$P_\theta$$ is trainable and the LM parameters $$\phi$$ is frozen during training.
+
+
+![Prefix-tuning]({{ '/assets/images/prefix-tuning.png' | relative_url }})
+{: style="width: 65%;" class="center"}
+*Fig. 9. Illustations of fine-tuning versus prefix-tuning. (Image source: [Li & Liang 2021](https://arxiv.org/abs/2101.00190))*
+{:.image-caption}
+
+
+The prefix parameters do not tie to any embeddings associated with the real words and thus they are more *expressive* for steering the context. Direct optimizing $$P_\theta$$ unfortunately results in poor performance. To reduce the difficulty associated with high dimensionality training, the matrix $$P_\theta$$ is reparameterized by a smaller matrix $$P'_\theta \in \mathbb{R}^{\vert\mathcal{P}_\text{idx}\vert \times c}$$ and a large feed forward network $$\text{MLP}_\theta \in \mathbb{R}^{c\times \text{dim}(h_i)}$$.
+
+The performance increases with the prefix length $$\vert\mathcal{P}_\text{idx}\vert$$ up to some value. And this value varies with tasks.
+
+![Prefix-tuning]({{ '/assets/images/prefix-tuning-length.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 10. Task performance, summarization (left) and table-to-text (right), as a function of prefix length. (Image source: [Li & Liang 2021](https://arxiv.org/abs/2101.00190))*
+{:.image-caption}
+
+
+A few other interesting learnings from their ablation studies include:
+- Tuning only the embedding layer (without prefix) is not sufficiently expressive.
+- Placing the trainable parameter between $$x$$ and $$y$$, $$[x; \text{INFIX}; y]$$, slightly underperforms prefix-tuning, likely because it only affects the context for $$y$$ while prefix affects both.
+- Random initialization of $$P_\theta$$ leads to low performance with high variance. In contrast, initializing $$P_\theta$$ with activations of real words improves generation, even the words are irrelevant to the task.
+
+Fine-tuned models achieve better task performance but they can fail in the low data regime. Both AutoPrompt and Prefix-Tuning were found to outperform fine-tuning in the regime where the training dataset is small (i.e. $$10^2-10^3$$ samples). As an alternative to fine-tuning, prompt design or learning the context embedding is much cheaper. AutoPrompt improves the accuracy for sentiment classification a lot more than manual prompts and achieves similar performance as linear probing. For the NLI task, AutoPrompt obtains higher accuracy than linear probing. It is able to retrieve facts more accurately than manual prompts too. In low data regime, Prefix-Tuning achieves performance comparable with fine-tuning on table-to-text generation and summarization.
+
 
 
 ### Heuristic-based Search
@@ -172,7 +323,7 @@ Interestingly some small modifications in the prompts may lead to big gain, as s
 
 ![Small modifications]({{ '/assets/images/prompt-small-modifications.png' | relative_url }})
 {: style="width: 52%;" class="center"}
-*Fig. 5. Small modifications in prompt templates can lead to big performance gains: replacement in blue, insertion in green, deletion in red. (Image source: [Jiang et al., 2020](https://arxiv.org/abs/1911.12543))*
+*Fig. 11. Small modifications in prompt templates can lead to big performance gains: replacement in blue, insertion in green, deletion in red. (Image source: [Jiang et al., 2020](https://arxiv.org/abs/1911.12543))*
 {:.image-caption}
 
 
@@ -192,7 +343,7 @@ Conditional training aims to learn a generative model conditioned on a control v
 
 ![CTRL examples]({{ '/assets/images/CTRL-control-code.png' | relative_url }})
 {: style="width: 90%;" class="center"}
-*Fig. 6. Datasets used for training CTRL and associated control codes. (Image source: Edited from Table 7 in [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
+*Fig. 12. Datasets used for training CTRL and associated control codes. (Image source: Edited from Table 7 in [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
 {:.image-caption}
 
 
@@ -201,7 +352,7 @@ The control code also can be used for *domain annotation* given tokens, because 
 
 ![CTRL examples]({{ '/assets/images/CTRL-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 7. The examples of conditioned sample generation by CTRL. (Image source: [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
+*Fig. 13. The examples of conditioned sample generation by CTRL. (Image source: [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
 {:.image-caption}
 
 
@@ -210,7 +361,7 @@ Note that CTRL trains a transformer model from scratch. However, labelling all t
 
 ### RL Fine-tuning
 
-Fine-tuning a sequential model with RL regarding any arbitrary and possibly non-differentiable reward function has been proved to work well years ago ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732)). RL fine-tuning can resolve several problems with *teacher forcing* method. With teacher forcing, the model only minimizes a maximum-likelihood loss at each individual decoding step during training but it is asked to predict the entire sequences from scratch at test time. Such a discrepency between train and test could lead to exposure bias and accumulated error. In contrast, RL fine-tuning is able to directly optimize task-specific metrics on the sequence level, such as BLEU for translation ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Wu et al., 2016](https://arxiv.org/abs/1609.08144), [Nguyen et al., 2017](https://arxiv.org/abs/1707.07402)), ROUGE for summarization ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Paulus et al., 2017](https://arxiv.org/abs/1705.04304), [Wu and Hu, 2018](https://arxiv.org/abs/1804.07036)) and customized metric for story generation ([Tambwekar et al., 2018](https://arxiv.org/abs/1809.10736)).
+Fine-tuning a sequential model with RL regarding any arbitrary and possibly non-differentiable reward function has been proved to work well years ago ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732)). RL fine-tuning can resolve several problems with *teacher forcing* method. With teacher forcing, the model only minimizes a maximum-likelihood loss at each individual decoding step during training but it is asked to predict the entire sequences from scratch at test time. Such a discrepancy between train and test could lead to exposure bias and accumulated error. In contrast, RL fine-tuning is able to directly optimize task-specific metrics on the sequence level, such as BLEU for translation ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Wu et al., 2016](https://arxiv.org/abs/1609.08144), [Nguyen et al., 2017](https://arxiv.org/abs/1707.07402)), ROUGE for summarization ([Ranzato et al., 2015](https://arxiv.org/abs/1511.06732), [Paulus et al., 2017](https://arxiv.org/abs/1705.04304), [Wu and Hu, 2018](https://arxiv.org/abs/1804.07036)) and customized metric for story generation ([Tambwekar et al., 2018](https://arxiv.org/abs/1809.10736)).
 
 [Ranzato et al (2015)](https://arxiv.org/abs/1511.06732) applied REINFORCE to train RNN models for sequence generation tasks. The model is first trained to predict the next token using cross-entropy loss (ML loss) and then fine-tuned alternatively by both ML loss and REINFORCE (RL loss). At the second fine-tuning stage, the number of training steps for next-token prediction is gradually decreasing until none and eventually only RL loss is used. This sequence-level RL fine-tuning was shown by experiments to lead to great improvements over several supervised learning baselines back then. 
 
@@ -264,7 +415,7 @@ Their experiments showed that the *preference loss* achieves the best performanc
 
 ![Human feedback fine-tuning]({{ '/assets/images/finetune-human-feedback.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 8. The overview of training framework for fine-tuning a language model policy with reward learned from human feedback. (Image source: [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593))*
+*Fig. 14. The overview of training framework for fine-tuning a language model policy with reward learned from human feedback. (Image source: [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593))*
 {:.image-caption}
 
 
@@ -293,7 +444,7 @@ $$
 
 ![Human feedback fine-tuning 2]({{ '/assets/images/summarize-human-feedback.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 9. The overview of fine-tuning the language model policy from human feedback for summarization, including (1) human feedback collection, (2) reward model training, and (3) policy training. (Image source: [Stiennon et al., 2020](https://arxiv.org/abs/2009.01325))*
+*Fig. 15. The overview of fine-tuning the language model policy from human feedback for summarization, including (1) human feedback collection, (2) reward model training, and (3) policy training. (Image source: [Stiennon et al., 2020](https://arxiv.org/abs/2009.01325))*
 {:.image-caption}
 
 
@@ -320,7 +471,7 @@ where $$\gamma$$ is a normalization scaling coefficient, set per layer. $$\alpha
 
 ![PPLM]({{ '/assets/images/PPLM.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 10. The overview of how PPLM runs three passes to update the model output to increase the likelihood of a desired attribute. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
+*Fig. 16. The overview of how PPLM runs three passes to update the model output to increase the likelihood of a desired attribute. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
 {:.image-caption}
 
 
@@ -340,7 +491,7 @@ To ensure the fluency in language, PPLM applied two additional designs:
 
 ![PPLM examples]({{ '/assets/images/PPLM-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 11. Examples of controllable text generation by PPLM. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
+*Fig. 17. Examples of controllable text generation by PPLM. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
 {:.image-caption}
 
 
@@ -349,12 +500,22 @@ Interestingly, they found a large variance in the extent of controllability acro
 One obvious drawback of PPLM is that during to multiple passes at every decoding step, the test time computation becomes much more expensive.
 
 
+Similar to PPLM, **DELOREAN** (DEcoding for nonmonotonic LOgical REAsoNing; [Qin et al., 2020](https://arxiv.org/abs/2010.05906)) incorporates the future context by back-propagation. Given input text $$\mathbf{x}$$, DELOREAN aims to generate continuation completion $$\mathbf{y} = [y_1, \dots, y_N]$$ such that $$y$$ satisfies certain constraints defined by a context $$z$$. To keep the generation differentiable, a soft representation of $$y$$ is tracked, $$\tilde{\mathbf{y}}=(\tilde{y}_1, \dots, \tilde{y}_N)$$ where $$\tilde{y}_i \in \mathbb{R}^V$$ are logits over the vocabulary. $$\tilde{\mathbf{y}}^{(t)}$$ is the soft representation at iteration $$t$$.
+
+
+Given the representation $$\tilde{y}^{(t-1)}$$ at iteration $$t$$, it runs the following procedures:
+1. **Backward**: The constraint is represented as a loss function $$\mathcal{L}(\mathbf{x}, \tilde{\mathbf{y}}^{(t-1)}, z))$$. The logits are updated via gradient descent: $$\tilde{y}^{(t), b}_n = \tilde{y}_n^{(t-1)} - \lambda \nabla_{\tilde{y}_n} \mathcal{L}(\mathbf{x}, \tilde{\mathbf{y}}^{(t-1)}, z)$$.
+2. **Forward**: Run forward pass to ensure the generated text is fluent. $$\tilde{y}^{(t),f}_n = \text{LM}(\mathbf{x}, \tilde{\mathbf{y}}^{(t)}_{1:n-1})$$.
+3. Then linearly combine two logits together to create a new representation $$\tilde{y}^{(t)}_n = \gamma \tilde{y}^{(t), f}_n + (1-\gamma) \tilde{y}^{(t), b}_n$$. Note that each $$\tilde{y}^{(t)}_n$$ is needed to sample the next $$\tilde{y}^{(t),f}_{n+1}$$.
+
+
+
 **Side-tuning** ([Zhang et al., 2019](https://arxiv.org/abs/1912.13503)) trains a light-weighted side network that learns a residual on top of the original model outputs without modifying the pre-trained model weights. Unlike PPLM, no gradient update is applied on the hidden states. It is a simple yet effective approach for incremental learning. The base model is treated as a black-box model and does not necessarily have to be a neural network. Side-tuning setup assumes the base and side models are fed exactly the same input and the side model is independently learned.
 
 
 ![Side-tuning]({{ '/assets/images/side-tuning.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 12. Comparison of fixed weights, fine-tuning and side-tuning. (Image source: [Zhang et al., 2019](https://arxiv.org/abs/1912.13503))*
+*Fig. 18. Comparison of fixed weights, fine-tuning and side-tuning. (Image source: [Zhang et al., 2019](https://arxiv.org/abs/1912.13503))*
 {:.image-caption}
 
 
@@ -384,7 +545,7 @@ And therefore the auxiliary model $$\text{logits}_\text{aux}(x_t \vert x_{<t}, z
 
 ![Side auxiliary]({{ '/assets/images/side-auxiliary.png' | relative_url }})
 {: style="width: 75%;" class="center"}
-*Fig. 13. The auxiliary model is trained by reusing features extracted from multiple layers of the base model. (Image source: [Zeldes et al., 2020](https://arxiv.org/abs/2006.16823))*
+*Fig. 19. The auxiliary model is trained by reusing features extracted from multiple layers of the base model. (Image source: [Zeldes et al., 2020](https://arxiv.org/abs/2006.16823))*
 {:.image-caption}
 
 
@@ -409,7 +570,7 @@ where $$p(z) = \exp(b_z) / \sum_{z'} \exp(b_{z'})$$ and $$b_z$$ is a learned cla
 
 ![GeDi]({{ '/assets/images/GeDi.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 14. An illustration of how GeDi works via Bayesian rule. (Image source: [Kruse et al., 2020](https://arxiv.org/abs/2009.06367))*
+*Fig. 20. An illustration of how GeDi works via Bayesian rule. (Image source: [Kruse et al., 2020](https://arxiv.org/abs/2009.06367))*
 {:.image-caption}
 
 
@@ -419,6 +580,96 @@ One way of decoding from GeDi is to sample from a weighted posterior $$p^w(x_{t+
 
 GeDi guided generation in their experiments showed strong controllability and ran 30x faster than [PPLM](#pplm).
 
+
+### Distributional Approach
+
+**Generation with Distributional Control** (GDC; [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635)) frames controlled text generation as the optimization of a probability distribution with a constraint. It involves two major steps.
+
+**Step 1: Learn a EBM of the target model**
+
+Let's label a pretrained LM as $$a$$ and a target LM with desired features as $$p$$. The desired features can be defined by a set of pre-defined real-valued feature functions $$\phi_i(x), i=1,\dots,k$$ over $$x \in X$$, denoted as a vector $$\boldsymbol{\phi}$$. When sequences $$x \in X$$ are sampled according to the desired model $$p$$, the expectations of features $$\mathbb{E}_{x\sim p}\boldsymbol{\phi}(x)$$ should be close to $$\bar{\boldsymbol{\mu}}$$ , named "*moment constraints*". The feature function $$\phi_i$$ can have distinct values (e.g. identity function for binary classifier) or continuous probabilities. In the meantime, the fine-tuned model $$p$$ should not diverge from $$a$$ too much by maintaining a small KL divergence measure. 
+
+In summary, given a pretrained model $$a$$, we would like to find a target model $$p$$ such that:
+
+$$
+\begin{aligned}
+\bar{\boldsymbol{\mu}} &= \mathbb{E}_{x\sim p}\boldsymbol{\phi}(x) \\
+p &= \arg\min_{c \in \mathcal{C}} D_\text{KL}(c, a)
+\end{aligned}
+$$
+
+where $$\mathcal{C}$$ is the set of all distributions over $$X$$ that satisfy the moment constraints.
+
+According to theorems in Information Geometry, $$p$$ can be approximated by an EBM (energy-based model; an unnormalized probability distribution) $$P$$ in the form of exponential function, such that $$p(x) \propto P(x)$$ and $$p(x)=\frac{1}{Z}P(x)$$ where $$Z=\sum_x P(x)$$. The energy-based model can be approximated by:
+$$
+P(x)=a(x)\exp\big(\sum_i \lambda_i \phi_i(x)\big)=a(x)\exp(\boldsymbol{\lambda}\cdot\boldsymbol{\phi}(x))
+$$
+Let's define *importance weight* $$w(x, \boldsymbol{\lambda}) = \frac{P(x)}{a(x)} = \exp\langle\boldsymbol{\lambda}\cdot\boldsymbol{\phi}(x)\rangle$$. Given a large number of sequences sampled from the pretrained model $$x_1, \dots, x_N \sim a(x)$$,
+
+$$
+\begin{aligned}
+\mu(\boldsymbol{\lambda}) 
+&= \mathbb{E}_{x\sim p}\boldsymbol{\phi}(x)
+= \mathbb{E}_{x\sim a} \frac{p(x)}{a(x)}\boldsymbol{\phi}(x)
+= \frac{1}{Z}\mathbb{E}_{x\sim a} w(x, \boldsymbol{\lambda}) \boldsymbol{\phi}(x) \\
+&= \frac{\mathbb{E}_{x\sim a} w(x, \boldsymbol{\lambda}) \boldsymbol{\phi}(x)}{\sum_{x\in X} P(x)}
+= \frac{\mathbb{E}_{x\sim a} w(x, \boldsymbol{\lambda}) \boldsymbol{\phi}(x)}{\sum_{x\in X} w(x, \boldsymbol{\lambda})a(x)}
+= \frac{\mathbb{E}_{x\sim a} w(x, \boldsymbol{\lambda}) \boldsymbol{\phi}(x)}{\mathbb{E}_{x\sim a} w(x, \boldsymbol{\lambda})} \\
+&\simeq \frac{\sum_{i=1}^N w(x_i,\boldsymbol{\lambda}) \boldsymbol{\phi}(x_i)}{\sum_{i=1}^N w(x_i, \boldsymbol{\lambda})}
+= \frac{\sum_{i=1}^N \exp\langle\boldsymbol{\lambda}\cdot\boldsymbol{\phi}(x)\rangle \boldsymbol{\phi}(x_i)}{\sum_{i=1}^N \exp\langle\boldsymbol{\lambda}\cdot\boldsymbol{\phi}(x)\rangle}
+\end{aligned}
+$$
+
+Using SGD over the objective $$\|\boldsymbol{\mu}(\boldsymbol{\lambda}) - \bar{\boldsymbol{\mu}}\|^2_2$$, we can obtain an estimated value for $$\boldsymbol{\lambda}$$ and a representation of $$P(x)=a(x)\exp\langle\boldsymbol{\lambda}\cdot\boldsymbol{\phi}(x)\rangle$$. $$P(x)$$ is a sequential EBM because $$a$$ is an autoregressive model.
+
+**Step 2: Learn the target probability distribution**
+
+The EBM $$P(x)$$ can compute ratios of probabilities of two sequences, but cannot sample from $$p(x)$$ with knowing $$Z$$. In order to sample from a sequential EBM, the paper proposed to use [Distributional Policy Gradient](https://arxiv.org/abs/1912.08517) (DPG; but not this [DPG]({{ site.baseurl }}{% post_url 2018-04-08-policy-gradient-algorithms %}#dpg)) with the objective to obtain an autoregressive policy $$\pi_\theta$$ to approximate a target distribution $$p$$ by minimizing the cross entropy $$H(p, \pi_\theta)$$. DPG runs through a sequence of iterations. Within each iteration, the proposed distribution $$q$$ is used for sampling and we can correct the cross entropy loss with importance weights too:
+
+
+$$
+\begin{aligned}
+\nabla_\theta H(p, \pi_\theta) 
+&= - \nabla_\theta \mathbb{E}_{x\sim p} \log \pi_\theta(x)
+= - \mathbb{E}_{x\sim p} \nabla_\theta  \log \pi_\theta(x) \\
+&= - \mathbb{E}_{x\sim q} \frac{p(x)}{q(x)} \nabla_\theta  \log \pi_\theta(x)
+= - \frac{1}{Z}\mathbb{E}_{x\sim q} \frac{P(x)}{q(x)} \nabla_\theta  \log \pi_\theta(x)
+\end{aligned}
+$$
+
+To learn such a $$\pi_\theta$$, the paper adopts a KL-adaptive version of DPG: It only updates $$q$$ when the estimated policy $$\pi_\theta$$ gets closer to $$p$$. This adaptive step is important for fast convergence.
+
+![KL-adaptive DPG]({{ '/assets/images/GDC-KL-adaptive-DPG.png' | relative_url }})
+{: style="width: 45%;" class="center"}
+*Fig. 21. The algorithm of distributional policy gradient to make it possible to sample from a EBM $$P(x)$$, where $$q$$ is initialized to be $$a$$. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
+{:.image-caption}
+
+
+This approach can be used to model various constraints in controllable text generation:
+
+1. Pointwise constraints: $$\phi_i$$ is a binary feature; such as constraining the presence or absence of words, or classifier-based constraints.
+2. Distributional constraints: $$\phi_i$$ represents a probability distribution; such as constraining the probability of gender, topic, etc. Their experiments showed great progress in debiasing a GPT-2 model that was trained on Wikipedia Biographies corpus. The percentage of generated biographies on females increased from 7.4% to 35.6%.
+3. Hybrid constraints: combine multiple constraints by simply summing them up.
+
+
+![GDC debiasing]({{ '/assets/images/GDC-debiasing.png' | relative_url }})
+{: style="width: 60%;" class="center"}
+*Fig. 22. Debiasing experiments using GDC with various constraints. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
+{:.image-caption}
+
+
+Comparing to other baselines, GDC using pointwise constraints diverges less from the base model $$a$$ and produces smoother curves.
+
+
+![GDC debiasing]({{ '/assets/images/GDC-ablation.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 23. Compare pointwise constrained GDC with several baselines. Low Self-BLEU-5 and high Dist-1 indicate high diversity. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
+{:.image-caption}
+
+
+- REINFORCE that optimizes the reward $$\phi$$ directly ($$\text{REINFORCE}$$ in Fig. X.) without constraints converges fast but has a high deviation from the original model.
+- REINFORCE that optimizes $$P(x)$$ ($$\text{REINFORCE}_{P(x)}$$ in Fig. X.) has low sample diversity.
+- Compared to [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593) GDC has smoother learning curves and produces a richer vocabulary.
 
 
 ---
@@ -488,3 +739,16 @@ Cited as:
 
 [26] Yoel Zeldes et al. ["Technical Report: Auxiliary Tuning and its Application to Conditional Text Generatio."](https://arxiv.org/abs/2006.16823) arXiv preprint arXiv:2006.16823.
 
+[27] Thomas Scialom, et al. ["Discriminative Adversarial Search for Abstractive Summarization"](https://arxiv.org/abs/2002.10375) ICML 2020.
+
+[28] Clara Meister, et al. ["If beam search is the answer, what was the question?"](https://arxiv.org/abs/2010.02650) EMNLP 2020.
+
+[29] Xiang Lisa Li and Percy Liang. ["Prefix-Tuning: Optimizing Continuous Prompts for Generation."](https://arxiv.org/abs/2101.00190) arXiv preprint arXiv:2101.00190 (2021).
+
+[30] Lianhui Qin, et al. ["Back to the Future: Unsupervised Backprop-based Decoding for Counterfactual and Abductive Commonsense Reasoning."](https://arxiv.org/abs/2010.05906) arXiv preprint arXiv:2010.05906 (2020).
+
+[31] Muhammad Khalifa, et al. ["A Distributional Approach to Controlled Text Generation"](https://arxiv.org/abs/2012.11635) Accepted by ICLR 2021.
+
+[32] Aditya Grover, et al. ["Bias correction of learned generative models using likelihood-free importance weighting."](https://arxiv.org/abs/1906.09531) NeuriPS 2019.
+
+[33] Yuntian Deng et al. ["Residual Energy-Based Models for Text Generation."](https://arxiv.org/abs/2004.11714) ICLR 2020.

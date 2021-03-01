@@ -303,7 +303,7 @@ where $$\tau$$ is a temperature hyper-parameter.
 
 Compared to another similar idea of **memory bank** ([Wu et al, 2018](https://arxiv.org/abs/1805.01978v1)) which stores representations of all the data points in the database and samples a random set of keys as negative examples, a queue-based dictionary in MoCo enables us to reuse representations of immediate preceding mini-batches of data. 
 
-The MoCo dictionary is not differentiable as a queue, so we cannot rely on back-propagation to update the key encoder $$f_k$$. One naive way might be to use the same encoder for both $$f_q$$ and $$f_k$$. Differently, MoCo proposed to use a momentum-based update. Say, the parameters of $$f_q$$ and $$f_k$$ are labeled as $$\theta_q$$ and $$\theta_k$$, respectively.
+It is intractable to update the key encoder $$f_k$$ using back-propagation due to the queue-based dictionary size. One naive way might be to use the same encoder for both $$f_q$$ and $$f_k$$. Differently, MoCo proposed to use a momentum-based update. Say, the parameters of $$f_q$$ and $$f_k$$ are labeled as $$\theta_q$$ and $$\theta_k$$, respectively.
 
 $$
 \theta_k \leftarrow m \theta_k + (1-m) \theta_q

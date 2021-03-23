@@ -19,7 +19,7 @@ Many challenges are associated with the effort to diminish various types of unsa
 
 In this post, we delve into the issue of toxicity in language models. As I'm still struggling to find a concrete definition of toxic content, I list a couple in the literature below. 
 
-> [[Perceptive API](https://support.perspectiveapi.com/s/about-the-api-attributes-and-languages)] A rude, disrespectful, or unreasonable comment; likely to make people leave a discussion.
+> [[Perspective API](https://support.perspectiveapi.com/s/about-the-api-attributes-and-languages)] A rude, disrespectful, or unreasonable comment; likely to make people leave a discussion.
 
 > [[Kurita et al. 2019](https://arxiv.org/abs/1912.06872)] Content that can offend or harm its recipients, including hate speech, racism, and offensive language.
 
@@ -147,9 +147,9 @@ The paper proposed two ways to resolve adversarial attacks:
 
 
 
-### Perceptive API
+### Perspective API
 
-**Perceptive API** ([www.perspectiveapi.com](https://www.perspectiveapi.com/)) is the most widely used commercial API for toxic content detection. Perspective trains machine learning models to provide scores for several different [attributes](https://support.perspectiveapi.com/s/about-the-api-attributes-and-languages): toxicity, severe toxicity, insult, profanity, identity attack, threat, and sexually explicit. Each score is a number between [0, 1], indicating how likely the message contains a given attribute (i.e. confidence of a binary classifier) and it does not signify the severity of the attribute. 
+**perspective API** ([www.perspectiveapi.com](https://www.perspectiveapi.com/)) is the most widely used commercial API for toxic content detection. Perspective trains machine learning models to provide scores for several different [attributes](https://support.perspectiveapi.com/s/about-the-api-attributes-and-languages): toxicity, severe toxicity, insult, profanity, identity attack, threat, and sexually explicit. Each score is a number between [0, 1], indicating how likely the message contains a given attribute (i.e. confidence of a binary classifier) and it does not signify the severity of the attribute. 
 
 ![Perspective API]({{ '/assets/images/about-perspective-api.png' | relative_url }})
 {: style="width: 100%;" class="center"}

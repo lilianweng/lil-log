@@ -420,6 +420,19 @@ They consider four general strategies in the recipes for making the bot safer:
 <a name="RealToxicityPrompt" />**RealToxicityPrompts** dataset (2020): contains 100k sentence snippets from the web with Perspective API toxicity scores for studying the risk of neural toxic degeneration in language models. [[Download](https://allenai.org/data/real-toxicity-prompts)]
 
 
+
+---
+Cited as:
+```
+@article{weng2021toxic,
+  title   = "Reducing Toxicity in Language Models.",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2021",
+  url     = "https://lilianweng.github.io/lil-log/2021/03/21/reducing-toxicity-in-language-models.html"
+}
+```
+
 ## References
 
 [1] Vidgen, et al. ["Challenges and frontiers in abusive content detection."](https://www.aclweb.org/anthology/W19-3509/) Workshop on Abusive Language Online 2019.

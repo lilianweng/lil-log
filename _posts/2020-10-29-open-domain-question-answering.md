@@ -449,6 +449,8 @@ REALM computes two probabilities, $$p(z \vert x)$$ and $$p(y \vert x, z)$$, same
 
 Both unsupervised pre-training and supervised fine-tuning optimize the same log-likelihood $$\log p(y \vert x)$$. Because the parameters of the retriever encoder for evidence documents are also updated in the process, the index for MIPS is changing. REALM asynchronously refreshes the index with the updated encoder parameters every several hundred training steps. 
 
+[Balachandran, et al. (2021)](https://arxiv.org/abs/2104.08710) found that REALM is significantly undertrained and REALM++ achieves great EM accuracy improvement (3-5%) by scaling up the model training with larger batch size and more retrieved documents for the reader to process.
+
 
 <a name="DPR" />**DPR** ("Dense Passage Retriever"; [Karpukhin et al., 2020](https://arxiv.org/abs/2004.04906), [code](https://github.com/facebookresearch/DPR)) argues that ICT pre-training could be too computationally expensive and the ORQA's context encoder might be sub-optimal because it is not fine-tuned with question-answer pairs. DPR aims to resolve these two issues by only training a dense dual-encoder architecture for retrieval only from a small number of Q/A pairs, without any pre-training.
 
@@ -725,5 +727,5 @@ Cited as:
 
 [20] Hervé Jegou, et al. ["Faiss: A library for efficient similarity search"](https://engineering.fb.com/2017/03/29/data-infrastructure/faiss-a-library-for-efficient-similarity-search/) Mar 2017.
 
-
+[21] Vidhisha Balachandran, et al. ["Simple and Efficient ways to Improve REALM."](https://arxiv.org/abs/2104.08710) arXiv:2104.08710 (2021).
  

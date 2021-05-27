@@ -11,7 +11,8 @@ tags: nlp language-model reinforcement-learning long-read
  
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2021-02-01: Improved the post to version 2.0 with several missing work added and fixed many typos.]</span>
+<span style="color: #286ee0;">[Updated on 2021-02-01: Updated to version 2.0 with several work added and many typos fixed.]</span><br />
+<span style="color: #286ee0;">[Updated on 2021-05-26: Add P-tuning and Prompt Tuning in the ["prompt design"](#gradient-based-search) section.]</span>
 
 
 There is a gigantic amount of free text on the Web, several magnitude more than labelled benchmark datasets. The state-of-the-art language models (LM) are trained with unsupervised Web data in large scale. When generating samples from LM by iteratively sampling the next token, we do not have much control over attributes of the output text, such as the topic, the style, the sentiment, etc. Many applications would demand a good control over the model output. For example, if we plan to use LM to generate reading materials for kids, we would like to guide the output stories to be safe, educational and easily understood by children.
@@ -277,8 +278,8 @@ Note that only $$P_\theta$$ is trainable and the LM parameters $$\phi$$ is froze
 
 
 ![Prefix-tuning]({{ '/assets/images/prefix-tuning.png' | relative_url }})
-{: style="width: 65%;" class="center"}
-*Fig. 9. Illustations of fine-tuning versus prefix-tuning. (Image source: [Li & Liang 2021](https://arxiv.org/abs/2101.00190))*
+{: style="width: 70%;" class="center"}
+*Fig. 9. Illustrations of fine-tuning versus prefix-tuning. (Image source: [Li & Liang 2021](https://arxiv.org/abs/2101.00190))*
 {:.image-caption}
 
 
@@ -299,6 +300,69 @@ A few other interesting learnings from their ablation studies include:
 
 Fine-tuned models achieve better task performance but they can fail in the low data regime. Both AutoPrompt and Prefix-Tuning were found to outperform fine-tuning in the regime where the training dataset is small (i.e. $$10^2-10^3$$ samples). As an alternative to fine-tuning, prompt design or learning the context embedding is much cheaper. AutoPrompt improves the accuracy for sentiment classification a lot more than manual prompts and achieves similar performance as linear probing. For the NLI task, AutoPrompt obtains higher accuracy than linear probing. It is able to retrieve facts more accurately than manual prompts too. In low data regime, Prefix-Tuning achieves performance comparable with fine-tuning on table-to-text generation and summarization.
 
+
+Two successive works, **P-tuning** ([Liu et al. 2021](https://arxiv.org/abs/2103.10385); [code](https://github.com/THUDM/P-tuning)) and **Prompt Tuning** ([Lester et al. 2021](https://arxiv.org/abs/2104.08691)), follow the similar idea of explicit training continuous prompt embeddings but with a few different choices over the trainable parameters and architecture. Different from Prefix-Tuning which concatenates continuous prompt tokens in every hidden state layer of the transformer, both P-tuning and Prompt Tuning non-invasively add continuous prompts *only in the input* to work well.
+
+
+Let $$[P_i]$$ be the $$i$$-th token in the prompt template of **P-tuning** ([Liu et al. 2021](https://arxiv.org/abs/2103.10385)), we can denote a prompt as a sequence $$T=\{[P_{0:i}], \mathbf{x}, [P_{i+1:m}], \mathbf{y}\}$$. Each token $$[P_i]$$ does not have to be a real token in the model vocabulary ("pseudo-token"), and thus the encoded template $$T^e$$ looks like the following and the pseudo-token hidden state can be optimized with gradient descent.
+
+$$
+T^e = \{ h_0, \dots, h_i, \text{embed}(\mathbf{x}), h_{i+1}, \dots, h_m, \text{embed}(\mathbf{y})\}
+$$
+
+
+![P-tuning]({{ '/assets/images/p-tuning.png' | relative_url }})
+{: style="width: 75%;" class="center"}
+*Fig. 11. The illustration of P-tuning. Sometimes, adding a few task-related anchor tokens, such as “capital” in the figure, can bring further improvement. (Image source: [Liu et al. 2021](https://arxiv.org/abs/2103.10385))*
+{:.image-caption}
+
+
+There are two major optimization challenges in P-tuning:
+1. Discreteness: The word embedding of a pretrained language model are highly discrete. It is hard to optimize $$h_i$$ if they are intialized at random.
+2. Association: $$h_i$$ should be dependent on each other. Thus they develop a mechanism to model this dependency by training a light-weighted LSTM-based prompt encoder:
+
+
+$$
+h_i = \text{MLP}([\text{LSTM}(h_{0:i}): \text{LSTM}(h_{i:m})])
+$$
+
+P-tuning is more flexible than prefix-tuning, as it inserts trainable tokens in the middle of a prompt not just at the beginning. The usage of task-specific anchor tokens is like combining manual prompt engineering with trainable prompts.
+
+**Prompt Tuning** ([Lester et al. 2021](https://arxiv.org/abs/2104.08691)) largely simplifies the idea of prefix tuning by only allowing an additional $$k$$ tunable tokens per downstream task to be prepended to the input text. The conditional generation is $$p_{\theta, \theta_P}(Y \vert [P; X])$$, where $$P$$ is the "pseudo prompt" with parameters $$\theta_P$$ trainable via back-propagation. Both $$X$$ and $$P$$ are embedding vectors and we have $$X \in \mathbb{R}^{n \times d^e}, P \in \mathbb{R}^{k \times d^e}$$ and $$[P;X] \in \mathbb{R}^{(n+k) \times d^e}$$, where $$d^e$$ is the embedding space dimensionality.
+
+- Prompt tuning produces competitive results as model fine-tuning when the model gets *large* (billions of parameters and up). This result is especially interesting given that large models are expensive to fine-tune and execute at inference time. 
+- With learned task-specific parameters, prompt tuning achieves better transfer learning when adapting to new domains. It outperforms fine-tuning on domain shift problems.
+- They also showed that prompt ensembling of multiple prompts for the same task introduces further improvement.
+
+
+![Prompt-tuning]({{ '/assets/images/prompt-tuning.png' | relative_url }})
+{: style="width: 75%;" class="center"}
+*Fig. 12. The illustration of how Prompt Tuning works. (Image source: [Lester et al. 2021](https://arxiv.org/abs/2104.08691))*
+{:.image-caption}
+
+
+The experiments investigated several prompt initialization schemes:
+1. Random initialization by uniformly sampling from [-0.5, 0.5];
+2. Sample embeddings of top 5000 common tokens;
+3. Use the embedding values of the class label strings. If we don't have enough class labels to initialize the soft-prompt, we fall back to scheme 2.
+Random initialization performs noticeably worse than the other two options.
+
+
+![Prompt-tuning-exp1]({{ '/assets/images/prompt-tuning-exp1.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 13. The effect of (a) different prompt initialization schemes and (b) different prompt lengths. (Image source: [Lester et al. 2021](https://arxiv.org/abs/2104.08691))*
+{:.image-caption}
+
+
+The pre-training objectives also have a big impact on the quality of prompt tuning. T5’s “span corruption” is not a good option here.
+
+Prompt tuning is found to be less likely to overfit to a specific dataset. To evaluate the robustness to data shifting problem, they trained the model on one dataset of one task and evaluated it on the test dataset but in a *different domain*. Prompt tuning is more resilient and can generalize to different domains better.
+
+
+![Prompt-tuning-exp2]({{ '/assets/images/prompt-tuning-exp2.png' | relative_url }})
+{: style="width: 50%;" class="center"}
+*Fig. 14. Prompt tuning is more resilient to domain shift between train and test sets. (Image source: [Lester et al. 2021](https://arxiv.org/abs/2104.08691))*
+{:.image-caption}
 
 
 ### Heuristic-based Search
@@ -323,7 +387,7 @@ Interestingly some small modifications in the prompts may lead to big gain, as s
 
 ![Small modifications]({{ '/assets/images/prompt-small-modifications.png' | relative_url }})
 {: style="width: 52%;" class="center"}
-*Fig. 11. Small modifications in prompt templates can lead to big performance gains: replacement in blue, insertion in green, deletion in red. (Image source: [Jiang et al., 2020](https://arxiv.org/abs/1911.12543))*
+*Fig. 15. Small modifications in prompt templates can lead to big performance gains: replacement in blue, insertion in green, deletion in red. (Image source: [Jiang et al., 2020](https://arxiv.org/abs/1911.12543))*
 {:.image-caption}
 
 
@@ -343,7 +407,7 @@ Conditional training aims to learn a generative model conditioned on a control v
 
 ![CTRL examples]({{ '/assets/images/CTRL-control-code.png' | relative_url }})
 {: style="width: 90%;" class="center"}
-*Fig. 12. Datasets used for training CTRL and associated control codes. (Image source: Edited from Table 7 in [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
+*Fig. 16. Datasets used for training CTRL and associated control codes. (Image source: Edited from Table 7 in [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
 {:.image-caption}
 
 
@@ -352,7 +416,7 @@ The control code also can be used for *domain annotation* given tokens, because 
 
 ![CTRL examples]({{ '/assets/images/CTRL-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 13. The examples of conditioned sample generation by CTRL. (Image source: [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
+*Fig. 17. The examples of conditioned sample generation by CTRL. (Image source: [Keskar et al., 2019](https://arxiv.org/abs/1909.05858))*
 {:.image-caption}
 
 
@@ -415,7 +479,7 @@ Their experiments showed that the *preference loss* achieves the best performanc
 
 ![Human feedback fine-tuning]({{ '/assets/images/finetune-human-feedback.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 14. The overview of the training framework for fine-tuning a language model policy with reward learned from human feedback. (Image source: [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593))*
+*Fig. 18. The overview of the training framework for fine-tuning a language model policy with reward learned from human feedback. (Image source: [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593))*
 {:.image-caption}
 
 
@@ -444,7 +508,7 @@ $$
 
 ![Human feedback fine-tuning 2]({{ '/assets/images/summarize-human-feedback.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 15. The overview of fine-tuning the language model policy from human feedback for summarization, including (1) human feedback collection, (2) reward model training, and (3) policy training. (Image source: [Stiennon et al., 2020](https://arxiv.org/abs/2009.01325))*
+*Fig. 19. The overview of fine-tuning the language model policy from human feedback for summarization, including (1) human feedback collection, (2) reward model training, and (3) policy training. (Image source: [Stiennon et al., 2020](https://arxiv.org/abs/2009.01325))*
 {:.image-caption}
 
 
@@ -471,7 +535,7 @@ where $$\gamma$$ is a normalization scaling coefficient, set per layer. $$\alpha
 
 ![PPLM]({{ '/assets/images/PPLM.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 16. The overview of how PPLM runs three passes to update the model output to increase the likelihood of a desired attribute. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
+*Fig. 20. The overview of how PPLM runs three passes to update the model output to increase the likelihood of a desired attribute. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
 {:.image-caption}
 
 
@@ -491,7 +555,7 @@ To ensure the fluency in language, PPLM applied two additional designs:
 
 ![PPLM examples]({{ '/assets/images/PPLM-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 17. Examples of controllable text generation by PPLM. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
+*Fig. 21. Examples of controllable text generation by PPLM. (Image source: [Dathathri et al., 2019](https://arxiv.org/abs/1912.02164))*
 {:.image-caption}
 
 
@@ -515,7 +579,7 @@ Given the representation $$\tilde{y}^{(t-1)}$$ at iteration $$t$$, it runs the f
 
 ![Side-tuning]({{ '/assets/images/side-tuning.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 18. Comparison of fixed weights, fine-tuning and side-tuning. (Image source: [Zhang et al., 2019](https://arxiv.org/abs/1912.13503))*
+*Fig. 22. Comparison of fixed weights, fine-tuning and side-tuning. (Image source: [Zhang et al., 2019](https://arxiv.org/abs/1912.13503))*
 {:.image-caption}
 
 
@@ -545,7 +609,7 @@ And therefore the auxiliary model $$\text{logits}_\text{aux}(x_t \vert x_{<t}, z
 
 ![Side auxiliary]({{ '/assets/images/side-auxiliary.png' | relative_url }})
 {: style="width: 75%;" class="center"}
-*Fig. 19. The auxiliary model is trained by reusing features extracted from multiple layers of the base model. (Image source: [Zeldes et al., 2020](https://arxiv.org/abs/2006.16823))*
+*Fig. 23. The auxiliary model is trained by reusing features extracted from multiple layers of the base model. (Image source: [Zeldes et al., 2020](https://arxiv.org/abs/2006.16823))*
 {:.image-caption}
 
 
@@ -570,7 +634,7 @@ where $$p(z) = \exp(b_z) / \sum_{z'} \exp(b_{z'})$$ and $$b_z$$ is a learned cla
 
 ![GeDi]({{ '/assets/images/GeDi.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 20. An illustration of how GeDi works via Bayesian rule. (Image source: [Kruse et al., 2020](https://arxiv.org/abs/2009.06367))*
+*Fig. 24. An illustration of how GeDi works via Bayesian rule. (Image source: [Kruse et al., 2020](https://arxiv.org/abs/2009.06367))*
 {:.image-caption}
 
 
@@ -641,7 +705,7 @@ To learn such a $$\pi_\theta$$, the paper adopts a KL-adaptive version of DPG: I
 
 ![KL-adaptive DPG]({{ '/assets/images/GDC-KL-adaptive-DPG.png' | relative_url }})
 {: style="width: 45%;" class="center"}
-*Fig. 21. The algorithm of distributional policy gradient to make it possible to sample from a EBM $$P(x)$$, where $$q$$ is initialized to be $$a$$. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
+*Fig. 25. The algorithm of distributional policy gradient to make it possible to sample from a EBM $$P(x)$$, where $$q$$ is initialized to be $$a$$. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
 {:.image-caption}
 
 
@@ -654,7 +718,7 @@ This approach can be used to model various constraints in controllable text gene
 
 ![GDC debiasing]({{ '/assets/images/GDC-debiasing.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 22. Debiasing experiments using GDC with various constraints. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
+*Fig. 26. Debiasing experiments using GDC with various constraints. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
 {:.image-caption}
 
 
@@ -663,7 +727,7 @@ Compared to other baselines, GDC using pointwise constraints diverges less from 
 
 ![GDC debiasing]({{ '/assets/images/GDC-ablation.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 23. Compare pointwise constrained GDC with several baselines. Low Self-BLEU-5 and high Dist-1 indicate high diversity. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
+*Fig. 27. Compare pointwise constrained GDC with several baselines. Low Self-BLEU-5 and high Dist-1 indicate high diversity. (Image source: [Khalifa, et al. 2020](https://arxiv.org/abs/2012.11635))*
 {:.image-caption}
 
 
@@ -752,3 +816,8 @@ Cited as:
 [32] Aditya Grover, et al. ["Bias correction of learned generative models using likelihood-free importance weighting."](https://arxiv.org/abs/1906.09531) NeuriPS 2019.
 
 [33] Yuntian Deng et al. ["Residual Energy-Based Models for Text Generation."](https://arxiv.org/abs/2004.11714) ICLR 2020.
+
+[34] Brian Lester et al. [“The Power of Scale for Parameter-Efficient Prompt Tuning.”](https://arxiv.org/abs/2104.08691) arXiv preprint arXiv:2104.08691 (2021).
+
+[35] Xiao Liu et al. [“GPT Understands, Too.”](https://arxiv.org/abs/2103.10385) arXiv preprint arXiv:2103.10385 (2021).
+

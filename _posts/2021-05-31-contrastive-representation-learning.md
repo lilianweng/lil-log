@@ -490,11 +490,11 @@ where $$\{ \mathbf{v}^{(t-1)} \}$$ are embeddings stored in the memory bank from
 #### MoCo & MoCo-V2
 **Momentum Contrast** (**MoCo**; [He et al, 2019](https://arxiv.org/abs/1911.05722)) provides a framework of unsupervised learning visual representation as a *dynamic dictionary look-up*. The dictionary is structured as a large FIFO queue of encoded representations of data samples. 
 
-Given a query sample $$x_q$$, we get a query representation through an encoder $$q = f_q(x_q)$$. A list of key representations $$\{k_1, k_2, \dots \}$$ in the dictionary are encoded by a momentum encoder $$k_i = f_k (x^k_i)$$. Let's assume among them there is a single *positive* key $$k^+$$ in the dictionary that matches $$q$$. In the paper, they create $$k^+$$ using a noise copy of $$x_q$$ with different [augmentation](#image-augmentations). Then the [InfoNCE](#infonce) contrastive loss with temperature $$\tau$$ is used over one positive and $$N-1$$ negative samples:
+Given a query sample $$\mathbf{x}_q$$, we get a query representation through an encoder $$\mathbf{q} = f_q(\mathbf{x}_q)$$. A list of key representations $$\{\mathbf{k}_1, \mathbf{k}_2, \dots \}$$ in the dictionary are encoded by a momentum encoder $$\mathbf{k}_i = f_k (\mathbf{x}^k_i)$$. Let's assume among them there is a single *positive* key $$\mathbf{k}^+$$ in the dictionary that matches $$\mathbf{q}$$. In the paper, they create $$\mathbf{k}^+$$ using a noise copy of $$\mathbf{x}_q$$ with different [augmentation](#image-augmentations). Then the [InfoNCE](#infonce) contrastive loss with temperature $$\tau$$ is used over one positive and $$N-1$$ negative samples:
 
 
 $$
-\mathcal{L}_\text{MoCo} = - \log \frac{\exp(q \cdot k^+ / \tau)}{\sum_{i=1}^N \exp(q \cdot k_i / \tau)}
+\mathcal{L}_\text{MoCo} = - \log \frac{\exp(\mathbf{q} \cdot \mathbf{k}^+ / \tau)}{\sum_{i=1}^N \exp(\mathbf{q} \cdot \mathbf{k}_i / \tau)}
 $$
 
 Compared to the [memory bank](#instance-discrimination-with-memoy-bank), a queue-based dictionary in MoCo enables us to reuse representations of immediately preceding mini-batches of data. 
@@ -527,7 +527,7 @@ One significant difference between RL and supervised visual tasks is that RL dep
 
 
 ![CURL]({{ '/assets/images/CURL.png' | relative_url }})
-{: style="width: 80%;" class="center"}
+{: style="width: 70%;" class="center"}
 *Fig. 13. The architecture of CURL. (Image source: [Srinivas, et al. 2020](https://arxiv.org/abs/2004.04136))*
 {:.image-caption}
 
@@ -612,7 +612,7 @@ Compared to other methods above for learning good visual representation, what ma
 
 
 ![CLIP efficiency]({{ '/assets/images/CLIP-efficiency.png' | relative_url }})
-{: style="width: 70%;" class="center"}
+{: style="width: 60%;" class="center"}
 *Fig. 18. Using bag-of-words text encoding and contrastive training objectives can bring in multiple folds of data efficiency improvement. (Image source: [Radford et al. 2021](https://arxiv.org/abs/2103.00020))*
 {:.image-caption}
 
@@ -626,7 +626,7 @@ There are several known issues with cross entropy loss, such as the lack of robu
 
 
 ![SupCon]({{ '/assets/images/sup-con.png' | relative_url }})
-{: style="width: 100%;" class="center"}
+{: style="width: 90%;" class="center"}
 *Fig. 19. Supervised vs self-supervised contrastive losses. Supervised contrastive learning considers different samples from the same class as positive examples, in addition to augmented versions. (Image source: [Khosla et al. 2021](https://arxiv.org/abs/2004.11362))*
 {:.image-caption}
 
@@ -732,9 +732,9 @@ The pre-trained BERT sentence embedding without any fine-tuning has been found t
 **SBERT (Sentence-BERT)** ([Reimers & Gurevych, 2019](https://arxiv.org/abs/1908.10084)) relies on siamese and triplet network architectures to learn sentence embeddings such that the sentence similarity can be estimated by cosine similarity between pairs of embeddings. Note that learning SBERT depends on supervised data, as it is fine-tuned on several NLI datasets. 
 
 They experimented with a few different prediction heads on top of BERT model:
-- Softmax classification objective: The classification head of the siamese network is built on the concatenation of two embeddings $$f(x), f(x')$$ and $$\vert f(x) - f(x') \vert$$. The predicted output is $$\hat{y}=\text{softmax}(\mathbf{W}_t [f(x); f(x'); \vert f(x) - f(x') \vert])$$. They showed that the most important component is the element-wise difference $$\vert f(x) - f(x') \vert$$.
-- Regression objective: This is the regression loss on $$\cos(f(x), f(x'))$$, in which the pooling strategy has a big impact. In the experiments, they observed that `max` performs much worse than `mean` and `CLS`-token.
-- Triplet objective: $$\max(\|f(x) - f(x^+)\|- \|f(x) - f(x^-)\| + \epsilon, 0)$$, where $$x, x^+, x^-$$ are embeddings of the anchor, positive and negative sentences.
+- Softmax classification objective: The classification head of the siamese network is built on the concatenation of two embeddings $$f(\mathbf{x}), f(\mathbf{x}')$$ and $$\vert f(\mathbf{x}) - f(\mathbf{x}') \vert$$. The predicted output is $$\hat{y}=\text{softmax}(\mathbf{W}_t [f(\mathbf{x}); f(\mathbf{x}'); \vert f(\mathbf{x}) - f(\mathbf{x}') \vert])$$. They showed that the most important component is the element-wise difference $$\vert f(\mathbf{x}) - f(\mathbf{x}') \vert$$.
+- Regression objective: This is the regression loss on $$\cos(f(\mathbf{x}), f(\mathbf{x}'))$$, in which the pooling strategy has a big impact. In the experiments, they observed that `max` performs much worse than `mean` and `CLS`-token.
+- Triplet objective: $$\max(0, \|f(\mathbf{x}) - f(\mathbf{x}^+)\|- \|f(\mathbf{x}) - f(\mathbf{x}^-)\| + \epsilon)$$, where $$\mathbf{x}, \mathbf{x}^+, \mathbf{x}^-$$ are embeddings of the anchor, positive and negative sentences.
 
 In the experiments, which objective function works the best depends on the datasets, so there is no universal winner.
 
@@ -790,16 +790,16 @@ BERT-flow was shown to improve the performance on most STS tasks either with or 
 
 #### Whitening Operation
 
-[Su et al. (2021)](https://arxiv.org/abs/2103.15316)) applied **whitening** operation to improve the [isotropy](#isotropy) of the learned representation and also to reduce the dimensionality of sentence embedding. 
+[Su et al. (2021)](https://arxiv.org/abs/2103.15316) applied **whitening** operation to improve the [isotropy](#isotropy) of the learned representation and also to reduce the dimensionality of sentence embedding. 
 
-They transform the mean value of the sentence vectors to 0 and the covariance matrix to the identity matrix. Given a set of samples $$\{x_i\}_{i=1}^N$$, let $$\tilde{x_i}$$ and $$\tilde{\Sigma}$$ be the transformed samples and corresponding covariance matrix:
+They transform the mean value of the sentence vectors to 0 and the covariance matrix to the identity matrix. Given a set of samples $$\{\mathbf{x}_i\}_{i=1}^N$$, let $$\tilde{\mathbf{x}}_i$$ and $$\tilde{\Sigma}$$ be the transformed samples and corresponding covariance matrix:
 
 
 
 $$
 \begin{aligned}
-\mu &= \frac{1}{N}\sum_{i=1}^N x_i \quad \Sigma = \frac{1}{N}\sum_{i=1}^N (x_i - \mu)^\top (x_i - \mu) \\
-\tilde{x_i} &= (x_i - \mu)W \quad \tilde{\Sigma} = W^\top\Sigma W = I \text{ thus } \Sigma = (W^{-1})^\top W^{-1}
+\mu &= \frac{1}{N}\sum_{i=1}^N \mathbf{x}_i \quad \Sigma = \frac{1}{N}\sum_{i=1}^N (\mathbf{x}_i - \mu)^\top (\mathbf{x}_i - \mu) \\
+\tilde{\mathbf{x}}_i &= (\mathbf{x}_i - \mu)W \quad \tilde{\Sigma} = W^\top\Sigma W = I \text{ thus } \Sigma = (W^{-1})^\top W^{-1}
 \end{aligned}
 $$
 

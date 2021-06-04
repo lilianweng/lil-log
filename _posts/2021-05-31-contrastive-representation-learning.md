@@ -112,7 +112,7 @@ If we only sample one negative sample per class, it is equivalent to the softmax
 
 **Noise Contrastive Estimation**, short for **NCE**, is a method for estimating parameters of a statistical model, proposed by [Gutmann & Hyvarinen](http://proceedings.mlr.press/v9/gutmann10a.html) in 2010. The idea is to run logistic regression to tell apart the target data from noise. Read more on how NCE is used for learning word embedding [here]({{ site.baseurl }}{% post_url 2017-10-15-learning-word-embedding %}#noise-contrastive-estimation-nce).
 
-Let $$\mathbf{x}$$ be the target sample $$\sim P(. \vert C=1; \theta) = p_\theta(.)$$ and $$\tilde{\mathbf{x}}$$ be the noise sample $$\sim  P(. \vert C=0) = q(.)$$. Note that the logistic regression models the logit (i.e. log-odds) and in this case we would like to model the logit of a sample $$u$$ from the target data distribution instead of the noise distribution:
+Let $$\mathbf{x}$$ be the target sample $$\sim P(\mathbf{x} \vert C=1; \theta) = p_\theta(\mathbf{x})$$ and $$\tilde{\mathbf{x}}$$ be the noise sample $$\sim  P(\tilde{\mathbf{x}} \vert C=0) = q(\tilde{\mathbf{x}})$$. Note that the logistic regression models the logit (i.e. log-odds) and in this case we would like to model the logit of a sample $$u$$ from the target data distribution instead of the noise distribution:
 
 $$
 \ell_\theta(\mathbf{u}) = \log \frac{p_\theta(\mathbf{u})}{q(\mathbf{u})} = \log p_\theta(\mathbf{u}) - \log q(\mathbf{u})

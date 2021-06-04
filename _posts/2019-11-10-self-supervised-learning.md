@@ -14,11 +14,13 @@ tags: representation-learning long-read generative-model object-recognition rein
 
 <span style="color: #286ee0;">[Updated on 2020-01-09: add a new section on [Contrastive Predictive Coding](#contrastive-predictive-coding)].</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2020-04-13: add a ["Momentum Contrast"](#momentum-contrast) section on MoCo, SimCLR and CURL.]</span>
+~~<span style="color: #286ee0;">[Updated on 2020-04-13: add a "Momentum Contrast" section on MoCo, SimCLR and CURL.]</span>~~
 <br/>
 <span style="color: #286ee0;">[Updated on 2020-07-08: add a ["Bisimulation"](#bisimulation) section on DeepMDP and DBC.]</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2020-09-12: add [MoCo V2](#mocov2) and [BYOL](#BYOL) in the ["Momentum Contrast"](#momentum-contrast) section.]</span>
+~~<span style="color: #286ee0;">[Updated on 2020-09-12: add [MoCo V2]({{ site.baseurl }}{% post_url 2021-05-31-contrastive-representation-learning %}#moco--moco-v2) and [BYOL]({{ site.baseurl }}{% post_url 2021-05-31-contrastive-representation-learning %}#byol) in the "Momentum Contrast" section.]</span>~~
+<br/>
+<span style="color: #286ee0;">[Updated on 2021-05-31: remove section on "Momentum Contrast" and add a pointer to a full post on ["Contrastive Representation Learning"]({{ site.baseurl }}{% post_url 2021-05-31-contrastive-representation-learning %})]</span>
 
 
 Given a task and enough labels, supervised learning can solve it really well. Good performance usually requires a decent amount of labels, but collecting manual labels is expensive (i.e. ImageNet) and hard to be scaled up. Considering the amount of unlabelled data (e.g. free text, all the images on the Internet) is substantially more than a limited number of human curated labelled datasets, it is kinda wasteful not to use them. However, unsupervised learning is not easy and usually works much less efficiently than supervised learning.
@@ -238,8 +240,7 @@ $$
 {:.image-caption}
 
 
-### Contrastive Predictive Coding
-
+### Contrastive Learning
 The <mark><b>Contrastive Predictive Coding (CPC)</b></mark> ([van den Oord, et al. 2018](https://arxiv.org/abs/1807.03748)) is an approach for unsupervised learning from high-dimensional data by translating a generative modeling problem to a classification problem. The *contrastive loss* or *InfoNCE loss* in CPC, inspired by [Noise Contrastive Estimation (NCE)]({{ site.baseurl }}{% post_url 2017-10-15-learning-word-embedding %}#noise-contrastive-estimation-nce), uses cross-entropy loss to measure how well the model can classify the "future" representation amongst a set of unrelated "negative" samples. Such design is partially motivated by the fact that the unimodal loss like MSE has no enough capacity but learning a full generative model could be too expensive. 
 
 
@@ -294,139 +295,8 @@ $$
 
 
 
-### Momentum Contrast
+For more content on contrastive learning, check out the post on ["Contrastive Representation Learning"]({{ site.baseurl }}{% post_url 2021-05-31-contrastive-representation-learning %}).
 
-<a name="moco" /><mark><b>Momentum Contrast</b></mark> (**MoCo**; [He et al, 2019](https://arxiv.org/abs/1911.05722)) provides a framework of unsupervised learning visual representation as a *dynamic dictionary look-up*. The dictionary is structured as a large FIFO queue of encoded representations of data samples. 
-
-
-![MoCo]({{ '/assets/images/MoCo.png' | relative_url }})
-{: style="width: 70%;" class="center"}
-*Fig. 13. Illustration of how Momentum Contrast (MoCo) learns visual representations. (Image source:   [He et al, 2019](https://arxiv.org/abs/1911.05722))*
-{:.image-caption}
-
-
-Given a query sample $$x_q$$, we get a query representation $$q$$ through an encoder $$f_q$$: $$q = f_q(x_q)$$. Key samples are encoded by a momentum encoder $$k_i = f_k (x^k_i)$$ to produce a list of key representations $$\{k_1, k_2, \dots \}$$ in the dictionary. Let's assume among them there is a single *positive* key $$k^+$$ in the dictionary that matches $$q$$. In the paper, $$k^+$$ is created using a copy of $$x_q$$ with different augmentation. Then the [InfoNCE](#contrastive-predictive-coding) contrastive loss is applied for one positive and $$K$$ negative samples:
-
-
-$$
-\mathcal{L}_q = - \log \frac{\exp(q \cdot k^+ / \tau)}{\sum_{i=0}^K \exp(q \cdot k_i / \tau)}
-$$
-
-where $$\tau$$ is a temperature hyper-parameter.
-
-Compared to another similar idea of **memory bank** ([Wu et al, 2018](https://arxiv.org/abs/1805.01978v1)) which stores representations of all the data points in the database and samples a random set of keys as negative examples, a queue-based dictionary in MoCo enables us to reuse representations of immediate preceding mini-batches of data. 
-
-It is intractable to update the key encoder $$f_k$$ using back-propagation due to the queue-based dictionary size. One naive way might be to use the same encoder for both $$f_q$$ and $$f_k$$. Differently, MoCo proposed to use a momentum-based update. Say, the parameters of $$f_q$$ and $$f_k$$ are labeled as $$\theta_q$$ and $$\theta_k$$, respectively.
-
-$$
-\theta_k \leftarrow m \theta_k + (1-m) \theta_q
-$$
-
-where $$m \in [0, 1)$$ is a momentum coefficient. No gradient flows through $$f_k$$'s update.
-
-
-![MoCo Algorithm]({{ '/assets/images/MoCo-algo.png' | relative_url }})
-{: style="width: 68%;" class="center"}
-*Fig. 14. Pseudo code pf MoCo in PyTorch style. (Image source:   [He et al, 2019](https://arxiv.org/abs/1911.05722))*
-{:.image-caption}
-
-
-**SimCLR** ([Chen et al, 2020](https://arxiv.org/abs/2002.05709)) proposed a simple framework for contrastive learning of visual representations. It learns representations for visual inputs by maximizing agreement between differently augmented views of the same sample via a contrastive loss in the latent space.
-
-
-![SimCLR]({{ '/assets/images/SimCLR.png' | relative_url }})
-{: style="width: 50%;" class="center"}
-*Fig. 15. A simple framework for contrastive learning of visual representations. (Image source: [Chen et al, 2020](https://arxiv.org/abs/2002.05709))*
-{:.image-caption}
-
-
-SimCLR works in the following three steps:
-
-(1) Randomly sample a mini-batch of $$n$$ samples and each sample is applied with two different data augmentation operations, resulting in $$2n$$ augmented samples in total.
-
-$$
-\tilde{\mathbf{x}}_i = t(\mathbf{x}),\quad\tilde{\mathbf{x}}_j = t'(\mathbf{x}),\quad t, t' \sim \mathcal{T}
-$$
-
-where two separate data augmentation operators, $$t$$ and $$t’$$, are sampled from the same family of augmentations $$\mathcal{T}$$. Data augmentation includes random crop, resize with random flip, color distortions, and Gaussian blur.
-
-(2) Given one positive pair, other $$2(n-1)$$ data points are treated as negative samples. The representation is produced by a base encoder $$f(.)$$:
-
-$$
-\mathbf{h}_i = f(\tilde{\mathbf{x}}_i),\quad \mathbf{h}_j = f(\tilde{\mathbf{x}}_j)
-$$
-
-(3) The contrastive loss is defined using cosine similarity $$\text{sim}(.,.)$$. Note that the loss operates on top of an extra projection of the representation via $$g(.)$$ rather than on the representation $$\mathbf{h}$$ directly. But only the representation $$\mathbf{h}$$ is used for downstream tasks.
-
-$$
-\begin{aligned}
-\mathbf{z}_i &= g(\mathbf{h}_i),\quad
-\mathbf{z}_j = g(\mathbf{h}_j),\quad
-\text{sim}(\mathbf{z}_i, \mathbf{z}_j) = \frac{\mathbf{z}_i^\top\mathbf{z}_j}{\|\mathbf{z}_i\| \|\mathbf{z}_j\|} \\
-\mathcal{L}_{i,j} &= - \log\frac{\exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_j) / \tau)}{\sum_{k=1}^{2n} \mathbf{1}_{[k \neq i]} \exp(\text{sim}(\mathbf{z}_i, \mathbf{z}_k) / \tau)}
-\end{aligned}
-$$
-
-where $$\mathbf{1}_{[k \neq i]}$$ is an indicator function: 1 if $$k\neq i$$ 0 otherwise. $$\tau$$ is a temperature hyperparameter.
-
-
-![SimCLR Algorithm]({{ '/assets/images/SimCLR-algo.png' | relative_url }})
-{: style="width: 58%;" class="center"}
-*Fig. 16. The algorithm for SimCLR. (Image source: [Chen et al, 2020](https://arxiv.org/abs/2002.05709)).*
-{:.image-caption}
-
-
-<a name="mocov2"/>
-The advantage of MoCo compared to SimCLR is that MoCo decouples the batch size from the number of negatives, but SimCLR requires a large batch size in order to have enough negative samples. So surprisingly SimCLR would suffer performance drops when their batch size is reduced.
-
-Two designs in SimCLR, namely, (1) an MLP projection head and (2) stronger data augmentation (e.g. crop, blur and stronger color distortation), are proved to be very efficient. Combining them with MoCo, we get **MoCo V2** ([Chen et al, 2020](https://arxiv.org/abs/2003.04297)) which achieves even better transfer performance with no dependency on a very large batch size. 
-
-
-<a name="BYOL"/> **BYOL** (“Bootstrap your own latent”; [Grill, et al 2020](https://arxiv.org/abs/2006.07733)) claims to achieve a new state-of-the-art results without using *negative samples*. It relies on two neural networks, referred to as *online* and *target* networks, that interact and learn from each other. The target network (parameterized by $$\xi$$) has the same architecture as the online one (parameterized by $$\theta$$), but with polyak averaged weights, $$\xi \leftarrow \tau \xi + (1-\tau) \theta$$.
-
-
-The goal is to learn a presentation $$y$$ that can be used in downstream tasks. The online network parameterized by $$\theta$$ contains:
-- an encoder $$f_\theta$$, 
-- a projector $$g_\theta$$,
-- and a predictor $$q_\theta$$. 
-
-The target network has the same network architecture, but with different parameter $$\xi$$, updated by polyak averaging $$\theta$$: $$\xi \leftarrow \tau \xi + (1-\tau) \theta$$.
-
-
-![BYOL]({{ '/assets/images/BYOL.png' | relative_url }})
-{: style="width: 100%;" class="center"}
-*Fig. 17. The model architecture of BYOL (“Bootstrapping your own latent”). (Image source: [Grill, et al 2020](https://arxiv.org/abs/2006.07733)). After training, we only care about $$f_\theta$$ for producing representation, $$y=f_\theta(x)$$, and everything else is discarded.*
-{:.image-caption}
-
-
-Given an image $$x$$, the BYOL loss is constructed as follows:
-1. Create two augmented views: $$v=t(x); v'=t'(x)$$ with augmentations sampled $$t \sim \mathcal{T}, t' \sim \mathcal{T}'$$;
-2. Then they are encoded into representations, $$y_\theta=f_\theta(v), y'=f_\xi(v')$$;
-3. Then they are projected into latent variables, $$z_\theta=g_\theta(y_\theta), z'=g_\xi(v')$$;
-4. The online network outputs a prediction $$q_\theta(z_\theta)$$;
-5. Both $$q_\theta(z_\theta)$$ and $$z’$$ are L2-normalized, giving us $$\bar{q}_\theta(z_\theta) = q_\theta(z_\theta) / \| q_\theta(z_\theta) \|$$ and $$\bar{z'} = z' / \|z'\|$$;
-6. The loss $$\mathcal{L}^\text{BYOL}_\theta$$ is MSE between L2-normalized prediction $$\bar{q}_\theta(z)$$ and $$\bar{z'}$$;
-7. The other symmetric loss $$\tilde{\mathcal{L}}^\text{BYOL}_\theta$$ can be generated by switching $$v'$$ and $$v$$; that is, feeding $$v'$$ to online network and $$v$$ to target network.
-8. The final loss is $$\mathcal{L}^\text{BYOL}_\theta + \tilde{\mathcal{L}}^\text{BYOL}_\theta$$ and only  parameters $$\theta$$ are optimized.
-
-Different from most popular contrastive learning based approaches, BYOL does not use negative pairs. Most bootstrapping approaches rely on pseudo-labels or cluster indices, but BYOL directly boostrapps the latent representation.
-
-It is quite interesting and surprising that without negative samples, BYOL still works well. Later I ran into this [post by Abe Fetterman & Josh Albrecht](https://untitled-ai.github.io/understanding-self-supervised-contrastive-learning.html), where they highlighted two surprising findings while they were trying to reproduce BYOL:
-1. BYOL generally performs no better than random when batch normalization is removed.
-2. The presence of batch normalization implicitly causes a form of contrastive learning.
-
-They believe that using negative samples is important for avoiding model collapse (i.e. what if your model outputs all-zeros representation for every data point?). Batch normalization injects dependency on negative samples inexplicitly because no matter how similar a batch of inputs are, the values are re-distributed (spread out ~ $$\mathcal{N}(0, 1$$) and therefore batch normalization prevents model collapse. Strongly recommend you to read the [full article](https://untitled-ai.github.io/understanding-self-supervised-contrastive-learning.html) if you are working in this field.
-
-
-**CURL** ([Srinivas & Laskin, et al. 2020](https://arxiv.org/abs/2004.04136)) applies the above ideas in Reinforcement Learning. It learns a visual representation for RL tasks by matching embeddings of two data-augmented versions, $$o_q$$ and $$o_k$$, of the raw observation $$o$$ via contrastive loss. CURL primarily relies on random crop data augmentation. The key encoder is implemented as a momentum encoder with weights as EMA of the query encoder weights, same as in [MoCo](#moco).
-
-One significant difference between RL and supervised visual tasks is that RL depends on *temporal* consistency between consecutive frames. Therefore, CURL applies augmentation consistently on each stack of frames to retain information about the temporal structure of the observation.
-
-
-![CURL]({{ '/assets/images/CURL.png' | relative_url }})
-{: style="width: 90%;" class="center"}
-*Fig. 18. The architecture of CURL. (Image source: [Srinivas & Laskin, et al. 2020](https://arxiv.org/abs/2004.04136))*
-{:.image-caption}
 
 
 ## Video-Based
@@ -469,7 +339,7 @@ $$
 
 ![tracking videos]({{ '/assets/images/tracking-videos.png' | relative_url }})
 {: style="width: 70%;" class="center"}
-*Fig. 19. Overview of learning representation by tracking objects in videos. (a) Identify moving patches in short traces; (b) Feed two related patched and one random patch into a conv network with shared weights. (c) The loss function enforces the distance between related patches to be closer than the distance between random patches. (Image source: [Wang & Gupta, 2015](https://arxiv.org/abs/1505.00687))*
+*Fig. 13. Overview of learning representation by tracking objects in videos. (a) Identify moving patches in short traces; (b) Feed two related patched and one random patch into a conv network with shared weights. (c) The loss function enforces the distance between related patches to be closer than the distance between random patches. (Image source: [Wang & Gupta, 2015](https://arxiv.org/abs/1505.00687))*
 {:.image-caption}
 
 
@@ -494,7 +364,7 @@ The pretext task of video frame order validation is shown to improve the perform
 
 ![frame order validation]({{ '/assets/images/frame-order-validation.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 20. Overview of learning representation by validating the order of video frames. (a) the data sample process; (b) the model is a triplet siamese network, where all input frames have shared weights. (Image source: [Misra, et al 2016](https://arxiv.org/abs/1603.08561))*
+*Fig. 14. Overview of learning representation by validating the order of video frames. (a) the data sample process; (b) the model is a triplet siamese network, where all input frames have shared weights. (Image source: [Misra, et al 2016](https://arxiv.org/abs/1603.08561))*
 {:.image-caption}
 
 
@@ -509,7 +379,7 @@ A classifier should capture both low-level physics and high-level semantics in o
 
 ![Learning the arrow of time]({{ '/assets/images/learning-arrow-of-time.png' | relative_url }})
 {: style="width: 65%;" class="center"}
-*Fig. 21. Overview of learning representation by predicting the arrow of time. (a) Conv features of multiple groups of frame sequences are concatenated. (b) The top level contains 3 conv layers and average pooling. (Image source: [Wei et al, 2018](https://www.robots.ox.ac.uk/~vgg/publications/2018/Wei18/wei18.pdf))*
+*Fig. 15. Overview of learning representation by predicting the arrow of time. (a) Conv features of multiple groups of frame sequences are concatenated. (b) The top level contains 3 conv layers and average pooling. (Image source: [Wei et al, 2018](https://www.robots.ox.ac.uk/~vgg/publications/2018/Wei18/wei18.pdf))*
 {:.image-caption}
 
 
@@ -530,7 +400,7 @@ Unlike the image-based [colorization](#colorization), here the task is to copy c
 
 ![Video colorization]({{ '/assets/images/video-colorization.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 22. Video colorization by copying colors from a reference frame to target frames in grayscale.  (Image source: [Vondrick et al. 2018](https://arxiv.org/abs/1806.09594))*
+*Fig. 16. Video colorization by copying colors from a reference frame to target frames in grayscale.  (Image source: [Vondrick et al. 2018](https://arxiv.org/abs/1806.09594))*
 {:.image-caption}
 
 
@@ -548,7 +418,7 @@ Based on how the reference frame are marked, the model can be used to complete s
 
 ![Video colorization for tracking]({{ '/assets/images/video-colorization-examples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 23. Use video colorization to track object segmentation and human pose in time. (Image source: [Vondrick et al. (2018)](https://arxiv.org/abs/1806.09594))*
+*Fig. 17. Use video colorization to track object segmentation and human pose in time. (Image source: [Vondrick et al. (2018)](https://arxiv.org/abs/1806.09594))*
 {:.image-caption}
 
 
@@ -575,7 +445,7 @@ The concept of metric learning has been mentioned multiple times in the [previou
 
 ![Grasp2vec]({{ '/assets/images/grasp2vec.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 24. A conceptual illustration of how grasp2vec learns an object-centric state embedding. (Image source: [Jang & Devin et al., 2018](https://arxiv.org/abs/1811.06964))*
+*Fig. 18. A conceptual illustration of how grasp2vec learns an object-centric state embedding. (Image source: [Jang & Devin et al., 2018](https://arxiv.org/abs/1811.06964))*
 {:.image-caption}
 
 
@@ -605,7 +475,7 @@ The embedding function $$\phi_o$$ works great for presenting a goal $$g$$ with a
 
 ![Grasp2vec attention map]({{ '/assets/images/grasp2vec-attention-map.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 25. Localization results of grasp2vec embedding. The heatmap of localizing a goal object in a pre-grasping scene is defined as $$\phi_o(o)^\top \phi_{s, \text{spatial}} (s_\text{pre})$$, where $$\phi_{s, \text{spatial}}$$ is the output of the last resnet block after ReLU. The fourth column is a failure case and the last three columns take real images as goals. (Image source: [Jang & Devin et al., 2018](https://arxiv.org/abs/1811.06964))*
+*Fig. 19. Localization results of grasp2vec embedding. The heatmap of localizing a goal object in a pre-grasping scene is defined as $$\phi_o(o)^\top \phi_{s, \text{spatial}} (s_\text{pre})$$, where $$\phi_{s, \text{spatial}}$$ is the output of the last resnet block after ReLU. The fourth column is a failure case and the last three columns take real images as goals. (Image source: [Jang & Devin et al., 2018](https://arxiv.org/abs/1811.06964))*
 {:.image-caption}
 
 
@@ -621,7 +491,7 @@ The training data is collected by taking videos of the same scene simultaneously
 
 ![Time-contrastive network]({{ '/assets/images/TCN.png' | relative_url }})
 {: style="width: 80%;" class="center"}
-*Fig. 26. An illustration of time-contrastive approach for learning state embedding. The blue frames selected from two camera views at the same timestep are anchor and positive samples, while the red frame at a different timestep is the negative sample.*
+*Fig. 20. An illustration of time-contrastive approach for learning state embedding. The blue frames selected from two camera views at the same timestep are anchor and positive samples, while the red frame at a different timestep is the negative sample.*
 {:.image-caption}
 
 
@@ -632,7 +502,7 @@ A further improvement over TCN is to learn embedding over multiple frames jointl
 
 ![mfTCN]({{ '/assets/images/mfTCN.png' | relative_url }})
 {: style="width: 75%;" class="center"}
-*Fig. 27. The sampling process for training mfTCN. (Image source: [Dwibedi et al., 2019](https://arxiv.org/abs/1808.00928))*
+*Fig. 21. The sampling process for training mfTCN. (Image source: [Dwibedi et al., 2019](https://arxiv.org/abs/1808.00928))*
 {:.image-caption}
 
 
@@ -652,7 +522,7 @@ mfTCN embedding can capture the position and velocity of objects in the scene (e
 
 ![RIG]({{ '/assets/images/RIG.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 28. The workflow of RIG. (Image source: [Nair et al., 2018](https://arxiv.org/abs/1807.04742))*
+*Fig. 22. The workflow of RIG. (Image source: [Nair et al., 2018](https://arxiv.org/abs/1807.04742))*
 {:.image-caption}
 
 
@@ -673,7 +543,7 @@ The reward is the Euclidean distance between state and goal embedding vectors: $
 
 ![RIG algorithm]({{ '/assets/images/RIG-algorithm.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 29. The algorithm of RIG. (Image source: [Nair et al., 2018](https://arxiv.org/abs/1807.04742))*
+*Fig. 23. The algorithm of RIG. (Image source: [Nair et al., 2018](https://arxiv.org/abs/1807.04742))*
 {:.image-caption}
 
 
@@ -682,7 +552,7 @@ The problem with RIG is a lack of object variations in the imagined goal picture
 
 ![Context-conditional RIG]({{ '/assets/images/CC-RIG.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 30. The workflow of context-conditioned RIG. (Image source: [Nair, et al., 2019](https://arxiv.org/abs/1910.11670)).*
+*Fig. 24. The workflow of context-conditioned RIG. (Image source: [Nair, et al., 2019](https://arxiv.org/abs/1910.11670)).*
 {:.image-caption}
 
 
@@ -706,7 +576,7 @@ $$
 
 ![RIG goal samples]({{ '/assets/images/CC-RIG-goal-samples.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 31. Examples of imagined goals generated by CVAE that conditions on the context image (the first row), while VAE fails to capture the object consistency. (Image source: [Nair, et al., 2019](https://arxiv.org/abs/1910.11670)).*
+*Fig. 25. Examples of imagined goals generated by CVAE that conditions on the context image (the first row), while VAE fails to capture the object consistency. (Image source: [Nair, et al., 2019](https://arxiv.org/abs/1910.11670)).*
 {:.image-caption}
 
 
@@ -736,7 +606,7 @@ Note that $$=$$ is always a bisimulation relation. The most interesting one is t
 
 ![DeepMDP]({{ '/assets/images/DeepMDP.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 32. DeepMDP learns a latent space model by minimizing two losses on a reward model and a dynamics model. (Image source: [Gelada, et al. 2019](https://arxiv.org/abs/1906.02736))*
+*Fig. 26. DeepMDP learns a latent space model by minimizing two losses on a reward model and a dynamics model. (Image source: [Gelada, et al. 2019](https://arxiv.org/abs/1906.02736))*
 {:.image-caption}
 
 
@@ -778,7 +648,7 @@ DeepMDP generalizes the model to the Norm Maximum Mean Discrepancy (Norm-[MMD](h
 
 ![DBC algorithm]({{ '/assets/images/DBC-illustration.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 33. The Deep Bisimulation for Control algorithm learns a bisimulation metric representation via learning a reward model and a dynamics model. The model architecture is a siamese network. (Image source: [Zhang et al. 2020](https://arxiv.org/abs/2006.10742))*
+*Fig. 27. The Deep Bisimulation for Control algorithm learns a bisimulation metric representation via learning a reward model and a dynamics model. The model architecture is a siamese network. (Image source: [Zhang et al. 2020](https://arxiv.org/abs/2006.10742))*
 {:.image-caption}
 
 
@@ -806,7 +676,7 @@ DBC is based on SAC but operates on the latent space:
 
 ![DBC algorithm]({{ '/assets/images/DBC-algorithm.png' | relative_url }})
 {: style="width: 60%;" class="center"}
-*Fig. 34. The algorithm of Deep Bisimulation for Control. (Image source: [Zhang et al. 2020](https://arxiv.org/abs/2006.10742))*
+*Fig. 28. The algorithm of Deep Bisimulation for Control. (Image source: [Zhang et al. 2020](https://arxiv.org/abs/2006.10742))*
 {:.image-caption}
 
 

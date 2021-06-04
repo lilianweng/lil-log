@@ -374,7 +374,7 @@ The model architecture of BERT is a multi-layer bidirectional Transformer encode
 
 To encourage the bi-directional prediction and sentence-level understanding, BERT is trained with two tasks instead of the basic language task (that is, to predict the next token given context).
 
-**Task 1: Mask language model (MLM)**
+*<a name="MLM" />*Task 1: Mask language model (MLM)**
 
 > From [Wikipedia](https://en.wikipedia.org/wiki/Cloze_test): "A cloze test (also cloze deletion test) is an exercise, test, or assessment consisting of a portion of language with certain items, words, or signs removed (cloze text), where the participant is asked to replace the missing language item. … The exercise was first described by W.L. Taylor in 1953."
 
@@ -466,7 +466,7 @@ Parameter sharing across layers can happen in many ways: (a) only share feed-for
 
 ### Sentence-Order Prediction (SOP)
 
-Interestingly, the [next sentence prediction (NSP)](#NSP) task of BERT turned out to be too easy. ALBERT instead adopted a sentence-order prediction (SOP) [self-supervised]({{ site.baseurl }}{% post_url 2019-10-29-self-supervised-learning %}) loss, 
+Interestingly, the [next sentence prediction (NSP)](#NSP) task of BERT turned out to be too easy. ALBERT instead adopted a sentence-order prediction (SOP) [self-supervised]({{ site.baseurl }}{% post_url 2019-11-10-self-supervised-learning %}) loss, 
 - Positive sample: two consecutive segments from the same document.
 - Negative sample: same as above, but the segment order is switched.
 

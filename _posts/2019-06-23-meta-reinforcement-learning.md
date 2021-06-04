@@ -282,7 +282,7 @@ $$
 
 As a tabular RL method, MFEC suffers from large memory consumption and a lack of ways to generalize among similar states. The first one can be fixed with an LRU cache. Inspired by [metric-based]({{ site.baseurl }}{% post_url 2018-11-30-meta-learning %}#metric-based) meta-learning, especially Matching Networks ([Vinyals et al., 2016](http://papers.nips.cc/paper/6385-matching-networks-for-one-shot-learning.pdf)), the generalization problem is improved in a follow-up algorithm, **NEC** (Neural Episodic Control; [Pritzel et al., 2016](https://arxiv.org/abs/1703.01988)). 
 
-The episodic memory in NEC is a Differentiable Neural Dictionary (**DND**), where the key is a convolutional embedding vector of input image pixels and the value stores estimated Q value. Given an inquiry key, the output is a weighted sum of values of top similar keys, where the weight is a normalized kernel measure between the query key and the selected key in the dictionary. This sounds like a hard [attention]({{ }}{% post_url 2018-06-24-attention-attention %}) machanism.
+The episodic memory in NEC is a Differentiable Neural Dictionary (**DND**), where the key is a convolutional embedding vector of input image pixels and the value stores estimated Q value. Given an inquiry key, the output is a weighted sum of values of top similar keys, where the weight is a normalized kernel measure between the query key and the selected key in the dictionary. This sounds like a hard [attention]({{ site.baseurl }}{% post_url 2018-06-24-attention-attention %}) machanism.
 
 
 ![Neural episodic control]({{ '/assets/images/neural-episodic-control.png' | relative_url }})

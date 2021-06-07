@@ -702,12 +702,12 @@ In **Contextual Augmentation** ([Sosuke Kobayashi, 2018](https://arxiv.org/abs/1
 Multiple augmented versions of one sample can be created. When training, [Shen et al. (2020)](https://arxiv.org/abs/2009.13818) applied an additional KL-divergence term to measure the consensus between predictions from different augmented samples.
 
 
-**SimCSE** ([Guo et al. 2021](https://arxiv.org/abs/2104.08821); [code](https://github.com/princeton-nlp/SimCSE)) learns from unsupervised data by predicting a sentence from itself with only **dropout** noise. In other words, they treat dropout as data augmentation for text sequences. A sample is simply fed into the encoder twice with different dropout masks and these two versions are the positive pair where the other in-batch samples are considered as negative pairs. It feels quite similar to the cutoff augmentation, but dropout is more flexible with less well-defined semantic meaning of what content can be masked off.
+**SimCSE** ([Gao et al. 2021](https://arxiv.org/abs/2104.08821); [code](https://github.com/princeton-nlp/SimCSE)) learns from unsupervised data by predicting a sentence from itself with only **dropout** noise. In other words, they treat dropout as data augmentation for text sequences. A sample is simply fed into the encoder twice with different dropout masks and these two versions are the positive pair where the other in-batch samples are considered as negative pairs. It feels quite similar to the cutoff augmentation, but dropout is more flexible with less well-defined semantic meaning of what content can be masked off.
 
 
 ![SimCSE]({{ '/assets/images/SimCSE.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 22. SimCSE creates augmented samples by applying different dropout masks. The supervised version leverages NLI datasets to predict positive (entailment) or negative (contradiction) given a pair of sentences. (Image source: [Guo et al. 2021](https://arxiv.org/abs/2104.08821))*
+*Fig. 22. SimCSE creates augmented samples by applying different dropout masks. The supervised version leverages NLI datasets to predict positive (entailment) or negative (contradiction) given a pair of sentences. (Image source: [Gao et al. 2021](https://arxiv.org/abs/2104.08821))*
 {:.image-caption}
 
 
@@ -716,7 +716,7 @@ They ran experiments on 7 STS (Semantic Text Similarity) datasets and computed c
 
 ![SimCSE experiments]({{ '/assets/images/SimCSE-STS-exp.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 23. Experiment numbers on a collection of STS benchmarks with SimCES. (Image source: [Guo et al. 2021](https://arxiv.org/abs/2104.08821))*
+*Fig. 23. Experiment numbers on a collection of STS benchmarks with SimCES. (Image source: [Gao et al. 2021](https://arxiv.org/abs/2104.08821))*
 {:.image-caption}
 
 

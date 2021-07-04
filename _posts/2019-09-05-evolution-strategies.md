@@ -393,7 +393,7 @@ $$
 
 Besides natural gradients, NES adopts a couple of important heuristics to make the algorithm performance more robust.
 - <a name="fitness-shaping"></a>NES applies **rank-based fitness shaping**, that is to use the *rank* under monotonically increasing fitness values instead of using $$f(x)$$ directly. Or it can be a function of the rank (“utility function”), which is considered as a free parameter of NES.
-- NES adopts **adaptation sampling** to adjust hyperparameters at run time. When changing $$\theta \to \theta’$$, samples drawn from $$p_\theta$$ are compared with samples from $$p_{\theta’}$$ using [Mann-Whitney U-test(https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test)]; if there shows a positive or negative sign, the target hyperparameter decreases or increases by a multiplication constant. Note the score of a sample $$x’_i \sim p_{\theta’}(x)$$ has importance sampling weights applied $$w_i’ = p_\theta(x) / p_{\theta’}(x)$$.
+- NES adopts **adaptation sampling** to adjust hyperparameters at run time. When changing $$\theta \to \theta’$$, samples drawn from $$p_\theta$$ are compared with samples from $$p_{\theta’}$$ using [Mann-Whitney U-test](https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test); if there shows a positive or negative sign, the target hyperparameter decreases or increases by a multiplication constant. Note the score of a sample $$x’_i \sim p_{\theta’}(x)$$ has importance sampling weights applied $$w_i’ = p_\theta(x) / p_{\theta’}(x)$$.
 
 
 

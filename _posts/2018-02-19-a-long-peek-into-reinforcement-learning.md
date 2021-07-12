@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "A (Long) Peek into Reinforcement Learning"
 date: 2018-02-19 17:31:00
-tags: reinforcement-learning long-read
+tags: reinforcement-learning long-read math-heavy
 image: "RL_illustration.png"
 ---
 

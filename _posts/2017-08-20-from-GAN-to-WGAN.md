@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "From GAN to WGAN"
 date: 2017-08-20 00:23:00
-tags: gan long-read generative-model
+tags: gan long-read generative-model math-heavy
 image: "GAN.png"
 ---
 

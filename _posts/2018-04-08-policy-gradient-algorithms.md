@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Policy Gradient Algorithms"
 date: 2018-04-08 00:15:06
-tags: reinforcement-learning long-read
+tags: reinforcement-learning long-read math-heavy
 image: "A3C_vs_A2C.png"
 ---
 

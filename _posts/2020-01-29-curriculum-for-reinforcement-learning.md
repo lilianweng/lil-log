@@ -73,7 +73,7 @@ To follow the curriculum learning approaches described above, generally we need 
 1. Design a metric to quantify how hard a task is so that we can sort tasks accordingly.
 2. Provide a sequence of tasks with an increasing level of difficulty to the model during training.
 
-However, the order of tasks does not have to be sequential. In our Rubik's cube paper ([OpenAI et al, 2019](https://arxiv.org/abs/1910.07113.)), we depended on *Automatic domain randomization* (**ADR**) to generate a curriculum by growing a distribution of environments with increasing complexity. The difficulty of each task (i.e. solving a Rubik's cube in a set of environments) depends on the randomization ranges of various environmental parameters. Even with a simplified assumption that all the environmental parameters are uncorrelated, we were able to create a decent curriculum for our robot hand to learn the task.
+However, the order of tasks does not have to be sequential. In our Rubik's cube paper ([OpenAI et al, 2019](https://arxiv.org/abs/1910.07113)), we depended on *Automatic domain randomization* (**ADR**) to generate a curriculum by growing a distribution of environments with increasing complexity. The difficulty of each task (i.e. solving a Rubik's cube in a set of environments) depends on the randomization ranges of various environmental parameters. Even with a simplified assumption that all the environmental parameters are uncorrelated, we were able to create a decent curriculum for our robot hand to learn the task.
 
 
 

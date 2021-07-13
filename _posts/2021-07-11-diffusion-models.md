@@ -33,7 +33,7 @@ Several diffusion-based generative models have been proposed with similar ideas 
 
 ### Forward diffusion process
 
-Given a data point sampled from a real data distribution $$\mathbf{x}_0 \sim q(\mathbf{x})$$, let us define a *forward diffusion process* in which we add small amount of Gaussian noise to the sample in $$T$$ steps, producing a sequence of noisy samples $$\mathbf{x}_1, \dots, \mathbf{x}_T$$. The step sizes are controlled by a variance schedule $$\{\beta_t \in (0, 1)\}_{t=1}^T$$.
+Given a data point sampled from a real data distribution $$\mathbf{x}_0 \sim q(\mathbf{x})$$, let us define a *forward diffusion process* in which we add small amount of Gaussian noise to the sample in $$T$$ steps, producing a sequence of noisy samples $$\mathbf{x}_1, \dots, \mathbf{x}_T$$. The step sizes are controlled by a variance schedule $$\{\beta_t \in (0, 1)\}_{t=1}^t$$.
 
 $$
 q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I}) \quad

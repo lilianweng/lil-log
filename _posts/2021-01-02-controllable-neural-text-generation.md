@@ -11,8 +11,12 @@ tags: nlp language-model reinforcement-learning long-read
  
 <!--more-->
 
-<span style="color: #286ee0;">[Updated on 2021-02-01: Updated to version 2.0 with several work added and many typos fixed.]</span><br />
+<span style="color: #286ee0;">[Updated on 2021-02-01: Updated to version 2.0 with several work added and many typos fixed.]</span>
+<br />
 <span style="color: #286ee0;">[Updated on 2021-05-26: Add P-tuning and Prompt Tuning in the ["prompt design"](#gradient-based-search) section.]</span>
+<br />
+<span style="color: #286ee0;">[Updated on 2021-09-19: Add ["unlikelihood training"](##unlikelihood-training).]</span>
+
 
 
 There is a gigantic amount of free text on the Web, several magnitude more than labelled benchmark datasets. The state-of-the-art language models (LM) are trained with unsupervised Web data in large scale. When generating samples from LM by iteratively sampling the next token, we do not have much control over attributes of the output text, such as the topic, the style, the sentiment, etc. Many applications would demand a good control over the model output. For example, if we plan to use LM to generate reading materials for kids, we would like to guide the output stories to be safe, educational and easily understood by children.
@@ -53,7 +57,7 @@ A low temperature would make the distribution sharper and a high value makes it 
 
 However, maximization-based decoding does not guarantee high-quality generation.
 
-
+<a name="beam-search-surprise" />
 ![Beam search probability]({{ '/assets/images/beam_search_less_surprising.png' | relative_url }})
 {: style="width: 65%;" class="center"}
 *Fig. 1. The probability assigned to the next token by beam search versus by humans. The human selected tokens have much higher variance in predicted probability and thus more surprising. (Image source: [Holtzman et al. 2019](https://arxiv.org/abs/1904.09751))*
@@ -736,6 +740,35 @@ Compared to other baselines, GDC using pointwise constraints diverges less from 
 - Compared to [Ziegler et al., 2019](https://arxiv.org/abs/1909.08593) GDC has smoother learning curves and produces a richer vocabulary.
 
 
+
+### Unlikelihood Training
+
+The standard way of maximizing the log-likelihood loss in language model training leads to [incorrect token distribution](#beam-search-surprise), which cannot be fixed with only smart decoding methods. Such models tend to output high-frequency words too often and low-frequency words too rarely, especially when using deterministic decoding (e.g. greedy, beam search). In other words, they are overconfident in their predictions.
+
+Unlikelihood training ([Welleck & Kulikov et al. 2019](https://arxiv.org/abs/1908.04319)] tries to combat this and incorporates preference to *unwanted* content into the training objective directly. It combines two updates:
+- A routine maximized likelihood update to assign true tokens with high probability;
+- A new type of unlikelihood update to avoid unwanted tokens with high probability.
+
+Given a sequence of tokens $$(x_1, \dots, x_T)$$ and a set of negative candidate tokens $$\mathcal{C}^t = \{c_1, \dots , c_m\}$$ at step $$t$$, where each token $$x_i, c_j \in \mathcal{V}$$, the combined loss for step $$t$$ is defined as:
+
+
+$$
+\mathcal{L}^t_\text{UL}(p_\theta (. \vert x_{<t}), \mathcal{C}^t)
+= - \alpha \cdot \underbrace{\sum_{c \in \mathcal{C}^t} \log(1 - p_\theta(c \vert x_{<t}))}_\text{unlikelihood} - \underbrace{\log p_\theta (x_t \vert x_{<t})}_\text{likelihood}
+$$
+
+One approach for constructing $$\mathcal{C}^t$$ is to randomly select candidates from model-generated sequences.
+
+The unlikelihood training can be extended to be on the *sequence*-level, where the negative continuation is defined by a sequence of per-step negative candidate sets. They should be designed to penalize properties that we don't like. For example, we can penalize repeating n-grams as follows:
+
+
+$$
+\mathcal{C}^t_\text{repeat-n} = \{x_t\} \text{ if }(x_{t-i}, \dots, x_{t+j}) \in x_{<t-i} \text{ for any } (j-i)=n, i\leq n \leq j.
+$$
+
+Their experiments used unlikelihood training to avoid repetitions in language model outputs and indeed showed better results on less repetition and more unique tokens compared to standard MLE training.
+
+
 ---
 Cited as:
 ```
@@ -820,4 +853,7 @@ Cited as:
 [34] Brian Lester et al. [“The Power of Scale for Parameter-Efficient Prompt Tuning.”](https://arxiv.org/abs/2104.08691) arXiv preprint arXiv:2104.08691 (2021).
 
 [35] Xiao Liu et al. [“GPT Understands, Too.”](https://arxiv.org/abs/2103.10385) arXiv preprint arXiv:2103.10385 (2021).
+
+[36] Welleck & Kulikov et al. [“Neural Text Generation with Unlikelihood Training”](https://arxiv.org/abs/1908.04319) arXiv:1908.04319 (2019).
+
 

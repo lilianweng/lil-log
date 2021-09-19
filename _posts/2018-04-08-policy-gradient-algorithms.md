@@ -18,8 +18,6 @@ image: "A3C_vs_A2C.png"
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-02-09: add [SAC with automatically adjusted temperature](#sac-with-automatically-adjusted-temperature)].</span>
 <br/>
-<span style="color: #286ee0;">[Updated on 2019-05-01: Thanks to Wenhao, we have a version of this post in [Chinese](https://tomaxent.com/2019/04/14/%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E6%96%B9%E6%B3%95/)].</span>
-<br/>
 <span style="color: #286ee0;">[Updated on 2019-06-26: Thanks to Chanseok, we have a version of this post in [Korean](https://talkingaboutme.tistory.com/entry/RL-Policy-Gradient-Algorithms)].</span>
 <br/>
 <span style="color: #286ee0;">[Updated on 2019-09-12: add a new policy gradient method [SVPG](#svpg).]</span>
@@ -27,6 +25,8 @@ image: "A3C_vs_A2C.png"
 <span style="color: #286ee0;">[Updated on 2019-12-22: add a new policy gradient method [IMPALA](#impala).]</span>
 <br/>
 <span style="color: #286ee0;">[Updated on 2020-10-15: add a new policy gradient method [PPG](#ppg) & some new discussion in [PPO](#ppo).]</span>
+<br/>
+<span style="color: #286ee0;">[Updated on 2021-09-19: Thanks to Wenhao & 爱吃猫的鱼, we have this post in [Chinese1](https://tomaxent.com/2019/04/14/%E7%AD%96%E7%95%A5%E6%A2%AF%E5%BA%A6%E6%96%B9%E6%B3%95/) & [Chinese2](https://paperexplained.cn/articles/article/detail/31/)].</span>
 
 
 {: class="table-of-content"}

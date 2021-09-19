@@ -12,6 +12,10 @@ tags: generative-model math-heavy
  
 <!--more-->
 
+
+<span style="color: #286ee0;">[Updated on 2021-09-19: Highly recommend this blog post on [score-based generative modeling](https://yang-song.github.io/blog/2021/score/) by Yang Song (author of several key papers in the references)].</span>
+
+
 So far, I've written about three types of generative models, [GAN]({{ site.baseurl }}{% post_url 2017-08-20-from-GAN-to-WGAN %}), [VAE]({{ site.baseurl }}{% post_url 2018-08-12-from-autoencoder-to-beta-vae %}), and [Flow-based]({{ site.baseurl }}{% post_url 2018-10-13-flow-based-deep-generative-models %}) models. They have shown great success in generating high-quality samples, but each has some limitations of its own. GAN models are known for potentially unstable training and less diversity in generation due to their adversarial training nature. VAE relies on a surrogate loss. Flow models have to use specialized architectures to construct reversible transform.
 
 Diffusion models are inspired by non-equilibrium thermodynamics. They define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise. Unlike VAE or flow models, diffusion models are learned with a fixed procedure and the latent variable has high dimensionality (same as the original data).

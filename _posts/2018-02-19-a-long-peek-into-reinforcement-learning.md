@@ -14,6 +14,8 @@ image: "RL_illustration.png"
 
 
 <span style="color: #286ee0;">[Updated on 2020-09-03: Updated the algorithm of [SARSA](#sarsa-on-policy-td-control) and [Q-learning](#q-learning-off-policy-td-control) so that the difference is more pronounced.</span>
+<br />
+<span style="color: #286ee0;">[Updated on 2021-09-19: Thanks to 爱吃猫的鱼, we have this post in [Chinese](https://paperexplained.cn/articles/article/detail/33/)].</span>
 
 
 {: class="table-of-content"}

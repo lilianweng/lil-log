@@ -480,7 +480,7 @@ The embedding function $$\phi_o$$ works great for presenting a goal $$g$$ with a
 
 
 Other than the embedding-similarity-based reward function, there are a few other tricks for training the RL policy in the grasp2vec framework:
-- *posthoc labelingP*: Augment the dataset by labeling a randomly grasped object as a correct goal, like HER (Hindsight Experience Replay; [Andrychowicz, et al., 2017](https://papers.nips.cc/paper/7090-hindsight-experience-replay.pdf)).
+- *Posthoc labeling*: Augment the dataset by labeling a randomly grasped object as a correct goal, like HER (Hindsight Experience Replay; [Andrychowicz, et al., 2017](https://papers.nips.cc/paper/7090-hindsight-experience-replay.pdf)).
 - *Auxiliary goal augmentation*: Augment the replay buffer even further by relabeling transitions with unachieved goals; precisely, in each iteration, two goals are sampled $$(g, g')$$ and both are used to add new transitions into replay buffer.
 
 

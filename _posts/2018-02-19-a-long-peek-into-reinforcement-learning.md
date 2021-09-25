@@ -250,7 +250,7 @@ $$
 
 Unsurprisingly they look very similar to Bellman expectation equations.
 
-If we have complete information of the environment, this turns into a planning problem, solvable by DP. Unfortunately, in most scenarios, we do not know $$P_{ss'}^a$$ or $$R(s, a)$$, so we cannot solve MDPs by directly applying Bellmen equations, but it lays the theoretical foundation for many RL algorithms.
+If we have complete information of the environment, this turns into a planning problem, solvable by DP. Unfortunately, in most scenarios, we do not know $$P_{ss'}^a$$ or $$R(s, a)$$, so we cannot solve MDPs by directly applying Bellman equations, but it lays the theoretical foundation for many RL algorithms.
 
 
 

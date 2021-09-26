@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Neural Architecture Search"
 date: 2020-08-06 12:00:00
-tags: reinforcement-learning evolution auto-ML
+tags: architecture reinforcement-learning evolution auto-ML
 ---
 
 

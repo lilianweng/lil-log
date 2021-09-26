@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Attention? Attention!"
 date: 2018-06-24 11:07:00
-tags: attention transformer rnn
+tags: architecture attention transformer rnn
 image: "transformer.png"
 ---
 

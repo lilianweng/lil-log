@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "Flow-based Deep Generative Models"
 date: 2018-10-13 12:15:00
-tags: generative-model math-heavy
+tags: architecture generative-model math-heavy
 image: "three-generative-models.png"
 ---
 

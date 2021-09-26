@@ -3,7 +3,7 @@ layout: post
 comments: true
 title: "The Transformer Family"
 date: 2020-04-07 12:00:00
-tags: attention transformer reinforcement-learning
+tags: architecture attention transformer reinforcement-learning
 ---
 
 > Inspired by recent progress on various enhanced versions of Transformer models, this post presents how the vanilla Transformer can be improved for longer-term attention span, less memory and computation consumption, RL task solving, etc.

@@ -374,7 +374,7 @@ The model architecture of BERT is a multi-layer bidirectional Transformer encode
 
 To encourage the bi-directional prediction and sentence-level understanding, BERT is trained with two tasks instead of the basic language task (that is, to predict the next token given context).
 
-*<a name="MLM" />*Task 1: Mask language model (MLM)**
+*<a name="MLM" />**Task 1: Mask language model (MLM)**
 
 > From [Wikipedia](https://en.wikipedia.org/wiki/Cloze_test): "A cloze test (also cloze deletion test) is an exercise, test, or assessment consisting of a portion of language with certain items, words, or signs removed (cloze text), where the participant is asked to replace the missing language item. … The exercise was first described by W.L. Taylor in 1953."
 

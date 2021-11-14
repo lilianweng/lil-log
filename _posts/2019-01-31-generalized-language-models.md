@@ -15,7 +15,8 @@ image: "elmo-and-bert.png"
 <span style="color: #286ee0;">[Updated on 2020-02-29: add [ALBERT](#albert).]</span><br/>
 <span style="color: #286ee0;">[Updated on 2020-10-25: add [RoBERTa](#roberta).]</span><br/>
 <span style="color: #286ee0;">[Updated on 2020-12-13: add [T5](#t5).]</span><br/>
-<span style="color: #286ee0;">[Updated on 2020-12-30: add [GPT-3](#gpt-3).]</span>
+<span style="color: #286ee0;">[Updated on 2020-12-30: add [GPT-3](#gpt-3).]</span><br/>
+<span style="color: #286ee0;">[Updated on 2021-11-13: add [XLNet](#xlnet), [BART](#bart) and [ELECTRA](#electra); Also updated the [Summary](#summary) section.]</span>
 
 
 <br />
@@ -555,20 +556,146 @@ For all the downstream evaluation, GPT-3 is tested in the few-shot setting witho
 {:.image-caption}
 
 
+## XLNet
+
+The *Autoregressive (AR)* model such as GPT and *autoencoder (AE)* model such as BERT are two most common ways for language modeling. However, each has their own disadvantages: AR does not learn the bidirectional context, which is needed by downstream tasks like reading comprehension and AE assumes masked positions are independent given all other unmasked tokens which oversimplifies the long context dependency.
+
+**XLNet** ([Yang et al. 2019](https://arxiv.org/abs/1906.08237)) generalizes the AE method to incorporate the benefits of AR. XLNet proposed the **permutation language modeling** objective. For a text sequence, it samples a factorization order $$\mathbf{z}$$ and decomposes the likelihood $$p_\theta(\mathbf{x})$$ according to this factorization order,
+
+$$
+\begin{aligned}
+\mathcal{L}_\text{XLNet} 
+&= - \mathbb{E}_{\mathbf{z} \sim \mathcal{Z}_T} \Big[ \sum_{t=1}^T \log p_\theta (X_{z_t} = x \mid \mathbf{x}_{\mathbf{z}_{<t}})\Big] \\
+&= - \mathbb{E}_{\mathbf{z} \sim \mathcal{Z}_T} \Big[ \log \frac{ \exp(e(x)^\top \color{red}{h_\theta (\mathbf{x}_{\mathbf{z}_{<t}})}) }{ \sum_{x'} \exp(e(x')^\top \color{red}{h_\theta (\mathbf{x}_{\mathbf{z}_{<t}})}) } \Big] \\
+&= - \mathbb{E}_{\mathbf{z} \sim \mathcal{Z}_T} \Big[ \log \frac{ \exp(e(x)^\top \color{blue}{g_\theta (\mathbf{x}_{\mathbf{z}_{<t}}, z_t)}) }{ \sum_{x'} \exp(e(x')^\top \color{blue}{g_\theta (\mathbf{x}_{\mathbf{z}_{<t}}, z_t)}) } \Big]
+\end{aligned}
+$$
+
+where $$\mathcal{Z}_T$$ is a set of all possible permutation of length $$T$$;  $$z_t$$ and $$\mathbf{z}_{<t}$$  denote the $$t$$-th element and the first $$t-1$$ elements of a permutation $$\mathbf{z} \in \mathcal{Z}_T$$. 
+
+Note that the naive representation of the hidden state of the context, $$h_\theta (\mathbf{x}_{\mathbf{z}_{<t}})$$ in red, does not depend on which position the model tries to predict, as the permutation breaks the default ordering. Therefore, XLNet re-parameterized it to a function of the target position too, $$g_\theta (\mathbf{x}_{\mathbf{z}_{<t}}, z_t)$$ in blue.
+
+However,  two different requirements on  $$g_\theta (\mathbf{x}_{\mathbf{z}_{<t}}, z_t)$$ lead to a two-stream self-attention design to accommodate:
+
+1. When predicting $$x_{z_t}$$, it should only encode the position $$z_t$$ but not the content $$x_{z_t}$$; otherwise it is trivial. This is wrapped into the "query representation"  $$g_{z_t} = g_\theta (\mathbf{x}_{\mathbf{z}_{<t}}, z_t)$$ does not encode $$x_{z_t}$$.
+2. When predicting $$x_j$$ where $$j > t$$, it should encode the content $$x_{z_t}$$ as well to provide the full context. This is the "content representation" $$h_{z_t} = h_\theta(\mathbf{x}_{\leq t})$$.
+
+
+![Two-stream self-attention in XLNet]({{ '/assets/images/XLNet-two-stream-attention.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 16. The illustration of two-stream self-attention mechanism in XLNet. (Image source: [Yang et al. 2019](https://arxiv.org/abs/1906.08237))*
+{:.image-caption}
+
+
+Conceptually, the two streams of representations are updated as follows,
+
+$$
+\begin{aligned}
+g_{z_t}^{(m)} &\gets \text{Attention}(Q = g^{(m-1)}_{z_t}, KV=\mathbf{h}^{(m-1)}_{\color{red}{\mathbf{z}_{<t}}}; \theta) &\text{(query stream: use }z_t\text{ but cannot see }x_{z_t}\text{)}\\
+h_{z_t}^{(m)} &\gets \text{Attention}(Q = h^{(m-1)}_{z_t}, KV=\mathbf{h}^{(m-1)}_{\color{blue}{\mathbf{z}_{\leq t}}}; \theta) &\text{(content stream: use both }x_{z_t}\text{ and }x_{z_t}\text{)}\\
+\end{aligned}
+$$
+
+Given the difficulty of optimization in permutation language modeling, XLNet is set to only predict the last chunk of tokens in a factorization order.
+
+The name in XLNet actually comes from [Transformer-XL]({{ site.baseurl }}{% post_url 2020-04-07-the-transformer-family %}#longer-attention-span-transformer-xl ). It incorporates the design of Transformer-XL to extend the attention span by reusing hidden states from previous segments.
+
+
+![XLNet GLUE]({{ '/assets/images/XLNet-glue.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 17. Comparison of model performance of XLNet with a couple other language models on GLUE, all single-task, no ensembles. (Image source: [Yang et al. 2019](https://arxiv.org/abs/1906.08237))*
+{:.image-caption}
+
+
+
+## BART
+
+**BART** ([Lewis et al., 2019](https://arxiv.org/abs/1910.13461)) is a denoising autoencoder to recover the original text from a randomly corrupted version. It combines **B**idirectional and **A**uto**R**egressive **T**ransformer: precisely, jointly training BERT-like bidirectional encoder and GPT-like autoregressive decoder together. The loss is simply just to minimize the negative log-likelihood. 
+
+![BART]({{ '/assets/images/BART.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 18. A schematic comparison of BART with BERT and GPT. (Image source: [Lewis et al., 2019](https://arxiv.org/abs/1910.13461))*
+{:.image-caption}
+
+
+They experimented with a variety of noising transformations, including token masking, token deletion, text infilling (i.e. A randomly sampled text span, which may contain multiple tokens, is replaced with a `[MASK]` token), sentence permutation, documentation rotation (i.e. A document is rotated to begin with a random token.). The best noising approach they discovered is text infilling and sentence shuffling.
+
+![BART Performance]({{ '/assets/images/BART-perf.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 19. Comparison of different language modeling pre-training objectives. (Image source: [Lewis et al., 2019](https://arxiv.org/abs/1910.13461))*
+{:.image-caption}
+
+Learnings from their experiments:
+- The performance of pre-training methods varies significantly across downstream tasks.
+- Token masking is crucial, as the performance is poor when only sentence permutation or documentation rotation is applied.
+- Left-to-right pre-training improves generation.
+- Bidirectional encoders are crucial for SQuAD.
+- The pre-training objective is not the only important factor. Architectural improvements such as relative-position embeddings or segment-level recurrence matter too.
+- Autoregressive language models perform best on ELI5.
+- BART achieves the most consistently strong performance.
+
+
+## ELECTRA
+
+Most current pre-training large language models demand a lot of computation resources, raising concerns about their cost and accessibility. **ELECTRA** ("Efficiently Learning an Encoder that Classifies Token Replacements Accurately"; [Clark et al. 2020](https://arxiv.org/abs/2003.10555)) aims to improve the *pre-training efficiency*, which frames the language modeling as a discrimination task instead of generation task.
+
+![ELECTRA overview]({{ '/assets/images/ELECTRA-overview.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 20. Illustration of ELECTRA model architecture. (Image source: [Clark et al. 2020](https://arxiv.org/abs/2003.10555))*
+{:.image-caption}
+
+ELECTRA proposes a new pretraining task, called "Replaced Token Detection" (RTD). Let's randomly sample $$k$$ positions to be masked. Each selected token in the original text is replaced by a plausible alternative predicted by a small language model, known as the generator $$G$$. The discriminator $$D$$ predicts whether each token is original or replaced. 
+
+
+$$
+\begin{aligned}
+\boldsymbol{m} &= [m_1, \dots, m_k] \text{ where } m_i \sim \text{unif}\{1, n\}\text{ for } i=1, \dots, k \\
+\boldsymbol{x}^\text{masked} &= \text{REPLACE}(\boldsymbol{x}, \boldsymbol{m}, \texttt{[MASK]}) \\
+\boldsymbol{x}^\text{corrupt} &= \text{REPLACE}(\boldsymbol{x}, \boldsymbol{m}, \tilde{\boldsymbol{x}}) \text{ where } \tilde{x}_t \sim p_G(x_i \mid \boldsymbol{x}^\text{masked}) \text{ for } i \in \boldsymbol{m} \\
+\end{aligned}
+$$
+
+The loss for the generator is the negative log-likelihood just as in other language models. The loss for the discriminator is the cross-entropy. Note that the generator is not adversarially trained to fool the discriminator but simply to optimize the NLL, since their experiments show negative results.
+
+
+$$
+\begin{aligned}
+\mathcal{L}_\text{MLM}(\mathbf{x}, \theta_G) &= \mathbb{E}\Big(\sum_{i \in \boldsymbol{m}} -\log p_G (x_i \mid \boldsymbol{x}^\text{masked} )\Big) \\
+\mathcal{L}_\text{Disc}(\mathbf{x}, \theta_D) &= \mathbb{E}\Big( - \mathbb{1}[x^\text{corrupt}_t = x_t] \log D(\boldsymbol{x}^\text{corrupt}, t) - \mathbb{1}[x^\text{corrupt}_t \neq x_t] \log (1 - \log D(\boldsymbol{x}^\text{corrupt}, t))  \Big)
+\end{aligned}
+$$
+
+They found it more beneficial to only share the embeddings between generator & discriminator while using a small generator (1/4 to 1/2 the discriminator size), rather than sharing all the weights (i.e. two models have to be the same size then). In addition, joint training of the generator and discriminator works better than two-stage training of each alternatively.
+
+After pretraining the generator is discarded and only the ELECTRA discriminator is fine-tuned further for downstream tasks. The following table shows ELECTRA's performance on the GLUE dev set.
+
+![ELECTRA overview]({{ '/assets/images/ELECTRA-overview.png' | relative_url }})
+{: style="width: 100%;" class="center"}
+*Fig. 21. Comparison of ELECTRA with other language models on the GLUE dev set. (Image source: [Clark et al. 2020](https://arxiv.org/abs/2003.10555))*
+{:.image-caption}
+
+
+
 ## Summary
 
 {: class="info"}
-|     | Base model | pre-training | Downstream tasks | Downstream model | Fine-tuning |
-| --- | --- | --- | --- | --- | --- |
-| CoVe | seq2seq NMT model | supervised | feature-based | task-specific | / |
-| ELMo | two-layer biLSTM | unsupervised | feature-based | task-specific | / |
-| CVT | two-layer biLSTM | semi-supervised | model-based | task-specific / task-agnostic | / |
-| ULMFiT | AWD-LSTM | unsupervised | model-based | task-agnostic | all layers; with various training tricks
-| GPT | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
-| BERT | Transformer encoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
-| GPT-2 | Transformer decoder | unsupervised | model-based | task-agnostic | pre-trained layers + top task layer(s) |
-| T5 | Transformer | unsupervised | model-based | task-agnostic | fine-tuned for each downstream task separately |
-| GPT-3 | Transformer decoder | unsupervised | model-based | task-agnostic | No fine-tuning |
+|     | Base model | Pretraining Tasks |
+| --- | --- | --- |
+| CoVe | seq2seq NMT model | supervised learning using translation dataset. |
+| ELMo | two-layer biLSTM | next token prediction | 
+| CVT | two-layer biLSTM | semi-supervised learning using both labeled and unlabeled datasets |
+| ULMFiT | AWD-LSTM | autoregressive pretraining on Wikitext-103  |
+| GPT | Transformer decoder | next token prediction |
+| BERT | Transformer encoder | mask language model + next sentence prediction |
+| ALBERT | same as BERT but light-weighted | mask language model + sentence order prediction |
+| GPT-2 | Transformer decoder | next token prediction |
+| RoBERTa | same as BERT | mask language model (dynamic masking) |
+| T5 | Transformer encoder + decoder | pre-trained on a multi-task mixture of unsupervised and supervised tasks and for which each task is converted into a text-to-text format. |
+| GPT-3 | Transformer decoder | next token prediction |
+| XLNet | same as BERT | permutation language modeling |
+| BART | BERT encoder + GPT decoder | reconstruct text from a noised version |
+| ELECTRA | same as BERT | replace token detection |
+
 
 
 ## Metric: Perplexity
@@ -732,4 +859,11 @@ Cited as:
 [17] Yinhan Liu, et al. ["RoBERTa: A Robustly Optimized BERT Pretraining Approach."](https://arxiv.org/abs/1907.11692) arXiv Preprint arXiv:1907.11692 (2019).
 
 [18] Tom B Brown, et al. ["Language Models are Few-Shot Learners"](https://arxiv.org/abs/2005.14165) NeuriPS 2020.
+
+[19] Zhilin Yang et al. [“XLNet: Generalized Autoregressive Pretraining for Language Understanding.”](https://arxiv.org/abs/1906.08237) NeuriPS 2019.
+
+[20] Mike Lewis et al. [“BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension.”](https://arxiv.org/abs/1910.13461) ACL 2020.
+
+[21] Kevin Clark et al. [“ELECTRA: Pre-training Text Encoders as Discriminators Rather Than Generators.”](https://arxiv.org/abs/2003.10555) ICLR 2020.
+
 

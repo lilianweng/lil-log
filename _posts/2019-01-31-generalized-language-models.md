@@ -669,7 +669,7 @@ They found it more beneficial to only share the embeddings between generator & d
 
 After pretraining the generator is discarded and only the ELECTRA discriminator is fine-tuned further for downstream tasks. The following table shows ELECTRA's performance on the GLUE dev set.
 
-![ELECTRA overview]({{ '/assets/images/ELECTRA-overview.png' | relative_url }})
+![ELECTRA overview]({{ '/assets/images/ELECTRA-perf.png' | relative_url }})
 {: style="width: 100%;" class="center"}
 *Fig. 21. Comparison of ELECTRA with other language models on the GLUE dev set. (Image source: [Clark et al. 2020](https://arxiv.org/abs/2003.10555))*
 {:.image-caption}

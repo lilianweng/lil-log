@@ -473,7 +473,7 @@ It is a common paradigm, especially in language tasks, to first pre-train a task
 Their experiments demonstrated a series of interesting findings:
 - The effectiveness of pre-training diminishes with more labeled samples available for the downstream task. Pre-training is helpful in the low-data regimes (20%) but neutral or harmful in the high-data regime.
 - Self-training helps in high data/strong augmentation regimes, even when pre-training hurts.
-- Self-training can bring in addictive improvement on top of pre-training, even using the same data source.
+- Self-training can bring in additive improvement on top of pre-training, even using the same data source.
 - Self-supervised pre-training (e.g. via SimCLR) hurts the performance in a high data regime, similar to how supervised pre-training does.
 - Joint-training supervised and self-supervised objectives help resolve the mismatch between the pre-training and downstream tasks. Pre-training, joint-training and self-training are all additive.
 - Noisy labels or un-targeted labeling (i.e. pre-training labels are not aligned with downstream task labels) is worse than targeted pseudo labeling.

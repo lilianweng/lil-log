@@ -341,7 +341,7 @@ Essentially in training, given a passage $$z$$ sampled by the retriever, the rea
 $$
 R(y, \hat{y} \vert z) = \begin{cases}
 2 & \text{if } y = \hat{y}\\
-f1(y, \hat{y}) & \text{if } y \cap \hat{y} = \varnothing \\
+f1(y, \hat{y}) & \text{if } y \cap \hat{y} \ne \varnothing \\
 -1 & \text{otherwise}
 \end{cases}
 $$

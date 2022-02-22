@@ -254,7 +254,7 @@ When the GPU memory is full, one option is to offload temporarily unused data to
 
 ### Activation Recomputation
 
-**Activation recomputation** (also known as “activation checkpointing” or “gradient checkpointing”; [Chen et al. 2016 (https://arvix.org/abs/1604.06174)) is a smart yet simple idea to reduce memory footprint at the cost of computation time. It reduces the memory cost of training a $$\ell$$ layer deep neural net to $$O(\sqrt{\ell})$$, which only additionally consumes an extra forward pass computation per batch.
+**Activation recomputation** (also known as “activation checkpointing” or “gradient checkpointing”; [Chen et al. 2016 (https://arxiv.org/abs/1604.06174)) is a smart yet simple idea to reduce memory footprint at the cost of computation time. It reduces the memory cost of training a $$\ell$$ layer deep neural net to $$O(\sqrt{\ell})$$, which only additionally consumes an extra forward pass computation per batch.
 
 Let's say, we evenly divide an $$\ell$$-layer network into $$d$$ partitions. Only activations at partition boundaries are saved and communicated between workers. Intermediate activations at intra-partition layers are still needed for computing gradients so they are recomputed during backward passes. With activation recomputation, the memory cost for training $$M(\ell)$$ is:
 
@@ -270,7 +270,7 @@ Activation recompuation trick can give sublinear memory cost with respect to the
 
 ![Activation checkpointing experiments]({{ '/assets/images/activation-checkpointing.png' | relative_url }})
 {: style="width: 100%;" class="center"}
-*Fig. 15. The memory cost of different memory saving algorithms. <u>Sharing</u>: Memory used by intermediate results is recycled when no longer needed. <u>Inplace</u>: Save the output directly into memory of an input value. (Image source: [Chen et al. 2016](https://arvix.org/abs/1604.06174))*
+*Fig. 15. The memory cost of different memory saving algorithms. <u>Sharing</u>: Memory used by intermediate results is recycled when no longer needed. <u>Inplace</u>: Save the output directly into memory of an input value. (Image source: [Chen et al. 2016](https://arxiv.org/abs/1604.06174))*
 {:.image-caption}
 
 

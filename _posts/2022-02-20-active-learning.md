@@ -49,7 +49,7 @@ To simplify the discussion, we assume that the task is a $$K$$-class classificat
 
 ## Acquisition Function
 
-The process of identifying the most valuable examples to label next is referred to as "sampling strategy" or "query strategy". The scoring function in the sampling process is named "acquisition function", denoted as $$U(\mathbf{x})$$. Data points with higher scores are expected to produce higher value for model training if get labeled.
+The process of identifying the most valuable examples to label next is referred to as "sampling strategy" or "query strategy". The scoring function in the sampling process is named "acquisition function", denoted as $$U(\mathbf{x})$$. Data points with higher scores are expected to produce higher value for model training if they get labeled.
 
 Here is a list of basic sampling strategies.
 
@@ -61,7 +61,7 @@ Here is a list of basic sampling strategies.
 - *Margin score*: $$U(\mathbf{x}) = P_\theta(\hat{y}_1 \vert \mathbf{x}) - P_\theta(\hat{y}_2 \vert \mathbf{x})$$, where $$\hat{y}_1$$ and $$\hat{y}_2$$ are the most likely and the second likely predicted labels.
 - *Entropy*: $$U(\mathbf{x}) = \mathcal{H}(P_\theta(y \vert \mathbf{x})) = - \sum_{y \in \mathcal{Y}} P_\theta(y \vert \mathbf{x}) \log P_\theta(y \vert \mathbf{x})$$.
 
-Another way to quantify ncertainty is to rely on a committee of expert models, known as Query-By-Committee (QBC). QBC measures uncertainty based on a pool of opinions and thus it is critical to keep a level of disagreement among committee members. Given $$C$$ models in the committee pool, each parameterized by $$\theta_1, \dots, \theta_C$$.
+Another way to quantify uncertainty is to rely on a committee of expert models, known as Query-By-Committee (QBC). QBC measures uncertainty based on a pool of opinions and thus it is critical to keep a level of disagreement among committee members. Given $$C$$ models in the committee pool, each parameterized by $$\theta_1, \dots, \theta_C$$.
 - *Voter entropy*: $$U(\mathbf{x}) = \mathcal{H}(\frac{V(y)}{C})$$, where $$V(y)$$ counts the number of votes from the committee on the label $$y$$.
 - *Consensus entropy*: $$U(\mathbf{x}) = \mathcal{H}(P_\mathcal{C})$$, where $$P_\mathcal{C}$$ is the prediction averaging across the committee.
 - *KL divergence*: $$U(\mathbf{x}) = \frac{1}{C} \sum_{c=1}^C D_\text{KL} (P_{\theta_c} \| P_\mathcal{C})$$
@@ -108,12 +108,12 @@ In active learning, a commoner approach is to use *dropout* to "simulate" a prob
 {:.image-caption}
 
 
-[Beluch et al. (2018)](https://openaccess.thecvf.com/content_cvpr_2018/papers/Beluch_The_Power_of_CVPR_2018_paper.pdf) compared ensemble-based models with MC dropout and found that the combination of naive ensemble (i.e. train multiple models separately and independently) and variation ratio yields better calibrated predictions than others. However, naive ensembleis *very* expensive, so they explored a few alternative cheaper options:
+[Beluch et al. (2018)](https://openaccess.thecvf.com/content_cvpr_2018/papers/Beluch_The_Power_of_CVPR_2018_paper.pdf) compared ensemble-based models with MC dropout and found that the combination of naive ensemble (i.e. train multiple models separately and independently) and variation ratio yields better calibrated predictions than others. However, naive ensembles are *very* expensive, so they explored a few alternative cheaper options:
 - Snapshot ensemble: Use a cyclic learning rate schedule to train an implicit ensemble such that it converges to different local minima.
 - Diversity encouraging ensemble (DEE): Use a base network trained for a small number of epochs as initialization for $$n$$ different networks, each trained with dropout to encourage diversity.
 - Split head approach: One base model has multiple heads, each corresponding to one classifier.
 
-Unfortunately all the cheap implicit ensemble options above perform worse than naive ensemble. Considering the limit on computational resources, MC dropout is still a pretty good and economical choice. Naturally, people also try to combine ensemble and MC dropout ([Pop & Fulop 2018](https://arxiv.org/abs/1811.03897)) to get a bit of additional performance gain by stochastic ensemble. 
+Unfortunately all the cheap implicit ensemble options above perform worse than naive ensembles. Considering the limit on computational resources, MC dropout is still a pretty good and economical choice. Naturally, people also try to combine ensemble and MC dropout ([Pop & Fulop 2018](https://arxiv.org/abs/1811.03897)) to get a bit of additional performance gain by stochastic ensemble. 
 
 
 #### Uncertainty in Parameter Space
@@ -419,6 +419,18 @@ Active learning can be further combined with [semi-supervised learning]({{ site.
 *Fig. 12. Illustration of CEAL (cost-effective active learning). (Image source: [Yang et al. 2017][(https://arxiv.org/abs/1701.03551))*
 {:.image-caption}
 
+
+---
+Cited as:
+```
+@article{weng2022active,
+  title   = "Learning with not Enough Data Part 1: Semi-Supervised Learning",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2022",
+  url     = "https://lilianweng.github.io/lil-log/2022/02/20/active-learning.html"
+}
+```
 
 
 ## References

@@ -516,6 +516,18 @@ They experimented on the ImageNet classification task. The self-supervised pre-t
 - Set a minimum number of labeled samples per mini-batch.
 - Sharpen the pseudo label distribution to reduce the class overlap.
 
+---
+Cited as:
+```
+@article{weng2021semi,
+  title   = "Learning with not Enough Data Part 1: Semi-Supervised Learning",
+  author  = "Weng, Lilian",
+  journal = "lilianweng.github.io/lil-log",
+  year    = "2021",
+  url     = "https://lilianweng.github.io/lil-log/2021/12/05/semi-supervised-learning.html"
+}
+```
+
 
 ## References
 

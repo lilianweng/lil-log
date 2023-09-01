@@ -1,15 +1,16 @@
-title: Lil'Log
-author: Lilian Weng
-baseurl: "/lil-log"
-description: Trace my thoughts
-profile_url: "http://lilianweng.github.io"
+title: BearnarddBlog
+name: "Bearnardd's Blog"
+author: Bearnardd 
+baseurl: bearnardd-blog 
+description: Document my learning notes.
 
 # Build settings
 markdown: kramdown
 highlighter: rouge
 excerpt_separator: <!--more-->
-gems:
+plugins:
   - jekyll-feed
+  - jekyll-archives
 exclude:
   - Gemfile
   - Gemfile.lock
@@ -17,3 +18,4 @@ kramdown:
   input: GFM
   auto_ids: true
   syntax_highlighter: rouge
+  toc_levels: 1..4
